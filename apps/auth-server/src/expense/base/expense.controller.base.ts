@@ -55,6 +55,10 @@ export class ExpenseControllerBase {
       data: {
         ...data,
 
+        addedByUser: {
+          connect: data.addedByUser,
+        },
+
         pop: data.pop
           ? {
               connect: data.pop,
@@ -62,9 +66,15 @@ export class ExpenseControllerBase {
           : undefined,
       },
       select: {
-        addedBy: true,
+        addedByUser: {
+          select: {
+            id: true,
+          },
+        },
+
         amount: true,
         category: true,
+        createdAt: true,
         date: true,
         id: true,
 
@@ -75,6 +85,7 @@ export class ExpenseControllerBase {
         },
 
         title: true,
+        updatedAt: true,
       },
     });
   }
@@ -96,9 +107,15 @@ export class ExpenseControllerBase {
     return this.service.expenses({
       ...args,
       select: {
-        addedBy: true,
+        addedByUser: {
+          select: {
+            id: true,
+          },
+        },
+
         amount: true,
         category: true,
+        createdAt: true,
         date: true,
         id: true,
 
@@ -109,6 +126,7 @@ export class ExpenseControllerBase {
         },
 
         title: true,
+        updatedAt: true,
       },
     });
   }
@@ -131,9 +149,15 @@ export class ExpenseControllerBase {
     const result = await this.service.expense({
       where: params,
       select: {
-        addedBy: true,
+        addedByUser: {
+          select: {
+            id: true,
+          },
+        },
+
         amount: true,
         category: true,
+        createdAt: true,
         date: true,
         id: true,
 
@@ -144,6 +168,7 @@ export class ExpenseControllerBase {
         },
 
         title: true,
+        updatedAt: true,
       },
     });
     if (result === null) {
@@ -179,6 +204,10 @@ export class ExpenseControllerBase {
         data: {
           ...data,
 
+          addedByUser: {
+            connect: data.addedByUser,
+          },
+
           pop: data.pop
             ? {
                 connect: data.pop,
@@ -186,9 +215,15 @@ export class ExpenseControllerBase {
             : undefined,
         },
         select: {
-          addedBy: true,
+          addedByUser: {
+            select: {
+              id: true,
+            },
+          },
+
           amount: true,
           category: true,
+          createdAt: true,
           date: true,
           id: true,
 
@@ -199,6 +234,7 @@ export class ExpenseControllerBase {
           },
 
           title: true,
+          updatedAt: true,
         },
       });
     } catch (error) {
@@ -229,9 +265,15 @@ export class ExpenseControllerBase {
       return await this.service.deleteExpense({
         where: params,
         select: {
-          addedBy: true,
+          addedByUser: {
+            select: {
+              id: true,
+            },
+          },
+
           amount: true,
           category: true,
+          createdAt: true,
           date: true,
           id: true,
 
@@ -242,6 +284,7 @@ export class ExpenseControllerBase {
           },
 
           title: true,
+          updatedAt: true,
         },
       });
     } catch (error) {

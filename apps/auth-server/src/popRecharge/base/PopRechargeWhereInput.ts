@@ -17,8 +17,9 @@ import { IsOptional, IsEnum, ValidateNested } from "class-validator";
 import { DateTimeFilter } from "../../util/DateTimeFilter";
 import { StringFilter } from "../../util/StringFilter";
 import { EnumPopRechargeMethod } from "./EnumPopRechargeMethod";
-import { StringNullableFilter } from "../../util/StringNullableFilter";
+import { UserWhereUniqueInput } from "../../user/base/UserWhereUniqueInput";
 import { PopWhereUniqueInput } from "../../pop/base/PopWhereUniqueInput";
+import { StringNullableFilter } from "../../util/StringNullableFilter";
 
 @InputType()
 class PopRechargeWhereInput {
@@ -32,6 +33,17 @@ class PopRechargeWhereInput {
     nullable: true,
   })
   amount?: DecimalFilter;
+
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
+  @Type(() => DateTimeFilter)
+  @IsOptional()
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
+  createdAt?: DateTimeFilter;
 
   @ApiProperty({
     required: false,
@@ -68,14 +80,15 @@ class PopRechargeWhereInput {
 
   @ApiProperty({
     required: false,
-    type: StringNullableFilter,
+    type: () => UserWhereUniqueInput,
   })
-  @Type(() => StringNullableFilter)
+  @ValidateNested()
+  @Type(() => UserWhereUniqueInput)
   @IsOptional()
-  @Field(() => StringNullableFilter, {
+  @Field(() => UserWhereUniqueInput, {
     nullable: true,
   })
-  performedBy?: StringNullableFilter;
+  performedByUser?: UserWhereUniqueInput;
 
   @ApiProperty({
     required: false,
@@ -99,6 +112,17 @@ class PopRechargeWhereInput {
     nullable: true,
   })
   reference?: StringNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
+  @Type(() => DateTimeFilter)
+  @IsOptional()
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
+  updatedAt?: DateTimeFilter;
 }
 
 export { PopRechargeWhereInput as PopRechargeWhereInput };

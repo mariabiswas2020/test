@@ -20,9 +20,9 @@ import {
   IsNumber,
   Max,
   IsInt,
+  IsDate,
   IsEnum,
   IsBoolean,
-  IsDate,
 } from "class-validator";
 
 import { AreaWhereUniqueInput } from "../../area/base/AreaWhereUniqueInput";
@@ -31,7 +31,9 @@ import { Decimal } from "decimal.js";
 import { BillSheetUpdateManyWithoutCustomersInput } from "./BillSheetUpdateManyWithoutCustomersInput";
 import { PackageModelWhereUniqueInput } from "../../packageModel/base/PackageModelWhereUniqueInput";
 import { PopWhereUniqueInput } from "../../pop/base/PopWhereUniqueInput";
+import { CustomerSessionUpdateManyWithoutCustomersInput } from "./CustomerSessionUpdateManyWithoutCustomersInput";
 import { EnumCustomerStatus } from "./EnumCustomerStatus";
+import { SupportTicketUpdateManyWithoutCustomersInput } from "./SupportTicketUpdateManyWithoutCustomersInput";
 import { TokenUpdateManyWithoutCustomersInput } from "./TokenUpdateManyWithoutCustomersInput";
 import { TransactionUpdateManyWithoutCustomersInput } from "./TransactionUpdateManyWithoutCustomersInput";
 
@@ -108,6 +110,17 @@ class CustomerUpdateInput {
     nullable: true,
   })
   customerId?: string;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  @Field(() => Date, {
+    nullable: true,
+  })
+  deletedAt?: Date | null;
 
   @ApiProperty({
     required: false,
@@ -267,6 +280,18 @@ class CustomerUpdateInput {
 
   @ApiProperty({
     required: false,
+    type: () => CustomerSessionUpdateManyWithoutCustomersInput,
+  })
+  @ValidateNested()
+  @Type(() => CustomerSessionUpdateManyWithoutCustomersInput)
+  @IsOptional()
+  @Field(() => CustomerSessionUpdateManyWithoutCustomersInput, {
+    nullable: true,
+  })
+  sessions?: CustomerSessionUpdateManyWithoutCustomersInput;
+
+  @ApiProperty({
+    required: false,
     enum: EnumCustomerStatus,
   })
   @IsEnum(EnumCustomerStatus)
@@ -303,6 +328,18 @@ class CustomerUpdateInput {
     nullable: true,
   })
   tempExtensionExpiresAt?: Date | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => SupportTicketUpdateManyWithoutCustomersInput,
+  })
+  @ValidateNested()
+  @Type(() => SupportTicketUpdateManyWithoutCustomersInput)
+  @IsOptional()
+  @Field(() => SupportTicketUpdateManyWithoutCustomersInput, {
+    nullable: true,
+  })
+  tickets?: SupportTicketUpdateManyWithoutCustomersInput;
 
   @ApiProperty({
     required: false,

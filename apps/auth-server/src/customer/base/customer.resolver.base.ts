@@ -28,6 +28,10 @@ import { UpdateCustomerArgs } from "./UpdateCustomerArgs";
 import { DeleteCustomerArgs } from "./DeleteCustomerArgs";
 import { BillSheetFindManyArgs } from "../../billSheet/base/BillSheetFindManyArgs";
 import { BillSheet } from "../../billSheet/base/BillSheet";
+import { CustomerSessionFindManyArgs } from "../../customerSession/base/CustomerSessionFindManyArgs";
+import { CustomerSession } from "../../customerSession/base/CustomerSession";
+import { SupportTicketFindManyArgs } from "../../supportTicket/base/SupportTicketFindManyArgs";
+import { SupportTicket } from "../../supportTicket/base/SupportTicket";
 import { TokenFindManyArgs } from "../../token/base/TokenFindManyArgs";
 import { Token } from "../../token/base/Token";
 import { TransactionFindManyArgs } from "../../transaction/base/TransactionFindManyArgs";
@@ -195,6 +199,46 @@ export class CustomerResolverBase {
     @graphql.Args() args: BillSheetFindManyArgs
   ): Promise<BillSheet[]> {
     const results = await this.service.findBillSheets(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [CustomerSession], { name: "sessions" })
+  @nestAccessControl.UseRoles({
+    resource: "CustomerSession",
+    action: "read",
+    possession: "any",
+  })
+  async findSessions(
+    @graphql.Parent() parent: Customer,
+    @graphql.Args() args: CustomerSessionFindManyArgs
+  ): Promise<CustomerSession[]> {
+    const results = await this.service.findSessions(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [SupportTicket], { name: "tickets" })
+  @nestAccessControl.UseRoles({
+    resource: "SupportTicket",
+    action: "read",
+    possession: "any",
+  })
+  async findTickets(
+    @graphql.Parent() parent: Customer,
+    @graphql.Args() args: SupportTicketFindManyArgs
+  ): Promise<SupportTicket[]> {
+    const results = await this.service.findTickets(parent.id, args);
 
     if (!results) {
       return [];

@@ -4,6 +4,7 @@ import { Supplier } from "../supplier/Supplier";
 import { Decimal } from "decimal.js";
 
 export type Purchase = {
+  createdAt: Date;
   date: Date;
   id: string;
   invoiceNo: string | null;
@@ -11,4 +12,5 @@ export type Purchase = {
   stockItems?: Array<ProductItem>;
   supplier?: Supplier;
   totalAmount: Decimal;
+  updatedAt: Date;
 };

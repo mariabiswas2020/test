@@ -11,18 +11,27 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { Customer } from "../../customer/base/Customer";
 import {
+  IsDate,
   ValidateNested,
   IsOptional,
   IsString,
   MaxLength,
 } from "class-validator";
 import { Type } from "class-transformer";
+import { Customer } from "../../customer/base/Customer";
 import { Pop } from "../../pop/base/Pop";
 
 @ObjectType()
 class Area {
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  createdAt!: Date;
+
   @ApiProperty({
     required: false,
     type: () => [Customer],
@@ -69,6 +78,14 @@ class Area {
   @Type(() => Pop)
   @IsOptional()
   pops?: Array<Pop>;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  updatedAt!: Date;
 }
 
 export { Area as Area };

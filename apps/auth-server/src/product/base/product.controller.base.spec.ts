@@ -20,39 +20,47 @@ const existingId = "existingId";
 const CREATE_INPUT = {
   brand: "exampleBrand",
   category: "exampleCategory",
+  createdAt: new Date(),
   hasWarranty: "true",
   id: "exampleId",
   name: "exampleName",
   unit: "exampleUnit",
+  updatedAt: new Date(),
   warrantyDays: 42,
 };
 const CREATE_RESULT = {
   brand: "exampleBrand",
   category: "exampleCategory",
+  createdAt: new Date(),
   hasWarranty: "true",
   id: "exampleId",
   name: "exampleName",
   unit: "exampleUnit",
+  updatedAt: new Date(),
   warrantyDays: 42,
 };
 const FIND_MANY_RESULT = [
   {
     brand: "exampleBrand",
     category: "exampleCategory",
+    createdAt: new Date(),
     hasWarranty: "true",
     id: "exampleId",
     name: "exampleName",
     unit: "exampleUnit",
+    updatedAt: new Date(),
     warrantyDays: 42,
   },
 ];
 const FIND_ONE_RESULT = {
   brand: "exampleBrand",
   category: "exampleCategory",
+  createdAt: new Date(),
   hasWarranty: "true",
   id: "exampleId",
   name: "exampleName",
   unit: "exampleUnit",
+  updatedAt: new Date(),
   warrantyDays: 42,
 };
 
@@ -136,14 +144,24 @@ describe("Product", () => {
       .post("/products")
       .send(CREATE_INPUT)
       .expect(HttpStatus.CREATED)
-      .expect(CREATE_RESULT);
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      });
   });
 
   test("GET /products", async () => {
     await request(app.getHttpServer())
       .get("/products")
       .expect(HttpStatus.OK)
-      .expect([FIND_MANY_RESULT[0]]);
+      .expect([
+        {
+          ...FIND_MANY_RESULT[0],
+          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
+          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
+        },
+      ]);
   });
 
   test("GET /products/:id non existing", async () => {
@@ -161,7 +179,11 @@ describe("Product", () => {
     await request(app.getHttpServer())
       .get(`${"/products"}/${existingId}`)
       .expect(HttpStatus.OK)
-      .expect(FIND_ONE_RESULT);
+      .expect({
+        ...FIND_ONE_RESULT,
+        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
+        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+      });
   });
 
   test("POST /products existing resource", async () => {
@@ -170,7 +192,11 @@ describe("Product", () => {
       .post("/products")
       .send(CREATE_INPUT)
       .expect(HttpStatus.CREATED)
-      .expect(CREATE_RESULT)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      })
       .then(function () {
         agent
           .post("/products")

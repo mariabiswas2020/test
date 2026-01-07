@@ -31,7 +31,8 @@ export const MarketingLeadList = (props: ListProps): React.ReactElement => {
         <TextField label="Price Quote" source="priceQuote" />
         <TextField label="Proposed Package" source="proposedPackage" />
         <TextField label="Remarks" source="remarks" />
-        <TextField label="Status" source="status" />{" "}
+        <TextField label="Status" source="status" />
+        <DateField source="updatedAt" label="Updated At" />{" "}
       </Datagrid>
     </List>
   );

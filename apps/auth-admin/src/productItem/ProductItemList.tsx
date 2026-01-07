@@ -1,12 +1,15 @@
 import * as React from "react";
+
 import {
   List,
   Datagrid,
   ListProps,
+  DateField,
   TextField,
   BooleanField,
   ReferenceField,
 } from "react-admin";
+
 import Pagination from "../Components/Pagination";
 import { POP_TITLE_FIELD } from "../pop/PopTitle";
 import { PRODUCT_TITLE_FIELD } from "../product/ProductTitle";
@@ -21,6 +24,7 @@ export const ProductItemList = (props: ListProps): React.ReactElement => {
       pagination={<Pagination />}
     >
       <Datagrid rowClick="show" bulkActionButtons={false}>
+        <DateField source="createdAt" label="Created At" />
         <TextField label="ID" source="id" />
         <BooleanField label="Is Used Product" source="isUsedProduct" />
         <ReferenceField label="Location Pop" source="pop.id" reference="Pop">
@@ -37,7 +41,8 @@ export const ProductItemList = (props: ListProps): React.ReactElement => {
           <TextField source={PURCHASE_TITLE_FIELD} />
         </ReferenceField>
         <TextField label="Serial Number" source="serialNumber" />
-        <TextField label="Status" source="status" />{" "}
+        <TextField label="Status" source="status" />
+        <DateField source="updatedAt" label="Updated At" />{" "}
       </Datagrid>
     </List>
   );

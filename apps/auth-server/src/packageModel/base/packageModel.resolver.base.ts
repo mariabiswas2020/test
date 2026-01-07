@@ -28,6 +28,8 @@ import { UpdatePackageModelArgs } from "./UpdatePackageModelArgs";
 import { DeletePackageModelArgs } from "./DeletePackageModelArgs";
 import { CustomerFindManyArgs } from "../../customer/base/CustomerFindManyArgs";
 import { Customer } from "../../customer/base/Customer";
+import { ResellerPackageFindManyArgs } from "../../resellerPackage/base/ResellerPackageFindManyArgs";
+import { ResellerPackage } from "../../resellerPackage/base/ResellerPackage";
 import { PackageModelService } from "../packageModel.service";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => PackageModel)
@@ -156,6 +158,26 @@ export class PackageModelResolverBase {
     @graphql.Args() args: CustomerFindManyArgs
   ): Promise<Customer[]> {
     const results = await this.service.findCustomers(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [ResellerPackage], { name: "resellerPricing" })
+  @nestAccessControl.UseRoles({
+    resource: "ResellerPackage",
+    action: "read",
+    possession: "any",
+  })
+  async findResellerPricing(
+    @graphql.Parent() parent: PackageModel,
+    @graphql.Args() args: ResellerPackageFindManyArgs
+  ): Promise<ResellerPackage[]> {
+    const results = await this.service.findResellerPricing(parent.id, args);
 
     if (!results) {
       return [];

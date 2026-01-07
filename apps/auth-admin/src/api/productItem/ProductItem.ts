@@ -3,6 +3,7 @@ import { Product } from "../product/Product";
 import { Purchase } from "../purchase/Purchase";
 
 export type ProductItem = {
+  createdAt: Date;
   id: string;
   isUsedProduct: boolean;
   locationPop?: Pop | null;
@@ -10,4 +11,5 @@ export type ProductItem = {
   purchase?: Purchase | null;
   serialNumber: string;
   status?: "IN_STOCK" | "SOLD" | "DEPLOYED" | "RETURNED" | "DAMAGED";
+  updatedAt: Date;
 };

@@ -58,9 +58,11 @@ export class SupplierControllerBase {
       data: data,
       select: {
         company: true,
+        createdAt: true,
         id: true,
         name: true,
         phone: true,
+        updatedAt: true,
       },
     });
   }
@@ -83,9 +85,11 @@ export class SupplierControllerBase {
       ...args,
       select: {
         company: true,
+        createdAt: true,
         id: true,
         name: true,
         phone: true,
+        updatedAt: true,
       },
     });
   }
@@ -109,9 +113,11 @@ export class SupplierControllerBase {
       where: params,
       select: {
         company: true,
+        createdAt: true,
         id: true,
         name: true,
         phone: true,
+        updatedAt: true,
       },
     });
     if (result === null) {
@@ -147,9 +153,11 @@ export class SupplierControllerBase {
         data: data,
         select: {
           company: true,
+          createdAt: true,
           id: true,
           name: true,
           phone: true,
+          updatedAt: true,
         },
       });
     } catch (error) {
@@ -181,9 +189,11 @@ export class SupplierControllerBase {
         where: params,
         select: {
           company: true,
+          createdAt: true,
           id: true,
           name: true,
           phone: true,
+          updatedAt: true,
         },
       });
     } catch (error) {
@@ -212,6 +222,7 @@ export class SupplierControllerBase {
     const results = await this.service.findPurchases(params.id, {
       ...query,
       select: {
+        createdAt: true,
         date: true,
         id: true,
         invoiceNo: true,
@@ -223,6 +234,7 @@ export class SupplierControllerBase {
         },
 
         totalAmount: true,
+        updatedAt: true,
       },
     });
     if (results === null) {

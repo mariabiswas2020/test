@@ -7,6 +7,7 @@ import { SupplierWhereUniqueInput } from "../supplier/SupplierWhereUniqueInput";
 import { DecimalFilter } from "../../util/DecimalFilter";
 
 export type PurchaseWhereInput = {
+  createdAt?: DateTimeFilter;
   date?: DateTimeFilter;
   id?: StringFilter;
   invoiceNo?: StringNullableFilter;
@@ -14,4 +15,5 @@ export type PurchaseWhereInput = {
   stockItems?: ProductItemListRelationFilter;
   supplier?: SupplierWhereUniqueInput;
   totalAmount?: DecimalFilter;
+  updatedAt?: DateTimeFilter;
 };

@@ -20,24 +20,32 @@ const existingId = "existingId";
 const CREATE_INPUT = {
   balance: 42.424242424,
   businessName: "exampleBusinessName",
+  createdAt: new Date(),
   id: "exampleId",
+  updatedAt: new Date(),
 };
 const CREATE_RESULT = {
   balance: 42.424242424,
   businessName: "exampleBusinessName",
+  createdAt: new Date(),
   id: "exampleId",
+  updatedAt: new Date(),
 };
 const FIND_MANY_RESULT = [
   {
     balance: 42.424242424,
     businessName: "exampleBusinessName",
+    createdAt: new Date(),
     id: "exampleId",
+    updatedAt: new Date(),
   },
 ];
 const FIND_ONE_RESULT = {
   balance: 42.424242424,
   businessName: "exampleBusinessName",
+  createdAt: new Date(),
   id: "exampleId",
+  updatedAt: new Date(),
 };
 
 const service = {
@@ -120,14 +128,24 @@ describe("Reseller", () => {
       .post("/resellers")
       .send(CREATE_INPUT)
       .expect(HttpStatus.CREATED)
-      .expect(CREATE_RESULT);
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      });
   });
 
   test("GET /resellers", async () => {
     await request(app.getHttpServer())
       .get("/resellers")
       .expect(HttpStatus.OK)
-      .expect([FIND_MANY_RESULT[0]]);
+      .expect([
+        {
+          ...FIND_MANY_RESULT[0],
+          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
+          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
+        },
+      ]);
   });
 
   test("GET /resellers/:id non existing", async () => {
@@ -145,7 +163,11 @@ describe("Reseller", () => {
     await request(app.getHttpServer())
       .get(`${"/resellers"}/${existingId}`)
       .expect(HttpStatus.OK)
-      .expect(FIND_ONE_RESULT);
+      .expect({
+        ...FIND_ONE_RESULT,
+        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
+        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+      });
   });
 
   test("POST /resellers existing resource", async () => {
@@ -154,7 +176,11 @@ describe("Reseller", () => {
       .post("/resellers")
       .send(CREATE_INPUT)
       .expect(HttpStatus.CREATED)
-      .expect(CREATE_RESULT)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      })
       .then(function () {
         agent
           .post("/resellers")

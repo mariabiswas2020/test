@@ -16,14 +16,15 @@ import {
   Max,
   IsOptional,
   IsEnum,
+  ValidateNested,
   IsString,
   MaxLength,
-  ValidateNested,
 } from "class-validator";
 import { Decimal } from "decimal.js";
 import { EnumPopRechargeMethod } from "./EnumPopRechargeMethod";
-import { PopWhereUniqueInput } from "../../pop/base/PopWhereUniqueInput";
+import { UserWhereUniqueInput } from "../../user/base/UserWhereUniqueInput";
 import { Type } from "class-transformer";
+import { PopWhereUniqueInput } from "../../pop/base/PopWhereUniqueInput";
 
 @InputType()
 class PopRechargeUpdateInput {
@@ -52,15 +53,15 @@ class PopRechargeUpdateInput {
 
   @ApiProperty({
     required: false,
-    type: String,
+    type: () => UserWhereUniqueInput,
   })
-  @IsString()
-  @MaxLength(256)
+  @ValidateNested()
+  @Type(() => UserWhereUniqueInput)
   @IsOptional()
-  @Field(() => String, {
+  @Field(() => UserWhereUniqueInput, {
     nullable: true,
   })
-  performedBy?: string | null;
+  performedByUser?: UserWhereUniqueInput | null;
 
   @ApiProperty({
     required: false,

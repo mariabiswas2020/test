@@ -3,6 +3,8 @@ import { Decimal } from "decimal.js";
 import { BillSheetUpdateManyWithoutCustomersInput } from "./BillSheetUpdateManyWithoutCustomersInput";
 import { PackageModelWhereUniqueInput } from "../packageModel/PackageModelWhereUniqueInput";
 import { PopWhereUniqueInput } from "../pop/PopWhereUniqueInput";
+import { CustomerSessionUpdateManyWithoutCustomersInput } from "./CustomerSessionUpdateManyWithoutCustomersInput";
+import { SupportTicketUpdateManyWithoutCustomersInput } from "./SupportTicketUpdateManyWithoutCustomersInput";
 import { TokenUpdateManyWithoutCustomersInput } from "./TokenUpdateManyWithoutCustomersInput";
 import { TransactionUpdateManyWithoutCustomersInput } from "./TransactionUpdateManyWithoutCustomersInput";
 
@@ -13,6 +15,7 @@ export type CustomerUpdateInput = {
   billSheets?: BillSheetUpdateManyWithoutCustomersInput;
   billingCycle?: number;
   customerId?: string;
+  deletedAt?: Date | null;
   dueAmount?: Decimal;
   email?: string | null;
   ipAddress?: string | null;
@@ -26,6 +29,7 @@ export type CustomerUpdateInput = {
   pop?: PopWhereUniqueInput;
   pppoePassword?: string | null;
   pppoeUsername?: string | null;
+  sessions?: CustomerSessionUpdateManyWithoutCustomersInput;
   status?:
     | "ACTIVE"
     | "INACTIVE"
@@ -35,6 +39,7 @@ export type CustomerUpdateInput = {
     | "DISCONNECTED";
   tempExtensionActive?: boolean;
   tempExtensionExpiresAt?: Date | null;
+  tickets?: SupportTicketUpdateManyWithoutCustomersInput;
   tokens?: TokenUpdateManyWithoutCustomersInput;
   transactions?: TransactionUpdateManyWithoutCustomersInput;
 };

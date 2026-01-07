@@ -18,6 +18,7 @@ import {
   Expense as PrismaExpense,
   ProductItem as PrismaProductItem,
   PopRecharge as PrismaPopRecharge,
+  MikroTikRouter as PrismaMikroTikRouter,
   Area as PrismaArea,
   Reseller as PrismaReseller,
 } from "@prisma/client";
@@ -87,6 +88,17 @@ export class PopServiceBase {
         where: { id: parentId },
       })
       .rechargeHistory(args);
+  }
+
+  async findRouters(
+    parentId: string,
+    args: Prisma.MikroTikRouterFindManyArgs
+  ): Promise<PrismaMikroTikRouter[]> {
+    return this.prisma.pop
+      .findUniqueOrThrow({
+        where: { id: parentId },
+      })
+      .routers(args);
   }
 
   async findSubPops(

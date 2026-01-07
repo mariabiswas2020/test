@@ -26,6 +26,8 @@ import { ResellerFindUniqueArgs } from "./ResellerFindUniqueArgs";
 import { CreateResellerArgs } from "./CreateResellerArgs";
 import { UpdateResellerArgs } from "./UpdateResellerArgs";
 import { DeleteResellerArgs } from "./DeleteResellerArgs";
+import { ResellerPackageFindManyArgs } from "../../resellerPackage/base/ResellerPackageFindManyArgs";
+import { ResellerPackage } from "../../resellerPackage/base/ResellerPackage";
 import { PopFindManyArgs } from "../../pop/base/PopFindManyArgs";
 import { Pop } from "../../pop/base/Pop";
 import { ResellerRechargeLogFindManyArgs } from "../../resellerRechargeLog/base/ResellerRechargeLogFindManyArgs";
@@ -157,6 +159,26 @@ export class ResellerResolverBase {
       }
       throw error;
     }
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [ResellerPackage], { name: "assignedPackages" })
+  @nestAccessControl.UseRoles({
+    resource: "ResellerPackage",
+    action: "read",
+    possession: "any",
+  })
+  async findAssignedPackages(
+    @graphql.Parent() parent: Reseller,
+    @graphql.Args() args: ResellerPackageFindManyArgs
+  ): Promise<ResellerPackage[]> {
+    const results = await this.service.findAssignedPackages(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)

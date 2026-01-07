@@ -22,6 +22,7 @@ const CREATE_INPUT = {
   id: "exampleId",
   month: "exampleMonth",
   payable: 42.424242424,
+  updatedAt: new Date(),
   year: 42,
 };
 const CREATE_RESULT = {
@@ -29,6 +30,7 @@ const CREATE_RESULT = {
   id: "exampleId",
   month: "exampleMonth",
   payable: 42.424242424,
+  updatedAt: new Date(),
   year: 42,
 };
 const FIND_MANY_RESULT = [
@@ -37,6 +39,7 @@ const FIND_MANY_RESULT = [
     id: "exampleId",
     month: "exampleMonth",
     payable: 42.424242424,
+    updatedAt: new Date(),
     year: 42,
   },
 ];
@@ -45,6 +48,7 @@ const FIND_ONE_RESULT = {
   id: "exampleId",
   month: "exampleMonth",
   payable: 42.424242424,
+  updatedAt: new Date(),
   year: 42,
 };
 
@@ -131,6 +135,7 @@ describe("BillSheet", () => {
       .expect({
         ...CREATE_RESULT,
         generatedAt: CREATE_RESULT.generatedAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
       });
   });
 
@@ -142,6 +147,7 @@ describe("BillSheet", () => {
         {
           ...FIND_MANY_RESULT[0],
           generatedAt: FIND_MANY_RESULT[0].generatedAt.toISOString(),
+          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
         },
       ]);
   });
@@ -164,6 +170,7 @@ describe("BillSheet", () => {
       .expect({
         ...FIND_ONE_RESULT,
         generatedAt: FIND_ONE_RESULT.generatedAt.toISOString(),
+        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
       });
   });
 
@@ -176,6 +183,7 @@ describe("BillSheet", () => {
       .expect({
         ...CREATE_RESULT,
         generatedAt: CREATE_RESULT.generatedAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
       })
       .then(function () {
         agent

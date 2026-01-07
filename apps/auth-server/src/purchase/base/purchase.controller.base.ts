@@ -66,6 +66,7 @@ export class PurchaseControllerBase {
         },
       },
       select: {
+        createdAt: true,
         date: true,
         id: true,
         invoiceNo: true,
@@ -77,6 +78,7 @@ export class PurchaseControllerBase {
         },
 
         totalAmount: true,
+        updatedAt: true,
       },
     });
   }
@@ -98,6 +100,7 @@ export class PurchaseControllerBase {
     return this.service.purchases({
       ...args,
       select: {
+        createdAt: true,
         date: true,
         id: true,
         invoiceNo: true,
@@ -109,6 +112,7 @@ export class PurchaseControllerBase {
         },
 
         totalAmount: true,
+        updatedAt: true,
       },
     });
   }
@@ -131,6 +135,7 @@ export class PurchaseControllerBase {
     const result = await this.service.purchase({
       where: params,
       select: {
+        createdAt: true,
         date: true,
         id: true,
         invoiceNo: true,
@@ -142,6 +147,7 @@ export class PurchaseControllerBase {
         },
 
         totalAmount: true,
+        updatedAt: true,
       },
     });
     if (result === null) {
@@ -182,6 +188,7 @@ export class PurchaseControllerBase {
           },
         },
         select: {
+          createdAt: true,
           date: true,
           id: true,
           invoiceNo: true,
@@ -193,6 +200,7 @@ export class PurchaseControllerBase {
           },
 
           totalAmount: true,
+          updatedAt: true,
         },
       });
     } catch (error) {
@@ -223,6 +231,7 @@ export class PurchaseControllerBase {
       return await this.service.deletePurchase({
         where: params,
         select: {
+          createdAt: true,
           date: true,
           id: true,
           invoiceNo: true,
@@ -234,6 +243,7 @@ export class PurchaseControllerBase {
           },
 
           totalAmount: true,
+          updatedAt: true,
         },
       });
     } catch (error) {
@@ -370,6 +380,7 @@ export class PurchaseControllerBase {
     const results = await this.service.findStockItems(params.id, {
       ...query,
       select: {
+        createdAt: true,
         id: true,
         isUsedProduct: true,
 
@@ -393,6 +404,7 @@ export class PurchaseControllerBase {
 
         serialNumber: true,
         status: true,
+        updatedAt: true,
       },
     });
     if (results === null) {

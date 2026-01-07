@@ -40,6 +40,14 @@ class Employee {
 
   @ApiProperty({
     required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  createdAt!: Date;
+
+  @ApiProperty({
+    required: true,
     type: String,
   })
   @IsString()
@@ -86,6 +94,14 @@ class Employee {
     nullable: true,
   })
   salary!: Decimal | null;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  updatedAt!: Date;
 
   @ApiProperty({
     required: true,

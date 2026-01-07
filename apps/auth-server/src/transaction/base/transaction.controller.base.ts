@@ -81,12 +81,14 @@ export class TransactionControllerBase {
         },
 
         date: true,
+        deletedAt: true,
         discount: true,
         id: true,
         method: true,
         note: true,
         trxId: true,
         type: true,
+        updatedAt: true,
       },
     });
   }
@@ -123,12 +125,14 @@ export class TransactionControllerBase {
         },
 
         date: true,
+        deletedAt: true,
         discount: true,
         id: true,
         method: true,
         note: true,
         trxId: true,
         type: true,
+        updatedAt: true,
       },
     });
   }
@@ -166,12 +170,14 @@ export class TransactionControllerBase {
         },
 
         date: true,
+        deletedAt: true,
         discount: true,
         id: true,
         method: true,
         note: true,
         trxId: true,
         type: true,
+        updatedAt: true,
       },
     });
     if (result === null) {
@@ -233,12 +239,14 @@ export class TransactionControllerBase {
           },
 
           date: true,
+          deletedAt: true,
           discount: true,
           id: true,
           method: true,
           note: true,
           trxId: true,
           type: true,
+          updatedAt: true,
         },
       });
     } catch (error) {
@@ -284,12 +292,14 @@ export class TransactionControllerBase {
           },
 
           date: true,
+          deletedAt: true,
           discount: true,
           id: true,
           method: true,
           note: true,
           trxId: true,
           type: true,
+          updatedAt: true,
         },
       });
     } catch (error) {

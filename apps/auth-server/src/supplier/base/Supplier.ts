@@ -15,10 +15,11 @@ import {
   IsString,
   MaxLength,
   IsOptional,
+  IsDate,
   ValidateNested,
 } from "class-validator";
-import { Purchase } from "../../purchase/base/Purchase";
 import { Type } from "class-transformer";
+import { Purchase } from "../../purchase/base/Purchase";
 
 @ObjectType()
 class Supplier {
@@ -33,6 +34,14 @@ class Supplier {
     nullable: true,
   })
   company!: string | null;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  createdAt!: Date;
 
   @ApiProperty({
     required: true,
@@ -71,6 +80,14 @@ class Supplier {
   @Type(() => Purchase)
   @IsOptional()
   purchases?: Array<Purchase>;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  updatedAt!: Date;
 }
 
 export { Supplier as Supplier };

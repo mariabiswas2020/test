@@ -28,6 +28,17 @@ class AreaOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
+  createdAt?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
   description?: SortOrder;
 
   @ApiProperty({
@@ -51,6 +62,17 @@ class AreaOrderByInput {
     nullable: true,
   })
   name?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  updatedAt?: SortOrder;
 }
 
 export { AreaOrderByInput as AreaOrderByInput };

@@ -29,6 +29,7 @@ import { PopWhereUniqueInput } from "./PopWhereUniqueInput";
 import { ProductItemCreateNestedManyWithoutPopsInput } from "./ProductItemCreateNestedManyWithoutPopsInput";
 import { PopRechargeCreateNestedManyWithoutPopsInput } from "./PopRechargeCreateNestedManyWithoutPopsInput";
 import { ResellerWhereUniqueInput } from "../../reseller/base/ResellerWhereUniqueInput";
+import { MikroTikRouterCreateNestedManyWithoutPopsInput } from "./MikroTikRouterCreateNestedManyWithoutPopsInput";
 import { PopCreateNestedManyWithoutPopsInput } from "./PopCreateNestedManyWithoutPopsInput";
 import { EnumPopType } from "./EnumPopType";
 
@@ -147,6 +148,18 @@ class PopCreateInput {
     nullable: true,
   })
   reseller?: ResellerWhereUniqueInput | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => MikroTikRouterCreateNestedManyWithoutPopsInput,
+  })
+  @ValidateNested()
+  @Type(() => MikroTikRouterCreateNestedManyWithoutPopsInput)
+  @IsOptional()
+  @Field(() => MikroTikRouterCreateNestedManyWithoutPopsInput, {
+    nullable: true,
+  })
+  routers?: MikroTikRouterCreateNestedManyWithoutPopsInput;
 
   @ApiProperty({
     required: false,

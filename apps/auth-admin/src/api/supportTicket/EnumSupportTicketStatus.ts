@@ -1,0 +1,6 @@
+export enum EnumSupportTicketStatus {
+  Open = "OPEN",
+  InProgress = "IN_PROGRESS",
+  Resolved = "RESOLVED",
+  Closed = "CLOSED",
+}

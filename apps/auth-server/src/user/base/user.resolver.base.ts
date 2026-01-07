@@ -26,14 +26,32 @@ import { UserFindUniqueArgs } from "./UserFindUniqueArgs";
 import { CreateUserArgs } from "./CreateUserArgs";
 import { UpdateUserArgs } from "./UpdateUserArgs";
 import { DeleteUserArgs } from "./DeleteUserArgs";
+import { AccountFindManyArgs } from "../../account/base/AccountFindManyArgs";
+import { Account } from "../../account/base/Account";
 import { ActivityLogFindManyArgs } from "../../activityLog/base/ActivityLogFindManyArgs";
 import { ActivityLog } from "../../activityLog/base/ActivityLog";
+import { SupportTicketFindManyArgs } from "../../supportTicket/base/SupportTicketFindManyArgs";
+import { SupportTicket } from "../../supportTicket/base/SupportTicket";
 import { TransactionFindManyArgs } from "../../transaction/base/TransactionFindManyArgs";
 import { Transaction } from "../../transaction/base/Transaction";
+import { ExpenseFindManyArgs } from "../../expense/base/ExpenseFindManyArgs";
+import { Expense } from "../../expense/base/Expense";
+import { InvoiceFindManyArgs } from "../../invoice/base/InvoiceFindManyArgs";
+import { Invoice } from "../../invoice/base/Invoice";
 import { MarketingLeadFindManyArgs } from "../../marketingLead/base/MarketingLeadFindManyArgs";
 import { MarketingLead } from "../../marketingLead/base/MarketingLead";
+import { UserPermissionFindManyArgs } from "../../userPermission/base/UserPermissionFindManyArgs";
+import { UserPermission } from "../../userPermission/base/UserPermission";
+import { PopRechargeFindManyArgs } from "../../popRecharge/base/PopRechargeFindManyArgs";
+import { PopRecharge } from "../../popRecharge/base/PopRecharge";
+import { SessionFindManyArgs } from "../../session/base/SessionFindManyArgs";
+import { Session } from "../../session/base/Session";
+import { SubscriptionFindManyArgs } from "../../subscription/base/SubscriptionFindManyArgs";
+import { Subscription } from "../../subscription/base/Subscription";
 import { TokenFindManyArgs } from "../../token/base/TokenFindManyArgs";
 import { Token } from "../../token/base/Token";
+import { UsageFindManyArgs } from "../../usage/base/UsageFindManyArgs";
+import { Usage } from "../../usage/base/Usage";
 import { Employee } from "../../employee/base/Employee";
 import { Reseller } from "../../reseller/base/Reseller";
 import { UserService } from "../user.service";
@@ -171,6 +189,26 @@ export class UserResolverBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [Account], { name: "accounts" })
+  @nestAccessControl.UseRoles({
+    resource: "Account",
+    action: "read",
+    possession: "any",
+  })
+  async findAccounts(
+    @graphql.Parent() parent: User,
+    @graphql.Args() args: AccountFindManyArgs
+  ): Promise<Account[]> {
+    const results = await this.service.findAccounts(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => [ActivityLog], { name: "activityLogs" })
   @nestAccessControl.UseRoles({
     resource: "ActivityLog",
@@ -182,6 +220,26 @@ export class UserResolverBase {
     @graphql.Args() args: ActivityLogFindManyArgs
   ): Promise<ActivityLog[]> {
     const results = await this.service.findActivityLogs(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [SupportTicket], { name: "assignedTickets" })
+  @nestAccessControl.UseRoles({
+    resource: "SupportTicket",
+    action: "read",
+    possession: "any",
+  })
+  async findAssignedTickets(
+    @graphql.Parent() parent: User,
+    @graphql.Args() args: SupportTicketFindManyArgs
+  ): Promise<SupportTicket[]> {
+    const results = await this.service.findAssignedTickets(parent.id, args);
 
     if (!results) {
       return [];
@@ -211,6 +269,46 @@ export class UserResolverBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [Expense], { name: "expenses" })
+  @nestAccessControl.UseRoles({
+    resource: "Expense",
+    action: "read",
+    possession: "any",
+  })
+  async findExpenses(
+    @graphql.Parent() parent: User,
+    @graphql.Args() args: ExpenseFindManyArgs
+  ): Promise<Expense[]> {
+    const results = await this.service.findExpenses(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [Invoice], { name: "invoices" })
+  @nestAccessControl.UseRoles({
+    resource: "Invoice",
+    action: "read",
+    possession: "any",
+  })
+  async findInvoices(
+    @graphql.Parent() parent: User,
+    @graphql.Args() args: InvoiceFindManyArgs
+  ): Promise<Invoice[]> {
+    const results = await this.service.findInvoices(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => [MarketingLead], { name: "marketingLeads" })
   @nestAccessControl.UseRoles({
     resource: "MarketingLead",
@@ -231,6 +329,86 @@ export class UserResolverBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [UserPermission], { name: "permissions" })
+  @nestAccessControl.UseRoles({
+    resource: "UserPermission",
+    action: "read",
+    possession: "any",
+  })
+  async findPermissions(
+    @graphql.Parent() parent: User,
+    @graphql.Args() args: UserPermissionFindManyArgs
+  ): Promise<UserPermission[]> {
+    const results = await this.service.findPermissions(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [PopRecharge], { name: "popRecharges" })
+  @nestAccessControl.UseRoles({
+    resource: "PopRecharge",
+    action: "read",
+    possession: "any",
+  })
+  async findPopRecharges(
+    @graphql.Parent() parent: User,
+    @graphql.Args() args: PopRechargeFindManyArgs
+  ): Promise<PopRecharge[]> {
+    const results = await this.service.findPopRecharges(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [Session], { name: "sessions" })
+  @nestAccessControl.UseRoles({
+    resource: "Session",
+    action: "read",
+    possession: "any",
+  })
+  async findSessions(
+    @graphql.Parent() parent: User,
+    @graphql.Args() args: SessionFindManyArgs
+  ): Promise<Session[]> {
+    const results = await this.service.findSessions(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [Subscription], { name: "subscriptions" })
+  @nestAccessControl.UseRoles({
+    resource: "Subscription",
+    action: "read",
+    possession: "any",
+  })
+  async findSubscriptions(
+    @graphql.Parent() parent: User,
+    @graphql.Args() args: SubscriptionFindManyArgs
+  ): Promise<Subscription[]> {
+    const results = await this.service.findSubscriptions(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => [Token], { name: "supportTickets" })
   @nestAccessControl.UseRoles({
     resource: "Token",
@@ -242,6 +420,46 @@ export class UserResolverBase {
     @graphql.Args() args: TokenFindManyArgs
   ): Promise<Token[]> {
     const results = await this.service.findSupportTickets(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [SupportTicket], { name: "tickets" })
+  @nestAccessControl.UseRoles({
+    resource: "SupportTicket",
+    action: "read",
+    possession: "any",
+  })
+  async findTickets(
+    @graphql.Parent() parent: User,
+    @graphql.Args() args: SupportTicketFindManyArgs
+  ): Promise<SupportTicket[]> {
+    const results = await this.service.findTickets(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [Usage], { name: "usages" })
+  @nestAccessControl.UseRoles({
+    resource: "Usage",
+    action: "read",
+    possession: "any",
+  })
+  async findUsages(
+    @graphql.Parent() parent: User,
+    @graphql.Args() args: UsageFindManyArgs
+  ): Promise<Usage[]> {
+    const results = await this.service.findUsages(parent.id, args);
 
     if (!results) {
       return [];

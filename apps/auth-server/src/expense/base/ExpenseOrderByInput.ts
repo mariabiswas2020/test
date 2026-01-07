@@ -61,6 +61,17 @@ class ExpenseOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
+  createdAt?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
   date?: SortOrder;
 
   @ApiProperty({
@@ -95,6 +106,17 @@ class ExpenseOrderByInput {
     nullable: true,
   })
   title?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  updatedAt?: SortOrder;
 }
 
 export { ExpenseOrderByInput as ExpenseOrderByInput };

@@ -50,6 +50,17 @@ class UserOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
+  emailVerified?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
   employeeProfileId?: SortOrder;
 
   @ApiProperty({
@@ -83,6 +94,17 @@ class UserOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
+  image?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
   isActive?: SortOrder;
 
   @ApiProperty({
@@ -105,7 +127,7 @@ class UserOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
-  password?: SortOrder;
+  name?: SortOrder;
 
   @ApiProperty({
     required: false,
@@ -116,7 +138,7 @@ class UserOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
-  permissionRoutes?: SortOrder;
+  password?: SortOrder;
 
   @ApiProperty({
     required: false,

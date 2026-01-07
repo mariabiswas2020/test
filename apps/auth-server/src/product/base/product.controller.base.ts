@@ -62,10 +62,12 @@ export class ProductControllerBase {
       select: {
         brand: true,
         category: true,
+        createdAt: true,
         hasWarranty: true,
         id: true,
         name: true,
         unit: true,
+        updatedAt: true,
         warrantyDays: true,
       },
     });
@@ -90,10 +92,12 @@ export class ProductControllerBase {
       select: {
         brand: true,
         category: true,
+        createdAt: true,
         hasWarranty: true,
         id: true,
         name: true,
         unit: true,
+        updatedAt: true,
         warrantyDays: true,
       },
     });
@@ -119,10 +123,12 @@ export class ProductControllerBase {
       select: {
         brand: true,
         category: true,
+        createdAt: true,
         hasWarranty: true,
         id: true,
         name: true,
         unit: true,
+        updatedAt: true,
         warrantyDays: true,
       },
     });
@@ -160,10 +166,12 @@ export class ProductControllerBase {
         select: {
           brand: true,
           category: true,
+          createdAt: true,
           hasWarranty: true,
           id: true,
           name: true,
           unit: true,
+          updatedAt: true,
           warrantyDays: true,
         },
       });
@@ -197,10 +205,12 @@ export class ProductControllerBase {
         select: {
           brand: true,
           category: true,
+          createdAt: true,
           hasWarranty: true,
           id: true,
           name: true,
           unit: true,
+          updatedAt: true,
           warrantyDays: true,
         },
       });
@@ -230,6 +240,7 @@ export class ProductControllerBase {
     const results = await this.service.findItems(params.id, {
       ...query,
       select: {
+        createdAt: true,
         id: true,
         isUsedProduct: true,
 
@@ -253,6 +264,7 @@ export class ProductControllerBase {
 
         serialNumber: true,
         status: true,
+        updatedAt: true,
       },
     });
     if (results === null) {

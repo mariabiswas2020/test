@@ -26,6 +26,7 @@ import { PopRechargeFindUniqueArgs } from "./PopRechargeFindUniqueArgs";
 import { CreatePopRechargeArgs } from "./CreatePopRechargeArgs";
 import { UpdatePopRechargeArgs } from "./UpdatePopRechargeArgs";
 import { DeletePopRechargeArgs } from "./DeletePopRechargeArgs";
+import { User } from "../../user/base/User";
 import { Pop } from "../../pop/base/Pop";
 import { PopRechargeService } from "../popRecharge.service";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
@@ -96,6 +97,12 @@ export class PopRechargeResolverBase {
       data: {
         ...args.data,
 
+        performedByUser: args.data.performedByUser
+          ? {
+              connect: args.data.performedByUser,
+            }
+          : undefined,
+
         pop: {
           connect: args.data.pop,
         },
@@ -118,6 +125,12 @@ export class PopRechargeResolverBase {
         ...args,
         data: {
           ...args.data,
+
+          performedByUser: args.data.performedByUser
+            ? {
+                connect: args.data.performedByUser,
+              }
+            : undefined,
 
           pop: {
             connect: args.data.pop,
@@ -153,6 +166,27 @@ export class PopRechargeResolverBase {
       }
       throw error;
     }
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => User, {
+    nullable: true,
+    name: "performedByUser",
+  })
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "read",
+    possession: "any",
+  })
+  async getPerformedByUser(
+    @graphql.Parent() parent: PopRecharge
+  ): Promise<User | null> {
+    const result = await this.service.getPerformedByUser(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return result;
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)

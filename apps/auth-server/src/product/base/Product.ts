@@ -11,17 +11,20 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
+
 import {
   IsString,
   MaxLength,
   IsOptional,
+  IsDate,
   IsBoolean,
   ValidateNested,
   IsInt,
   Max,
 } from "class-validator";
-import { ProductItem } from "../../productItem/base/ProductItem";
+
 import { Type } from "class-transformer";
+import { ProductItem } from "../../productItem/base/ProductItem";
 import { PurchaseItem } from "../../purchaseItem/base/PurchaseItem";
 
 @ObjectType()
@@ -49,6 +52,14 @@ class Product {
     nullable: true,
   })
   category!: string | null;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  createdAt!: Date;
 
   @ApiProperty({
     required: true,
@@ -104,6 +115,14 @@ class Product {
     nullable: true,
   })
   unit!: string | null;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  updatedAt!: Date;
 
   @ApiProperty({
     required: false,

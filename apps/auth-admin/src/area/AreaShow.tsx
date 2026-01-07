@@ -4,11 +4,11 @@ import {
   Show,
   SimpleShowLayout,
   ShowProps,
+  DateField,
   TextField,
   ReferenceManyField,
   Datagrid,
   ReferenceField,
-  DateField,
   BooleanField,
 } from "react-admin";
 
@@ -21,9 +21,11 @@ export const AreaShow = (props: ShowProps): React.ReactElement => {
   return (
     <Show {...props}>
       <SimpleShowLayout>
+        <DateField source="createdAt" label="Created At" />
         <TextField label="Description" source="description" />
         <TextField label="ID" source="id" />
         <TextField label="Name" source="name" />
+        <DateField source="updatedAt" label="Updated At" />
         <ReferenceManyField
           reference="Customer"
           target="areaId"
@@ -39,6 +41,7 @@ export const AreaShow = (props: ShowProps): React.ReactElement => {
             <DateField source="connectionDate" label="Connection Date" />
             <DateField source="createdAt" label="Created At" />
             <TextField label="Customer Id" source="customerId" />
+            <TextField label="Deleted At" source="deletedAt" />
             <TextField label="Due Amount" source="dueAmount" />
             <TextField label="Email" source="email" />
             <TextField label="ID" source="id" />
@@ -80,6 +83,7 @@ export const AreaShow = (props: ShowProps): React.ReactElement => {
               <TextField source={AREA_TITLE_FIELD} />
             </ReferenceField>
             <TextField label="Balance" source="balance" />
+            <DateField source="createdAt" label="Created At" />
             <TextField label="ID" source="id" />
             <TextField label="Name" source="name" />
             <ReferenceField label="Parent Pop" source="pop.id" reference="Pop">
@@ -93,6 +97,7 @@ export const AreaShow = (props: ShowProps): React.ReactElement => {
               <TextField source={RESELLER_TITLE_FIELD} />
             </ReferenceField>
             <TextField label="Type" source="type" />
+            <DateField source="updatedAt" label="Updated At" />
           </Datagrid>
         </ReferenceManyField>
       </SimpleShowLayout>

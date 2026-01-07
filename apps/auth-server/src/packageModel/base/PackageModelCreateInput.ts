@@ -23,6 +23,7 @@ import {
 } from "class-validator";
 import { Type } from "class-transformer";
 import { Decimal } from "decimal.js";
+import { ResellerPackageCreateNestedManyWithoutPackageModelsInput } from "./ResellerPackageCreateNestedManyWithoutPackageModelsInput";
 import { EnumPackageModelType } from "./EnumPackageModelType";
 
 @InputType()
@@ -68,6 +69,18 @@ class PackageModelCreateInput {
   @Max(99999999999)
   @Field(() => Float)
   price!: Decimal;
+
+  @ApiProperty({
+    required: false,
+    type: () => ResellerPackageCreateNestedManyWithoutPackageModelsInput,
+  })
+  @ValidateNested()
+  @Type(() => ResellerPackageCreateNestedManyWithoutPackageModelsInput)
+  @IsOptional()
+  @Field(() => ResellerPackageCreateNestedManyWithoutPackageModelsInput, {
+    nullable: true,
+  })
+  resellerPricing?: ResellerPackageCreateNestedManyWithoutPackageModelsInput;
 
   @ApiProperty({
     required: false,

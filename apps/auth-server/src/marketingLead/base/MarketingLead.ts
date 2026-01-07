@@ -141,6 +141,14 @@ class MarketingLead {
     nullable: true,
   })
   status?: "NEW" | "CONTACTED" | "SUCCESS" | "REJECTED";
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  updatedAt!: Date;
 }
 
 export { MarketingLead as MarketingLead };

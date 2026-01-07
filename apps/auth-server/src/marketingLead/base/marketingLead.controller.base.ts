@@ -77,6 +77,7 @@ export class MarketingLeadControllerBase {
         proposedPackage: true,
         remarks: true,
         status: true,
+        updatedAt: true,
       },
     });
   }
@@ -117,6 +118,7 @@ export class MarketingLeadControllerBase {
         proposedPackage: true,
         remarks: true,
         status: true,
+        updatedAt: true,
       },
     });
   }
@@ -156,6 +158,7 @@ export class MarketingLeadControllerBase {
         proposedPackage: true,
         remarks: true,
         status: true,
+        updatedAt: true,
       },
     });
     if (result === null) {
@@ -213,6 +216,7 @@ export class MarketingLeadControllerBase {
           proposedPackage: true,
           remarks: true,
           status: true,
+          updatedAt: true,
         },
       });
     } catch (error) {
@@ -260,6 +264,7 @@ export class MarketingLeadControllerBase {
           proposedPackage: true,
           remarks: true,
           status: true,
+          updatedAt: true,
         },
       });
     } catch (error) {

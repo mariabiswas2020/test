@@ -34,6 +34,14 @@ class Purchase {
   @IsDate()
   @Type(() => Date)
   @Field(() => Date)
+  createdAt!: Date;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
   date!: Date;
 
   @ApiProperty({
@@ -90,6 +98,14 @@ class Purchase {
   @Max(99999999999)
   @Field(() => Float)
   totalAmount!: Decimal;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  updatedAt!: Date;
 }
 
 export { Purchase as Purchase };

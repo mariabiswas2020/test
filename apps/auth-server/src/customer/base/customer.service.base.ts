@@ -15,6 +15,8 @@ import {
   Prisma,
   Customer as PrismaCustomer,
   BillSheet as PrismaBillSheet,
+  CustomerSession as PrismaCustomerSession,
+  SupportTicket as PrismaSupportTicket,
   Token as PrismaToken,
   Transaction as PrismaTransaction,
   Area as PrismaArea,
@@ -64,6 +66,28 @@ export class CustomerServiceBase {
         where: { id: parentId },
       })
       .billSheets(args);
+  }
+
+  async findSessions(
+    parentId: string,
+    args: Prisma.CustomerSessionFindManyArgs
+  ): Promise<PrismaCustomerSession[]> {
+    return this.prisma.customer
+      .findUniqueOrThrow({
+        where: { id: parentId },
+      })
+      .sessions(args);
+  }
+
+  async findTickets(
+    parentId: string,
+    args: Prisma.SupportTicketFindManyArgs
+  ): Promise<PrismaSupportTicket[]> {
+    return this.prisma.customer
+      .findUniqueOrThrow({
+        where: { id: parentId },
+      })
+      .tickets(args);
   }
 
   async findTokens(

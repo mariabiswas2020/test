@@ -26,12 +26,14 @@ export const TransactionShow = (props: ShowProps): React.ReactElement => {
           <TextField source={CUSTOMER_TITLE_FIELD} />
         </ReferenceField>
         <DateField source="date" label="Date" />
+        <TextField label="Deleted At" source="deletedAt" />
         <TextField label="Discount" source="discount" />
         <TextField label="ID" source="id" />
         <TextField label="Method" source="method" />
         <TextField label="Note" source="note" />
         <TextField label="Trx Id" source="trxId" />
         <TextField label="Type" source="type" />
+        <DateField source="updatedAt" label="Updated At" />
       </SimpleShowLayout>
     </Show>
   );

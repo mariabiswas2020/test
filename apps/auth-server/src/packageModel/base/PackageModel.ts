@@ -11,8 +11,9 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { ObjectType, Field, Float } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { Customer } from "../../customer/base/Customer";
+
 import {
+  IsDate,
   ValidateNested,
   IsOptional,
   IsString,
@@ -21,12 +22,23 @@ import {
   Max,
   IsEnum,
 } from "class-validator";
+
 import { Type } from "class-transformer";
+import { Customer } from "../../customer/base/Customer";
 import { Decimal } from "decimal.js";
+import { ResellerPackage } from "../../resellerPackage/base/ResellerPackage";
 import { EnumPackageModelType } from "./EnumPackageModelType";
 
 @ObjectType()
 class PackageModel {
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  createdAt!: Date;
+
   @ApiProperty({
     required: false,
     type: () => [Customer],
@@ -76,6 +88,15 @@ class PackageModel {
 
   @ApiProperty({
     required: false,
+    type: () => [ResellerPackage],
+  })
+  @ValidateNested()
+  @Type(() => ResellerPackage)
+  @IsOptional()
+  resellerPricing?: Array<ResellerPackage>;
+
+  @ApiProperty({
+    required: false,
     type: String,
   })
   @IsString()
@@ -95,6 +116,14 @@ class PackageModel {
     nullable: true,
   })
   type?: "RETAIL" | "WHOLESALE";
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  updatedAt!: Date;
 }
 
 export { PackageModel as PackageModel };

@@ -12,6 +12,7 @@ import {
 } from "react-admin";
 
 import { CustomerTitle } from "../customer/CustomerTitle";
+import { ResellerPackageTitle } from "../resellerPackage/ResellerPackageTitle";
 
 export const PackageModelEdit = (props: EditProps): React.ReactElement => {
   return (
@@ -27,6 +28,16 @@ export const PackageModelEdit = (props: EditProps): React.ReactElement => {
         <TextInput label="Mikro Tik Profile" source="mikroTikProfile" />
         <TextInput label="Name" source="name" />
         <NumberInput label="Price" source="price" />
+        <ReferenceArrayInput
+          source="resellerPricing"
+          reference="ResellerPackage"
+        >
+          <SelectArrayInput
+            optionText={ResellerPackageTitle}
+            parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+            format={(value: any) => value && value.map((v: any) => v.id)}
+          />
+        </ReferenceArrayInput>
         <TextInput label="Speed" source="speed" />
         <SelectInput
           source="type"

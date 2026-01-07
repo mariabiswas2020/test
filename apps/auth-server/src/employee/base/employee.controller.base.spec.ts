@@ -19,37 +19,45 @@ const nonExistingId = "nonExistingId";
 const existingId = "existingId";
 const CREATE_INPUT = {
   address: "exampleAddress",
+  createdAt: new Date(),
   designation: "exampleDesignation",
   id: "exampleId",
   joinDate: new Date(),
   nid: "exampleNid",
   salary: 42.424242424,
+  updatedAt: new Date(),
 };
 const CREATE_RESULT = {
   address: "exampleAddress",
+  createdAt: new Date(),
   designation: "exampleDesignation",
   id: "exampleId",
   joinDate: new Date(),
   nid: "exampleNid",
   salary: 42.424242424,
+  updatedAt: new Date(),
 };
 const FIND_MANY_RESULT = [
   {
     address: "exampleAddress",
+    createdAt: new Date(),
     designation: "exampleDesignation",
     id: "exampleId",
     joinDate: new Date(),
     nid: "exampleNid",
     salary: 42.424242424,
+    updatedAt: new Date(),
   },
 ];
 const FIND_ONE_RESULT = {
   address: "exampleAddress",
+  createdAt: new Date(),
   designation: "exampleDesignation",
   id: "exampleId",
   joinDate: new Date(),
   nid: "exampleNid",
   salary: 42.424242424,
+  updatedAt: new Date(),
 };
 
 const service = {
@@ -134,7 +142,9 @@ describe("Employee", () => {
       .expect(HttpStatus.CREATED)
       .expect({
         ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
         joinDate: CREATE_RESULT.joinDate.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
       });
   });
 
@@ -145,7 +155,9 @@ describe("Employee", () => {
       .expect([
         {
           ...FIND_MANY_RESULT[0],
+          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
           joinDate: FIND_MANY_RESULT[0].joinDate.toISOString(),
+          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
         },
       ]);
   });
@@ -167,7 +179,9 @@ describe("Employee", () => {
       .expect(HttpStatus.OK)
       .expect({
         ...FIND_ONE_RESULT,
+        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
         joinDate: FIND_ONE_RESULT.joinDate.toISOString(),
+        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
       });
   });
 
@@ -179,7 +193,9 @@ describe("Employee", () => {
       .expect(HttpStatus.CREATED)
       .expect({
         ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
         joinDate: CREATE_RESULT.joinDate.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
       })
       .then(function () {
         agent

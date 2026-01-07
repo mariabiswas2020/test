@@ -1,6 +1,9 @@
+import { User } from "./User";
 import { Reseller } from "../reseller/Reseller";
 
 export enum EnumUserRoles {
+  User = "USER",
+  Admin = "ADMIN",
   SuperAdmin = "SUPER_ADMIN",
   Manager = "MANAGER",
   Accountant = "ACCOUNTANT",

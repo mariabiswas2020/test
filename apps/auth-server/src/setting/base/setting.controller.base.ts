@@ -54,8 +54,10 @@ export class SettingControllerBase {
     return await this.service.createSetting({
       data: data,
       select: {
+        createdAt: true,
         id: true,
         key: true,
+        updatedAt: true,
         value: true,
       },
     });
@@ -78,8 +80,10 @@ export class SettingControllerBase {
     return this.service.settings({
       ...args,
       select: {
+        createdAt: true,
         id: true,
         key: true,
+        updatedAt: true,
         value: true,
       },
     });
@@ -103,8 +107,10 @@ export class SettingControllerBase {
     const result = await this.service.setting({
       where: params,
       select: {
+        createdAt: true,
         id: true,
         key: true,
+        updatedAt: true,
         value: true,
       },
     });
@@ -140,8 +146,10 @@ export class SettingControllerBase {
         where: params,
         data: data,
         select: {
+          createdAt: true,
           id: true,
           key: true,
+          updatedAt: true,
           value: true,
         },
       });
@@ -173,8 +181,10 @@ export class SettingControllerBase {
       return await this.service.deleteSetting({
         where: params,
         select: {
+          createdAt: true,
           id: true,
           key: true,
+          updatedAt: true,
           value: true,
         },
       });

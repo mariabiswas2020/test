@@ -11,28 +11,29 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field, Float } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
+import { UserWhereUniqueInput } from "../../user/base/UserWhereUniqueInput";
 import {
-  IsString,
-  MaxLength,
+  ValidateNested,
   IsNumber,
   Max,
+  IsString,
+  MaxLength,
   IsOptional,
-  ValidateNested,
 } from "class-validator";
+import { Type } from "class-transformer";
 import { Decimal } from "decimal.js";
 import { PopWhereUniqueInput } from "../../pop/base/PopWhereUniqueInput";
-import { Type } from "class-transformer";
 
 @InputType()
 class ExpenseCreateInput {
   @ApiProperty({
     required: true,
-    type: String,
+    type: () => UserWhereUniqueInput,
   })
-  @IsString()
-  @MaxLength(256)
-  @Field(() => String)
-  addedBy!: string;
+  @ValidateNested()
+  @Type(() => UserWhereUniqueInput)
+  @Field(() => UserWhereUniqueInput)
+  addedByUser!: UserWhereUniqueInput;
 
   @ApiProperty({
     required: true,

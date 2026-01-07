@@ -18,34 +18,42 @@ import { PackageModelService } from "../packageModel.service";
 const nonExistingId = "nonExistingId";
 const existingId = "existingId";
 const CREATE_INPUT = {
+  createdAt: new Date(),
   id: "exampleId",
   mikroTikProfile: "exampleMikroTikProfile",
   name: "exampleName",
   price: 42.424242424,
   speed: "exampleSpeed",
+  updatedAt: new Date(),
 };
 const CREATE_RESULT = {
+  createdAt: new Date(),
   id: "exampleId",
   mikroTikProfile: "exampleMikroTikProfile",
   name: "exampleName",
   price: 42.424242424,
   speed: "exampleSpeed",
+  updatedAt: new Date(),
 };
 const FIND_MANY_RESULT = [
   {
+    createdAt: new Date(),
     id: "exampleId",
     mikroTikProfile: "exampleMikroTikProfile",
     name: "exampleName",
     price: 42.424242424,
     speed: "exampleSpeed",
+    updatedAt: new Date(),
   },
 ];
 const FIND_ONE_RESULT = {
+  createdAt: new Date(),
   id: "exampleId",
   mikroTikProfile: "exampleMikroTikProfile",
   name: "exampleName",
   price: 42.424242424,
   speed: "exampleSpeed",
+  updatedAt: new Date(),
 };
 
 const service = {
@@ -128,14 +136,24 @@ describe("PackageModel", () => {
       .post("/packageModels")
       .send(CREATE_INPUT)
       .expect(HttpStatus.CREATED)
-      .expect(CREATE_RESULT);
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      });
   });
 
   test("GET /packageModels", async () => {
     await request(app.getHttpServer())
       .get("/packageModels")
       .expect(HttpStatus.OK)
-      .expect([FIND_MANY_RESULT[0]]);
+      .expect([
+        {
+          ...FIND_MANY_RESULT[0],
+          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
+          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
+        },
+      ]);
   });
 
   test("GET /packageModels/:id non existing", async () => {
@@ -153,7 +171,11 @@ describe("PackageModel", () => {
     await request(app.getHttpServer())
       .get(`${"/packageModels"}/${existingId}`)
       .expect(HttpStatus.OK)
-      .expect(FIND_ONE_RESULT);
+      .expect({
+        ...FIND_ONE_RESULT,
+        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
+        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+      });
   });
 
   test("POST /packageModels existing resource", async () => {
@@ -162,7 +184,11 @@ describe("PackageModel", () => {
       .post("/packageModels")
       .send(CREATE_INPUT)
       .expect(HttpStatus.CREATED)
-      .expect(CREATE_RESULT)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      })
       .then(function () {
         agent
           .post("/packageModels")

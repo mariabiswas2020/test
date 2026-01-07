@@ -95,6 +95,78 @@ import { SettingList } from "./setting/SettingList";
 import { SettingCreate } from "./setting/SettingCreate";
 import { SettingEdit } from "./setting/SettingEdit";
 import { SettingShow } from "./setting/SettingShow";
+import { AccountList } from "./account/AccountList";
+import { AccountCreate } from "./account/AccountCreate";
+import { AccountEdit } from "./account/AccountEdit";
+import { AccountShow } from "./account/AccountShow";
+import { SessionList } from "./session/SessionList";
+import { SessionCreate } from "./session/SessionCreate";
+import { SessionEdit } from "./session/SessionEdit";
+import { SessionShow } from "./session/SessionShow";
+import { VerificationTokenList } from "./verificationToken/VerificationTokenList";
+import { VerificationTokenCreate } from "./verificationToken/VerificationTokenCreate";
+import { VerificationTokenEdit } from "./verificationToken/VerificationTokenEdit";
+import { VerificationTokenShow } from "./verificationToken/VerificationTokenShow";
+import { PermissionList } from "./permission/PermissionList";
+import { PermissionCreate } from "./permission/PermissionCreate";
+import { PermissionEdit } from "./permission/PermissionEdit";
+import { PermissionShow } from "./permission/PermissionShow";
+import { UserPermissionList } from "./userPermission/UserPermissionList";
+import { UserPermissionCreate } from "./userPermission/UserPermissionCreate";
+import { UserPermissionEdit } from "./userPermission/UserPermissionEdit";
+import { UserPermissionShow } from "./userPermission/UserPermissionShow";
+import { PlanList } from "./plan/PlanList";
+import { PlanCreate } from "./plan/PlanCreate";
+import { PlanEdit } from "./plan/PlanEdit";
+import { PlanShow } from "./plan/PlanShow";
+import { SubscriptionList } from "./subscription/SubscriptionList";
+import { SubscriptionCreate } from "./subscription/SubscriptionCreate";
+import { SubscriptionEdit } from "./subscription/SubscriptionEdit";
+import { SubscriptionShow } from "./subscription/SubscriptionShow";
+import { UsageList } from "./usage/UsageList";
+import { UsageCreate } from "./usage/UsageCreate";
+import { UsageEdit } from "./usage/UsageEdit";
+import { UsageShow } from "./usage/UsageShow";
+import { InvoiceList } from "./invoice/InvoiceList";
+import { InvoiceCreate } from "./invoice/InvoiceCreate";
+import { InvoiceEdit } from "./invoice/InvoiceEdit";
+import { InvoiceShow } from "./invoice/InvoiceShow";
+import { NetworkStatusList } from "./networkStatus/NetworkStatusList";
+import { NetworkStatusCreate } from "./networkStatus/NetworkStatusCreate";
+import { NetworkStatusEdit } from "./networkStatus/NetworkStatusEdit";
+import { NetworkStatusShow } from "./networkStatus/NetworkStatusShow";
+import { ResellerPackageList } from "./resellerPackage/ResellerPackageList";
+import { ResellerPackageCreate } from "./resellerPackage/ResellerPackageCreate";
+import { ResellerPackageEdit } from "./resellerPackage/ResellerPackageEdit";
+import { ResellerPackageShow } from "./resellerPackage/ResellerPackageShow";
+import { MikroTikRouterList } from "./mikroTikRouter/MikroTikRouterList";
+import { MikroTikRouterCreate } from "./mikroTikRouter/MikroTikRouterCreate";
+import { MikroTikRouterEdit } from "./mikroTikRouter/MikroTikRouterEdit";
+import { MikroTikRouterShow } from "./mikroTikRouter/MikroTikRouterShow";
+import { CustomerSessionList } from "./customerSession/CustomerSessionList";
+import { CustomerSessionCreate } from "./customerSession/CustomerSessionCreate";
+import { CustomerSessionEdit } from "./customerSession/CustomerSessionEdit";
+import { CustomerSessionShow } from "./customerSession/CustomerSessionShow";
+import { TicketCategoryList } from "./ticketCategory/TicketCategoryList";
+import { TicketCategoryCreate } from "./ticketCategory/TicketCategoryCreate";
+import { TicketCategoryEdit } from "./ticketCategory/TicketCategoryEdit";
+import { TicketCategoryShow } from "./ticketCategory/TicketCategoryShow";
+import { SupportTicketList } from "./supportTicket/SupportTicketList";
+import { SupportTicketCreate } from "./supportTicket/SupportTicketCreate";
+import { SupportTicketEdit } from "./supportTicket/SupportTicketEdit";
+import { SupportTicketShow } from "./supportTicket/SupportTicketShow";
+import { SmsGatewayList } from "./smsGateway/SmsGatewayList";
+import { SmsGatewayCreate } from "./smsGateway/SmsGatewayCreate";
+import { SmsGatewayEdit } from "./smsGateway/SmsGatewayEdit";
+import { SmsGatewayShow } from "./smsGateway/SmsGatewayShow";
+import { SmsTemplateList } from "./smsTemplate/SmsTemplateList";
+import { SmsTemplateCreate } from "./smsTemplate/SmsTemplateCreate";
+import { SmsTemplateEdit } from "./smsTemplate/SmsTemplateEdit";
+import { SmsTemplateShow } from "./smsTemplate/SmsTemplateShow";
+import { SmsLogList } from "./smsLog/SmsLogList";
+import { SmsLogCreate } from "./smsLog/SmsLogCreate";
+import { SmsLogEdit } from "./smsLog/SmsLogEdit";
+import { SmsLogShow } from "./smsLog/SmsLogShow";
 import { auth0AuthProvider } from "./auth-provider/ra-auth-auth0";
 
 const history = createHistory();
@@ -278,6 +350,132 @@ const App = (): React.ReactElement => {
             edit={SettingEdit}
             create={SettingCreate}
             show={SettingShow}
+          />
+          <Resource
+            name="Account"
+            list={AccountList}
+            edit={AccountEdit}
+            create={AccountCreate}
+            show={AccountShow}
+          />
+          <Resource
+            name="Session"
+            list={SessionList}
+            edit={SessionEdit}
+            create={SessionCreate}
+            show={SessionShow}
+          />
+          <Resource
+            name="VerificationToken"
+            list={VerificationTokenList}
+            edit={VerificationTokenEdit}
+            create={VerificationTokenCreate}
+            show={VerificationTokenShow}
+          />
+          <Resource
+            name="Permission"
+            list={PermissionList}
+            edit={PermissionEdit}
+            create={PermissionCreate}
+            show={PermissionShow}
+          />
+          <Resource
+            name="UserPermission"
+            list={UserPermissionList}
+            edit={UserPermissionEdit}
+            create={UserPermissionCreate}
+            show={UserPermissionShow}
+          />
+          <Resource
+            name="Plan"
+            list={PlanList}
+            edit={PlanEdit}
+            create={PlanCreate}
+            show={PlanShow}
+          />
+          <Resource
+            name="Subscription"
+            list={SubscriptionList}
+            edit={SubscriptionEdit}
+            create={SubscriptionCreate}
+            show={SubscriptionShow}
+          />
+          <Resource
+            name="Usage"
+            list={UsageList}
+            edit={UsageEdit}
+            create={UsageCreate}
+            show={UsageShow}
+          />
+          <Resource
+            name="Invoice"
+            list={InvoiceList}
+            edit={InvoiceEdit}
+            create={InvoiceCreate}
+            show={InvoiceShow}
+          />
+          <Resource
+            name="NetworkStatus"
+            list={NetworkStatusList}
+            edit={NetworkStatusEdit}
+            create={NetworkStatusCreate}
+            show={NetworkStatusShow}
+          />
+          <Resource
+            name="ResellerPackage"
+            list={ResellerPackageList}
+            edit={ResellerPackageEdit}
+            create={ResellerPackageCreate}
+            show={ResellerPackageShow}
+          />
+          <Resource
+            name="MikroTikRouter"
+            list={MikroTikRouterList}
+            edit={MikroTikRouterEdit}
+            create={MikroTikRouterCreate}
+            show={MikroTikRouterShow}
+          />
+          <Resource
+            name="CustomerSession"
+            list={CustomerSessionList}
+            edit={CustomerSessionEdit}
+            create={CustomerSessionCreate}
+            show={CustomerSessionShow}
+          />
+          <Resource
+            name="TicketCategory"
+            list={TicketCategoryList}
+            edit={TicketCategoryEdit}
+            create={TicketCategoryCreate}
+            show={TicketCategoryShow}
+          />
+          <Resource
+            name="SupportTicket"
+            list={SupportTicketList}
+            edit={SupportTicketEdit}
+            create={SupportTicketCreate}
+            show={SupportTicketShow}
+          />
+          <Resource
+            name="SmsGateway"
+            list={SmsGatewayList}
+            edit={SmsGatewayEdit}
+            create={SmsGatewayCreate}
+            show={SmsGatewayShow}
+          />
+          <Resource
+            name="SmsTemplate"
+            list={SmsTemplateList}
+            edit={SmsTemplateEdit}
+            create={SmsTemplateCreate}
+            show={SmsTemplateShow}
+          />
+          <Resource
+            name="SmsLog"
+            list={SmsLogList}
+            edit={SmsLogEdit}
+            create={SmsLogCreate}
+            show={SmsLogShow}
           />
         </Admin>
       </BrowserRouter>

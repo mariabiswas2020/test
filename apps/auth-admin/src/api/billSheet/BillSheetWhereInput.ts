@@ -11,5 +11,6 @@ export type BillSheetWhereInput = {
   month?: StringFilter;
   payable?: DecimalFilter;
   status?: "PAID" | "UNPAID" | "PARTIAL";
+  updatedAt?: DateTimeFilter;
   year?: IntFilter;
 };

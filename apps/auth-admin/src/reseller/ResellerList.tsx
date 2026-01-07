@@ -4,6 +4,7 @@ import {
   Datagrid,
   ListProps,
   TextField,
+  DateField,
   ReferenceField,
 } from "react-admin";
 import Pagination from "../Components/Pagination";
@@ -20,7 +21,9 @@ export const ResellerList = (props: ListProps): React.ReactElement => {
       <Datagrid rowClick="show" bulkActionButtons={false}>
         <TextField label="Balance" source="balance" />
         <TextField label="Business Name" source="businessName" />
+        <DateField source="createdAt" label="Created At" />
         <TextField label="ID" source="id" />
+        <DateField source="updatedAt" label="Updated At" />
         <ReferenceField label="User" source="user.id" reference="User">
           <TextField source={USER_TITLE_FIELD} />
         </ReferenceField>{" "}

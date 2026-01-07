@@ -14,6 +14,7 @@ import { PrismaService } from "../../prisma/prisma.service";
 import {
   Prisma,
   Reseller as PrismaReseller,
+  ResellerPackage as PrismaResellerPackage,
   Pop as PrismaPop,
   ResellerRechargeLog as PrismaResellerRechargeLog,
   User as PrismaUser,
@@ -50,6 +51,17 @@ export class ResellerServiceBase {
     args: Prisma.ResellerDeleteArgs
   ): Promise<PrismaReseller> {
     return this.prisma.reseller.delete(args);
+  }
+
+  async findAssignedPackages(
+    parentId: string,
+    args: Prisma.ResellerPackageFindManyArgs
+  ): Promise<PrismaResellerPackage[]> {
+    return this.prisma.reseller
+      .findUniqueOrThrow({
+        where: { id: parentId },
+      })
+      .assignedPackages(args);
   }
 
   async findPops(

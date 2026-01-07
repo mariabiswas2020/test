@@ -5,10 +5,12 @@ export type TransactionOrderByInput = {
   collectedBy?: SortOrder;
   customerId?: SortOrder;
   date?: SortOrder;
+  deletedAt?: SortOrder;
   discount?: SortOrder;
   id?: SortOrder;
   method?: SortOrder;
   note?: SortOrder;
   trxId?: SortOrder;
   type?: SortOrder;
+  updatedAt?: SortOrder;
 };

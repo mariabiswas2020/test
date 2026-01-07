@@ -11,29 +11,29 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { ObjectType, Field, Float } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
+import { User } from "../../user/base/User";
 import {
-  IsString,
-  MaxLength,
+  ValidateNested,
   IsNumber,
   Max,
+  IsString,
+  MaxLength,
   IsOptional,
   IsDate,
-  ValidateNested,
 } from "class-validator";
-import { Decimal } from "decimal.js";
 import { Type } from "class-transformer";
+import { Decimal } from "decimal.js";
 import { Pop } from "../../pop/base/Pop";
 
 @ObjectType()
 class Expense {
   @ApiProperty({
     required: true,
-    type: String,
+    type: () => User,
   })
-  @IsString()
-  @MaxLength(256)
-  @Field(() => String)
-  addedBy!: string;
+  @ValidateNested()
+  @Type(() => User)
+  addedByUser?: User;
 
   @ApiProperty({
     required: true,
@@ -55,6 +55,14 @@ class Expense {
     nullable: true,
   })
   category!: string | null;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  createdAt!: Date;
 
   @ApiProperty({
     required: true,
@@ -89,6 +97,14 @@ class Expense {
   @MaxLength(256)
   @Field(() => String)
   title!: string;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  updatedAt!: Date;
 }
 
 export { Expense as Expense };

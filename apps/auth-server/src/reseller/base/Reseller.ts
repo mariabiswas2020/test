@@ -11,22 +11,33 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { ObjectType, Field, Float } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
+import { ResellerPackage } from "../../resellerPackage/base/ResellerPackage";
 import {
+  ValidateNested,
+  IsOptional,
   IsNumber,
   Max,
   IsString,
   MaxLength,
-  IsOptional,
-  ValidateNested,
+  IsDate,
 } from "class-validator";
+import { Type } from "class-transformer";
 import { Decimal } from "decimal.js";
 import { Pop } from "../../pop/base/Pop";
-import { Type } from "class-transformer";
 import { ResellerRechargeLog } from "../../resellerRechargeLog/base/ResellerRechargeLog";
 import { User } from "../../user/base/User";
 
 @ObjectType()
 class Reseller {
+  @ApiProperty({
+    required: false,
+    type: () => [ResellerPackage],
+  })
+  @ValidateNested()
+  @Type(() => ResellerPackage)
+  @IsOptional()
+  assignedPackages?: Array<ResellerPackage>;
+
   @ApiProperty({
     required: true,
     type: Number,
@@ -47,6 +58,14 @@ class Reseller {
     nullable: true,
   })
   businessName!: string | null;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  createdAt!: Date;
 
   @ApiProperty({
     required: true,
@@ -73,6 +92,14 @@ class Reseller {
   @Type(() => ResellerRechargeLog)
   @IsOptional()
   rechargeLogs?: Array<ResellerRechargeLog>;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  updatedAt!: Date;
 
   @ApiProperty({
     required: true,

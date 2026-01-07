@@ -26,6 +26,7 @@ import { ExpenseFindUniqueArgs } from "./ExpenseFindUniqueArgs";
 import { CreateExpenseArgs } from "./CreateExpenseArgs";
 import { UpdateExpenseArgs } from "./UpdateExpenseArgs";
 import { DeleteExpenseArgs } from "./DeleteExpenseArgs";
+import { User } from "../../user/base/User";
 import { Pop } from "../../pop/base/Pop";
 import { ExpenseService } from "../expense.service";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
@@ -96,6 +97,10 @@ export class ExpenseResolverBase {
       data: {
         ...args.data,
 
+        addedByUser: {
+          connect: args.data.addedByUser,
+        },
+
         pop: args.data.pop
           ? {
               connect: args.data.pop,
@@ -120,6 +125,10 @@ export class ExpenseResolverBase {
         ...args,
         data: {
           ...args.data,
+
+          addedByUser: {
+            connect: args.data.addedByUser,
+          },
 
           pop: args.data.pop
             ? {
@@ -157,6 +166,27 @@ export class ExpenseResolverBase {
       }
       throw error;
     }
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => User, {
+    nullable: true,
+    name: "addedByUser",
+  })
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "read",
+    possession: "any",
+  })
+  async getAddedByUser(
+    @graphql.Parent() parent: Expense
+  ): Promise<User | null> {
+    const result = await this.service.getAddedByUser(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return result;
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)

@@ -143,6 +143,17 @@ class MarketingLeadWhereInput {
     nullable: true,
   })
   status?: "NEW" | "CONTACTED" | "SUCCESS" | "REJECTED";
+
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
+  @Type(() => DateTimeFilter)
+  @IsOptional()
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
+  updatedAt?: DateTimeFilter;
 }
 
 export { MarketingLeadWhereInput as MarketingLeadWhereInput };

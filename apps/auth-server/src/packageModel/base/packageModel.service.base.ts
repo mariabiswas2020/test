@@ -10,10 +10,12 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
+
 import {
   Prisma,
   PackageModel as PrismaPackageModel,
   Customer as PrismaCustomer,
+  ResellerPackage as PrismaResellerPackage,
 } from "@prisma/client";
 
 export class PackageModelServiceBase {
@@ -60,5 +62,16 @@ export class PackageModelServiceBase {
         where: { id: parentId },
       })
       .customers(args);
+  }
+
+  async findResellerPricing(
+    parentId: string,
+    args: Prisma.ResellerPackageFindManyArgs
+  ): Promise<PrismaResellerPackage[]> {
+    return this.prisma.packageModel
+      .findUniqueOrThrow({
+        where: { id: parentId },
+      })
+      .resellerPricing(args);
   }
 }

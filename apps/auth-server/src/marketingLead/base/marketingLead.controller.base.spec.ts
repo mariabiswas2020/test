@@ -27,6 +27,7 @@ const CREATE_INPUT = {
   priceQuote: 42.424242424,
   proposedPackage: "exampleProposedPackage",
   remarks: "exampleRemarks",
+  updatedAt: new Date(),
 };
 const CREATE_RESULT = {
   address: "exampleAddress",
@@ -38,6 +39,7 @@ const CREATE_RESULT = {
   priceQuote: 42.424242424,
   proposedPackage: "exampleProposedPackage",
   remarks: "exampleRemarks",
+  updatedAt: new Date(),
 };
 const FIND_MANY_RESULT = [
   {
@@ -50,6 +52,7 @@ const FIND_MANY_RESULT = [
     priceQuote: 42.424242424,
     proposedPackage: "exampleProposedPackage",
     remarks: "exampleRemarks",
+    updatedAt: new Date(),
   },
 ];
 const FIND_ONE_RESULT = {
@@ -62,6 +65,7 @@ const FIND_ONE_RESULT = {
   priceQuote: 42.424242424,
   proposedPackage: "exampleProposedPackage",
   remarks: "exampleRemarks",
+  updatedAt: new Date(),
 };
 
 const service = {
@@ -147,6 +151,7 @@ describe("MarketingLead", () => {
       .expect({
         ...CREATE_RESULT,
         createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
       });
   });
 
@@ -158,6 +163,7 @@ describe("MarketingLead", () => {
         {
           ...FIND_MANY_RESULT[0],
           createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
+          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
         },
       ]);
   });
@@ -180,6 +186,7 @@ describe("MarketingLead", () => {
       .expect({
         ...FIND_ONE_RESULT,
         createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
+        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
       });
   });
 
@@ -192,6 +199,7 @@ describe("MarketingLead", () => {
       .expect({
         ...CREATE_RESULT,
         createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
       })
       .then(function () {
         agent

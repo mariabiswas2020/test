@@ -16,6 +16,7 @@ import { Type } from "class-transformer";
 import { IsOptional, ValidateNested, IsEnum } from "class-validator";
 import { AreaWhereUniqueInput } from "../../area/base/AreaWhereUniqueInput";
 import { DecimalFilter } from "../../util/DecimalFilter";
+import { DateTimeFilter } from "../../util/DateTimeFilter";
 import { CustomerListRelationFilter } from "../../customer/base/CustomerListRelationFilter";
 import { ExpenseListRelationFilter } from "../../expense/base/ExpenseListRelationFilter";
 import { StringFilter } from "../../util/StringFilter";
@@ -23,6 +24,7 @@ import { PopWhereUniqueInput } from "./PopWhereUniqueInput";
 import { ProductItemListRelationFilter } from "../../productItem/base/ProductItemListRelationFilter";
 import { PopRechargeListRelationFilter } from "../../popRecharge/base/PopRechargeListRelationFilter";
 import { ResellerWhereUniqueInput } from "../../reseller/base/ResellerWhereUniqueInput";
+import { MikroTikRouterListRelationFilter } from "../../mikroTikRouter/base/MikroTikRouterListRelationFilter";
 import { PopListRelationFilter } from "./PopListRelationFilter";
 import { EnumPopType } from "./EnumPopType";
 
@@ -61,6 +63,17 @@ class PopWhereInput {
     nullable: true,
   })
   balance?: DecimalFilter;
+
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
+  @Type(() => DateTimeFilter)
+  @IsOptional()
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
+  createdAt?: DateTimeFilter;
 
   @ApiProperty({
     required: false,
@@ -158,6 +171,18 @@ class PopWhereInput {
 
   @ApiProperty({
     required: false,
+    type: () => MikroTikRouterListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => MikroTikRouterListRelationFilter)
+  @IsOptional()
+  @Field(() => MikroTikRouterListRelationFilter, {
+    nullable: true,
+  })
+  routers?: MikroTikRouterListRelationFilter;
+
+  @ApiProperty({
+    required: false,
     type: () => PopListRelationFilter,
   })
   @ValidateNested()
@@ -178,6 +203,17 @@ class PopWhereInput {
     nullable: true,
   })
   type?: "MAIN" | "RESELLER" | "SUB_POP";
+
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
+  @Type(() => DateTimeFilter)
+  @IsOptional()
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
+  updatedAt?: DateTimeFilter;
 }
 
 export { PopWhereInput as PopWhereInput };

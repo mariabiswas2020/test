@@ -11,10 +11,12 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { DecimalFilter } from "../../util/DecimalFilter";
+import { ResellerPackageListRelationFilter } from "../../resellerPackage/base/ResellerPackageListRelationFilter";
+import { ValidateNested, IsOptional } from "class-validator";
 import { Type } from "class-transformer";
-import { IsOptional, ValidateNested } from "class-validator";
+import { DecimalFilter } from "../../util/DecimalFilter";
 import { StringNullableFilter } from "../../util/StringNullableFilter";
+import { DateTimeFilter } from "../../util/DateTimeFilter";
 import { StringFilter } from "../../util/StringFilter";
 import { PopListRelationFilter } from "../../pop/base/PopListRelationFilter";
 import { ResellerRechargeLogListRelationFilter } from "../../resellerRechargeLog/base/ResellerRechargeLogListRelationFilter";
@@ -22,6 +24,18 @@ import { UserWhereUniqueInput } from "../../user/base/UserWhereUniqueInput";
 
 @InputType()
 class ResellerWhereInput {
+  @ApiProperty({
+    required: false,
+    type: () => ResellerPackageListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => ResellerPackageListRelationFilter)
+  @IsOptional()
+  @Field(() => ResellerPackageListRelationFilter, {
+    nullable: true,
+  })
+  assignedPackages?: ResellerPackageListRelationFilter;
+
   @ApiProperty({
     required: false,
     type: DecimalFilter,
@@ -43,6 +57,17 @@ class ResellerWhereInput {
     nullable: true,
   })
   businessName?: StringNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
+  @Type(() => DateTimeFilter)
+  @IsOptional()
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
+  createdAt?: DateTimeFilter;
 
   @ApiProperty({
     required: false,
@@ -78,6 +103,17 @@ class ResellerWhereInput {
     nullable: true,
   })
   rechargeLogs?: ResellerRechargeLogListRelationFilter;
+
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
+  @Type(() => DateTimeFilter)
+  @IsOptional()
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
+  updatedAt?: DateTimeFilter;
 
   @ApiProperty({
     required: false,

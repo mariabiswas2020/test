@@ -61,11 +61,13 @@ export class EmployeeControllerBase {
       },
       select: {
         address: true,
+        createdAt: true,
         designation: true,
         id: true,
         joinDate: true,
         nid: true,
         salary: true,
+        updatedAt: true,
 
         user: {
           select: {
@@ -94,11 +96,13 @@ export class EmployeeControllerBase {
       ...args,
       select: {
         address: true,
+        createdAt: true,
         designation: true,
         id: true,
         joinDate: true,
         nid: true,
         salary: true,
+        updatedAt: true,
 
         user: {
           select: {
@@ -128,11 +132,13 @@ export class EmployeeControllerBase {
       where: params,
       select: {
         address: true,
+        createdAt: true,
         designation: true,
         id: true,
         joinDate: true,
         nid: true,
         salary: true,
+        updatedAt: true,
 
         user: {
           select: {
@@ -180,11 +186,13 @@ export class EmployeeControllerBase {
         },
         select: {
           address: true,
+          createdAt: true,
           designation: true,
           id: true,
           joinDate: true,
           nid: true,
           salary: true,
+          updatedAt: true,
 
           user: {
             select: {
@@ -222,11 +230,13 @@ export class EmployeeControllerBase {
         where: params,
         select: {
           address: true,
+          createdAt: true,
           designation: true,
           id: true,
           joinDate: true,
           nid: true,
           salary: true,
+          updatedAt: true,
 
           user: {
             select: {

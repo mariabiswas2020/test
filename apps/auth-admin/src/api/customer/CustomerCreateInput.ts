@@ -3,6 +3,8 @@ import { Decimal } from "decimal.js";
 import { BillSheetCreateNestedManyWithoutCustomersInput } from "./BillSheetCreateNestedManyWithoutCustomersInput";
 import { PackageModelWhereUniqueInput } from "../packageModel/PackageModelWhereUniqueInput";
 import { PopWhereUniqueInput } from "../pop/PopWhereUniqueInput";
+import { CustomerSessionCreateNestedManyWithoutCustomersInput } from "./CustomerSessionCreateNestedManyWithoutCustomersInput";
+import { SupportTicketCreateNestedManyWithoutCustomersInput } from "./SupportTicketCreateNestedManyWithoutCustomersInput";
 import { TokenCreateNestedManyWithoutCustomersInput } from "./TokenCreateNestedManyWithoutCustomersInput";
 import { TransactionCreateNestedManyWithoutCustomersInput } from "./TransactionCreateNestedManyWithoutCustomersInput";
 
@@ -13,6 +15,7 @@ export type CustomerCreateInput = {
   billSheets?: BillSheetCreateNestedManyWithoutCustomersInput;
   billingCycle: number;
   customerId: string;
+  deletedAt?: Date | null;
   dueAmount: Decimal;
   email?: string | null;
   ipAddress?: string | null;
@@ -26,6 +29,7 @@ export type CustomerCreateInput = {
   pop: PopWhereUniqueInput;
   pppoePassword?: string | null;
   pppoeUsername?: string | null;
+  sessions?: CustomerSessionCreateNestedManyWithoutCustomersInput;
   status:
     | "ACTIVE"
     | "INACTIVE"
@@ -35,6 +39,7 @@ export type CustomerCreateInput = {
     | "DISCONNECTED";
   tempExtensionActive: boolean;
   tempExtensionExpiresAt?: Date | null;
+  tickets?: SupportTicketCreateNestedManyWithoutCustomersInput;
   tokens?: TokenCreateNestedManyWithoutCustomersInput;
   transactions?: TransactionCreateNestedManyWithoutCustomersInput;
 };

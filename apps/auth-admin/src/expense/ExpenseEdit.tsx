@@ -4,19 +4,26 @@ import {
   Edit,
   SimpleForm,
   EditProps,
-  TextInput,
-  NumberInput,
   ReferenceInput,
   SelectInput,
+  NumberInput,
+  TextInput,
 } from "react-admin";
 
+import { UserTitle } from "../user/UserTitle";
 import { PopTitle } from "../pop/PopTitle";
 
 export const ExpenseEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
       <SimpleForm>
-        <TextInput label="Added By" source="addedBy" />
+        <ReferenceInput
+          source="addedByUser.id"
+          reference="User"
+          label="Added By User"
+        >
+          <SelectInput optionText={UserTitle} />
+        </ReferenceInput>
         <NumberInput label="Amount" source="amount" />
         <TextInput label="Category" source="category" />
         <ReferenceInput source="pop.id" reference="Pop" label="Pop">

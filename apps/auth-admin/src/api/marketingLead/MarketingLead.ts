@@ -13,4 +13,5 @@ export type MarketingLead = {
   proposedPackage: string | null;
   remarks: string | null;
   status?: "NEW" | "CONTACTED" | "SUCCESS" | "REJECTED";
+  updatedAt: Date;
 };

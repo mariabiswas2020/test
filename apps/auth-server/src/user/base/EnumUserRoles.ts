@@ -9,10 +9,13 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
+import { User } from "./User";
 import { Reseller } from "../../reseller/base/Reseller";
 import { registerEnumType } from "@nestjs/graphql";
 
 export enum EnumUserRoles {
+  User = "USER",
+  Admin = "ADMIN",
   SuperAdmin = "SUPER_ADMIN",
   Manager = "MANAGER",
   Accountant = "ACCOUNTANT",

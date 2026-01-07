@@ -10,9 +10,11 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
+
 import {
   Prisma,
   PopRecharge as PrismaPopRecharge,
+  User as PrismaUser,
   Pop as PrismaPop,
 } from "@prisma/client";
 
@@ -49,6 +51,14 @@ export class PopRechargeServiceBase {
     args: Prisma.PopRechargeDeleteArgs
   ): Promise<PrismaPopRecharge> {
     return this.prisma.popRecharge.delete(args);
+  }
+
+  async getPerformedByUser(parentId: string): Promise<PrismaUser | null> {
+    return this.prisma.popRecharge
+      .findUnique({
+        where: { id: parentId },
+      })
+      .performedByUser();
   }
 
   async getPop(parentId: string): Promise<PrismaPop | null> {

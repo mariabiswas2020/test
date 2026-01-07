@@ -11,28 +11,47 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { ActivityLogUpdateManyWithoutUsersInput } from "./ActivityLogUpdateManyWithoutUsersInput";
+import { AccountUpdateManyWithoutUsersInput } from "./AccountUpdateManyWithoutUsersInput";
 import {
   ValidateNested,
   IsOptional,
   IsString,
+  IsDate,
   MaxLength,
   IsBoolean,
   IsEnum,
 } from "class-validator";
 import { Type } from "class-transformer";
+import { ActivityLogUpdateManyWithoutUsersInput } from "./ActivityLogUpdateManyWithoutUsersInput";
+import { SupportTicketUpdateManyWithoutUsersInput } from "./SupportTicketUpdateManyWithoutUsersInput";
 import { TransactionUpdateManyWithoutUsersInput } from "./TransactionUpdateManyWithoutUsersInput";
 import { EmployeeWhereUniqueInput } from "../../employee/base/EmployeeWhereUniqueInput";
+import { ExpenseUpdateManyWithoutUsersInput } from "./ExpenseUpdateManyWithoutUsersInput";
+import { InvoiceUpdateManyWithoutUsersInput } from "./InvoiceUpdateManyWithoutUsersInput";
 import { MarketingLeadUpdateManyWithoutUsersInput } from "./MarketingLeadUpdateManyWithoutUsersInput";
-import { IsJSONValue } from "../../validators";
-import { GraphQLJSON } from "graphql-type-json";
-import { InputJsonValue } from "../../types";
+import { UserPermissionUpdateManyWithoutUsersInput } from "./UserPermissionUpdateManyWithoutUsersInput";
+import { PopRechargeUpdateManyWithoutUsersInput } from "./PopRechargeUpdateManyWithoutUsersInput";
 import { ResellerWhereUniqueInput } from "../../reseller/base/ResellerWhereUniqueInput";
 import { EnumUserRoles } from "./EnumUserRoles";
+import { SessionUpdateManyWithoutUsersInput } from "./SessionUpdateManyWithoutUsersInput";
+import { SubscriptionUpdateManyWithoutUsersInput } from "./SubscriptionUpdateManyWithoutUsersInput";
 import { TokenUpdateManyWithoutUsersInput } from "./TokenUpdateManyWithoutUsersInput";
+import { UsageUpdateManyWithoutUsersInput } from "./UsageUpdateManyWithoutUsersInput";
 
 @InputType()
 class UserUpdateInput {
+  @ApiProperty({
+    required: false,
+    type: () => AccountUpdateManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => AccountUpdateManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => AccountUpdateManyWithoutUsersInput, {
+    nullable: true,
+  })
+  accounts?: AccountUpdateManyWithoutUsersInput;
+
   @ApiProperty({
     required: false,
     type: () => ActivityLogUpdateManyWithoutUsersInput,
@@ -44,6 +63,18 @@ class UserUpdateInput {
     nullable: true,
   })
   activityLogs?: ActivityLogUpdateManyWithoutUsersInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => SupportTicketUpdateManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => SupportTicketUpdateManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => SupportTicketUpdateManyWithoutUsersInput, {
+    nullable: true,
+  })
+  assignedTickets?: SupportTicketUpdateManyWithoutUsersInput;
 
   @ApiProperty({
     required: false,
@@ -70,6 +101,17 @@ class UserUpdateInput {
 
   @ApiProperty({
     required: false,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  @Field(() => Date, {
+    nullable: true,
+  })
+  emailVerified?: Date | null;
+
+  @ApiProperty({
+    required: false,
     type: () => EmployeeWhereUniqueInput,
   })
   @ValidateNested()
@@ -82,6 +124,18 @@ class UserUpdateInput {
 
   @ApiProperty({
     required: false,
+    type: () => ExpenseUpdateManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => ExpenseUpdateManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => ExpenseUpdateManyWithoutUsersInput, {
+    nullable: true,
+  })
+  expenses?: ExpenseUpdateManyWithoutUsersInput;
+
+  @ApiProperty({
+    required: false,
     type: String,
   })
   @IsString()
@@ -91,6 +145,30 @@ class UserUpdateInput {
     nullable: true,
   })
   firstName?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @MaxLength(256)
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  image?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => InvoiceUpdateManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => InvoiceUpdateManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => InvoiceUpdateManyWithoutUsersInput, {
+    nullable: true,
+  })
+  invoices?: InvoiceUpdateManyWithoutUsersInput;
 
   @ApiProperty({
     required: false,
@@ -132,21 +210,36 @@ class UserUpdateInput {
     type: String,
   })
   @IsString()
+  @MaxLength(256)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  password?: string;
+  name?: string | null;
 
   @ApiProperty({
     required: false,
+    type: String,
   })
-  @IsJSONValue()
+  @IsString()
+  @MaxLength(256)
   @IsOptional()
-  @Field(() => GraphQLJSON, {
+  @Field(() => String, {
     nullable: true,
   })
-  permissionRoutes?: InputJsonValue;
+  password?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => UserPermissionUpdateManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => UserPermissionUpdateManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => UserPermissionUpdateManyWithoutUsersInput, {
+    nullable: true,
+  })
+  permissions?: UserPermissionUpdateManyWithoutUsersInput;
 
   @ApiProperty({
     required: false,
@@ -159,6 +252,18 @@ class UserUpdateInput {
     nullable: true,
   })
   phone?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => PopRechargeUpdateManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => PopRechargeUpdateManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => PopRechargeUpdateManyWithoutUsersInput, {
+    nullable: true,
+  })
+  popRecharges?: PopRechargeUpdateManyWithoutUsersInput;
 
   @ApiProperty({
     required: false,
@@ -182,6 +287,8 @@ class UserUpdateInput {
     nullable: true,
   })
   roles?:
+    | "USER"
+    | "ADMIN"
     | "SUPER_ADMIN"
     | "MANAGER"
     | "ACCOUNTANT"
@@ -191,6 +298,30 @@ class UserUpdateInput {
     | "MARKETING_AGENT"
     | "RESELLER"
     | "SUB_RESELLER";
+
+  @ApiProperty({
+    required: false,
+    type: () => SessionUpdateManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => SessionUpdateManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => SessionUpdateManyWithoutUsersInput, {
+    nullable: true,
+  })
+  sessions?: SessionUpdateManyWithoutUsersInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => SubscriptionUpdateManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => SubscriptionUpdateManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => SubscriptionUpdateManyWithoutUsersInput, {
+    nullable: true,
+  })
+  subscriptions?: SubscriptionUpdateManyWithoutUsersInput;
 
   @ApiProperty({
     required: false,
@@ -206,14 +337,39 @@ class UserUpdateInput {
 
   @ApiProperty({
     required: false,
+    type: () => SupportTicketUpdateManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => SupportTicketUpdateManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => SupportTicketUpdateManyWithoutUsersInput, {
+    nullable: true,
+  })
+  tickets?: SupportTicketUpdateManyWithoutUsersInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => UsageUpdateManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => UsageUpdateManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => UsageUpdateManyWithoutUsersInput, {
+    nullable: true,
+  })
+  usages?: UsageUpdateManyWithoutUsersInput;
+
+  @ApiProperty({
+    required: false,
     type: String,
   })
   @IsString()
+  @MaxLength(256)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
   })
-  username?: string;
+  username?: string | null;
 }
 
 export { UserUpdateInput as UserUpdateInput };

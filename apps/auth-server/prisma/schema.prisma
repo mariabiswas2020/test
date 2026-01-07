@@ -127,7 +127,7 @@ model Customer {
   deletedAt              DateTime?
   dueAmount              Decimal            @default(0.0) @db.Decimal(12, 2)
   email                  String?            @db.VarChar(255)
-  id                     String             @id @default(cuid())
+  id                     String             @id @default(uuid())
   ipAddress              String?            @db.VarChar(45)
   macAddress             String?            @db.VarChar(17)
   monthlyBill            Decimal            @db.Decimal(10, 2)
@@ -197,7 +197,7 @@ model Transaction {
   date        DateTime              @default(now())
   deletedAt   DateTime?
   discount    Decimal               @default(0.0) @db.Decimal(10, 2)
-  id          String                @id @default(cuid())
+  id          String                @id @default(uuid())
   method      EnumTransactionMethod
   note        String?
   trxId       String?               @unique @db.VarChar(50)
@@ -286,7 +286,7 @@ model MarketingLead {
   agent           User                    @relation(fields: [agentId], references: [id])
   agentId         String
   createdAt       DateTime                @default(now())
-  id              String                  @id @default(cuid())
+  id              String                  @id @default(uuid())
   mapLocation     String?
   name            String                  @db.VarChar(200)
   phone           String                  @db.VarChar(20)
@@ -421,7 +421,7 @@ model Plan {
 model Subscription {
   createdAt DateTime               @default(now())
   endDate   DateTime?
-  id        String                 @id @default(cuid())
+  id        String                 @id @default(uuid())
   plan      Plan                   @relation(fields: [planId], references: [id])
   planId    String
   startDate DateTime               @default(now())
@@ -456,7 +456,7 @@ model Invoice {
   createdAt   DateTime          @default(now())
   description String?           @db.VarChar(500)
   dueDate     DateTime
-  id          String            @id @default(cuid())
+  id          String            @id @default(uuid())
   paidDate    DateTime?
   status      EnumInvoiceStatus @default(PENDING)
   updatedAt   DateTime          @updatedAt
@@ -557,7 +557,7 @@ model SupportTicket {
   customer    Customer?                 @relation(fields: [customerId], references: [id])
   customerId  String?
   description String                    @db.Text
-  id          String                    @id @default(cuid())
+  id          String                    @id @default(uuid())
   priority    EnumSupportTicketPriority @default(MEDIUM)
   resolvedAt  DateTime?
   status      EnumSupportTicketStatus   @default(OPEN)

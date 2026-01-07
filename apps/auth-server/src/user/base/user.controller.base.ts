@@ -91,7 +91,6 @@ export class UserControllerBase {
         id: true,
         isActive: true,
         lastName: true,
-        password: true,
         permissionRoutes: true,
         phone: true,
 
@@ -138,7 +137,6 @@ export class UserControllerBase {
         id: true,
         isActive: true,
         lastName: true,
-        password: true,
         permissionRoutes: true,
         phone: true,
 
@@ -186,7 +184,6 @@ export class UserControllerBase {
         id: true,
         isActive: true,
         lastName: true,
-        password: true,
         permissionRoutes: true,
         phone: true,
 
@@ -260,7 +257,6 @@ export class UserControllerBase {
           id: true,
           isActive: true,
           lastName: true,
-          password: true,
           permissionRoutes: true,
           phone: true,
 
@@ -316,7 +312,6 @@ export class UserControllerBase {
           id: true,
           isActive: true,
           lastName: true,
-          password: true,
           permissionRoutes: true,
           phone: true,
 

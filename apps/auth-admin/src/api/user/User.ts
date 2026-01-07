@@ -17,7 +17,6 @@ export type User = {
   isActive: boolean;
   lastName: string | null;
   marketingLeads?: Array<MarketingLead>;
-  password: string;
   permissionRoutes: JsonValue;
   phone: string | null;
   resellerProfile?: Reseller | null;

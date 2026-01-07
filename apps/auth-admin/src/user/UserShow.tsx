@@ -35,7 +35,6 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
         <TextField label="ID" source="id" />
         <BooleanField label="Is Active" source="isActive" />
         <TextField label="Last Name" source="lastName" />
-        <TextField label="Password" source="password" />
         <TextField label="Permission Routes" source="permissionRoutes" />
         <TextField label="Phone" source="phone" />
         <ReferenceField

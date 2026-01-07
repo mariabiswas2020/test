@@ -1,0 +1,380 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  activityLogs     ActivityLog[]
+  collectedBills   Transaction[]
+  createdAt        DateTime        @default(now())
+  email            String?         @unique
+  employeeProfile  Employee?
+  firstName        String?
+  id               String          @id @default(cuid())
+  isActive         Boolean         @default(true)
+  lastName         String?
+  marketingLeads   MarketingLead[]
+  password         String
+  permissionRoutes Json?
+  phone            String?
+  resellerProfile  Reseller?
+  role             EnumUserRole    @default(MANAGER)
+  supportTickets   Token[]
+  updatedAt        DateTime        @updatedAt
+  username         String          @unique
+}
+
+model Employee {
+  address     String?
+  designation String
+  id          String   @id @default(cuid())
+  joinDate    DateTime @default(now())
+  nid         String?
+  salary      Decimal?
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String   @unique
+}
+
+model Area {
+  customers   Customer[]
+  description String?
+  id          String     @id @default(cuid())
+  name        String
+  pops        Pop[]
+}
+
+model Pop {
+  address         String?
+  area            Area?         @relation(fields: [areaId], references: [id])
+  areaId          String?
+  balance         Decimal       @default(0.0)
+  customers       Customer[]
+  expenses        Expense[]
+  id              String        @id @default(cuid())
+  name            String
+  parentPop       Pop?          @relation(name: "parentPop", fields: [parentId], references: [id])
+  parentId        String?
+  products        ProductItem[]
+  rechargeHistory PopRecharge[]
+  reseller        Reseller?     @relation(fields: [resellerId], references: [id])
+  resellerId      String?
+  subPops         Pop[]         @relation(name: "parentPop")
+  type            EnumPopType   @default(MAIN)
+}
+
+model PopRecharge {
+  amount      Decimal
+  date        DateTime              @default(now())
+  id          String                @id @default(cuid())
+  method      EnumPopRechargeMethod @default(CASH)
+  performedBy String?
+  pop         Pop                   @relation(fields: [popId], references: [id])
+  popId       String
+  reference   String?
+}
+
+model PackageModel {
+  customers       Customer[]
+  id              String               @id @default(cuid())
+  mikroTikProfile String?
+  name            String
+  price           Decimal
+  speed           String?
+  type            EnumPackageModelType @default(RETAIL)
+
+  @@map("Package")
+}
+
+model Customer {
+  address                String?
+  area                   Area?              @relation(fields: [areaId], references: [id])
+  areaId                 String?
+  balance                Decimal            @default(0.0)
+  billSheets             BillSheet[]
+  billingCycle           Int                @default(1)
+  connectionDate         DateTime           @default(now())
+  createdAt              DateTime           @default(now())
+  customerId             String             @unique
+  dueAmount              Decimal            @default(0.0)
+  email                  String?
+  id                     String             @id @default(cuid())
+  ipAddress              String?
+  macAddress             String?
+  monthlyBill            Decimal
+  name                   String
+  nid                    String?
+  onuMac                 String?
+  packageField           PackageModel       @relation(fields: [packageId], references: [id])
+  packageId              String
+  phone                  String
+  pop                    Pop                @relation(fields: [popId], references: [id])
+  popId                  String
+  pppoePassword          String?
+  pppoeUsername          String?            @unique
+  status                 EnumCustomerStatus @default(PENDING)
+  tempExtensionActive    Boolean            @default(false)
+  tempExtensionExpiresAt DateTime?
+  tokens                 Token[]
+  transactions           Transaction[]
+  updatedAt              DateTime           @updatedAt
+}
+
+model Reseller {
+  balance      Decimal               @default(0.0)
+  businessName String?
+  id           String                @id @default(cuid())
+  pops         Pop[]
+  rechargeLogs ResellerRechargeLog[]
+  user         User                  @relation(fields: [userId], references: [id])
+  userId       String                @unique
+}
+
+model ResellerRechargeLog {
+  amount     Decimal
+  date       DateTime                    @default(now())
+  id         String                      @id @default(cuid())
+  note       String?
+  reseller   Reseller                    @relation(fields: [resellerId], references: [id])
+  resellerId String
+  type       EnumResellerRechargeLogType
+}
+
+model BillSheet {
+  customer    Customer            @relation(fields: [customerId], references: [id])
+  customerId  String
+  generatedAt DateTime            @default(now())
+  id          String              @id @default(cuid())
+  month       String
+  payable     Decimal
+  status      EnumBillSheetStatus @default(UNPAID)
+  year        Int
+
+  @@unique([customerId, month, year])
+}
+
+model Transaction {
+  amount      Decimal
+  collector   User?                 @relation(fields: [collectedBy], references: [id])
+  collectedBy String?
+  customer    Customer              @relation(fields: [customerId], references: [id])
+  customerId  String
+  date        DateTime              @default(now())
+  discount    Decimal               @default(0.0)
+  id          String                @id @default(cuid())
+  method      EnumTransactionMethod
+  note        String?
+  trxId       String?               @unique
+  type        EnumTransactionType
+}
+
+model Expense {
+  addedBy  String
+  amount   Decimal
+  category String?
+  date     DateTime @default(now())
+  id       String   @id @default(cuid())
+  pop      Pop?     @relation(fields: [popId], references: [id])
+  popId    String?
+  title    String
+}
+
+model Supplier {
+  company   String?
+  id        String     @id @default(cuid())
+  name      String
+  phone     String?
+  purchases Purchase[]
+}
+
+model Product {
+  brand        String?
+  category     String?
+  hasWarranty  Boolean        @default(false)
+  id           String         @id @default(cuid())
+  items        ProductItem[]
+  name         String
+  purchases    PurchaseItem[]
+  unit         String?
+  warrantyDays Int?
+}
+
+model ProductItem {
+  id            String                @id @default(cuid())
+  isUsedProduct Boolean               @default(false)
+  locationPop   Pop?                  @relation(fields: [locationPopId], references: [id])
+  locationPopId String?
+  product       Product               @relation(fields: [productId], references: [id])
+  productId     String
+  purchase      Purchase?             @relation(fields: [purchaseId], references: [id])
+  purchaseId    String?
+  serialNumber  String                @unique
+  status        EnumProductItemStatus @default(IN_STOCK)
+}
+
+model Purchase {
+  date        DateTime       @default(now())
+  id          String         @id @default(cuid())
+  invoiceNo   String?
+  items       PurchaseItem[]
+  stockItems  ProductItem[]
+  supplier    Supplier       @relation(fields: [supplierId], references: [id])
+  supplierId  String
+  totalAmount Decimal
+}
+
+model PurchaseItem {
+  id         String   @id @default(cuid())
+  product    Product  @relation(fields: [productId], references: [id])
+  productId  String
+  purchase   Purchase @relation(fields: [purchaseId], references: [id])
+  purchaseId String
+  quantity   Int
+  unitPrice  Decimal
+}
+
+model MarketingLead {
+  address         String?
+  agent           User                    @relation(fields: [agentId], references: [id])
+  agentId         String
+  createdAt       DateTime                @default(now())
+  id              String                  @id @default(cuid())
+  mapLocation     String?
+  name            String
+  phone           String
+  priceQuote      Decimal?
+  proposedPackage String?
+  remarks         String?
+  status          EnumMarketingLeadStatus @default(NEW)
+}
+
+model TokenCategory {
+  id     String  @id @default(cuid())
+  price  Decimal @default(0.0)
+  title  String
+  tokens Token[]
+}
+
+model Token {
+  assignee    User?           @relation(fields: [assignedTo], references: [id])
+  assignedTo  String?
+  category    TokenCategory   @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  closedAt    DateTime?
+  createdAt   DateTime        @default(now())
+  customer    Customer?       @relation(fields: [customerId], references: [id])
+  customerId  String?
+  description String?
+  id          String          @id @default(cuid())
+  status      EnumTokenStatus @default(OPEN)
+  ticketNo    String          @unique
+}
+
+model ActivityLog {
+  action    String
+  createdAt DateTime @default(now())
+  details   Json?
+  id        String   @id @default(cuid())
+  ipAddress String?
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+}
+
+model Setting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+}
+
+enum EnumUserRole {
+  SUPER_ADMIN
+  MANAGER
+  ACCOUNTANT
+  SUPPORT
+  CABLE_TEAM
+  BILL_MAN
+  MARKETING_AGENT
+  RESELLER
+  SUB_RESELLER
+}
+
+enum EnumPopType {
+  MAIN
+  RESELLER
+  SUB_POP
+}
+
+enum EnumPopRechargeMethod {
+  CASH
+  BKASH
+  NAGAD
+  ROCKET
+  BANK
+}
+
+enum EnumPackageModelType {
+  RETAIL
+  WHOLESALE
+}
+
+enum EnumCustomerStatus {
+  ACTIVE
+  INACTIVE
+  EXPIRED
+  PENDING
+  DELETED
+  DISCONNECTED
+}
+
+enum EnumResellerRechargeLogType {
+  BILL_PAYMENT
+  CONNECTION_FEE
+  OPENING_BALANCE
+  ADJUSTMENT
+}
+
+enum EnumBillSheetStatus {
+  PAID
+  UNPAID
+  PARTIAL
+}
+
+enum EnumTransactionMethod {
+  CASH
+  BKASH
+  NAGAD
+  ROCKET
+  BANK
+}
+
+enum EnumTransactionType {
+  BILL_PAYMENT
+  CONNECTION_FEE
+  OPENING_BALANCE
+  ADJUSTMENT
+}
+
+enum EnumProductItemStatus {
+  IN_STOCK
+  SOLD
+  DEPLOYED
+  RETURNED
+  DAMAGED
+}
+
+enum EnumMarketingLeadStatus {
+  NEW
+  CONTACTED
+  SUCCESS
+  REJECTED
+}
+
+enum EnumTokenStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}

@@ -18,7 +18,7 @@ model User {
   employeeProfile Employee?
   expenses        Expense[]
   firstName       String?          @db.VarChar(100)
-  id              String           @id @default(cuid())
+  id              String           @id @default(uuid())
   image           String?
   invoices        Invoice[]
   isActive        Boolean          @default(true)

@@ -5,6 +5,7 @@ import {
   SimpleShowLayout,
   ShowProps,
   TextField,
+  DateField,
   BooleanField,
   ReferenceManyField,
   Datagrid,
@@ -21,10 +22,12 @@ export const ProductShow = (props: ShowProps): React.ReactElement => {
       <SimpleShowLayout>
         <TextField label="Brand" source="brand" />
         <TextField label="Category" source="category" />
+        <DateField source="createdAt" label="Created At" />
         <BooleanField label="Has Warranty" source="hasWarranty" />
         <TextField label="ID" source="id" />
         <TextField label="Name" source="name" />
         <TextField label="Unit" source="unit" />
+        <DateField source="updatedAt" label="Updated At" />
         <TextField label="Warranty Days" source="warrantyDays" />
         <ReferenceManyField
           reference="ProductItem"
@@ -32,6 +35,7 @@ export const ProductShow = (props: ShowProps): React.ReactElement => {
           label="ProductItems"
         >
           <Datagrid rowClick="show" bulkActionButtons={false}>
+            <DateField source="createdAt" label="Created At" />
             <TextField label="ID" source="id" />
             <BooleanField label="Is Used Product" source="isUsedProduct" />
             <ReferenceField
@@ -57,6 +61,7 @@ export const ProductShow = (props: ShowProps): React.ReactElement => {
             </ReferenceField>
             <TextField label="Serial Number" source="serialNumber" />
             <TextField label="Status" source="status" />
+            <DateField source="updatedAt" label="Updated At" />
           </Datagrid>
         </ReferenceManyField>
         <ReferenceManyField

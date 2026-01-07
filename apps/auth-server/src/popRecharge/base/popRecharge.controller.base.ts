@@ -55,16 +55,28 @@ export class PopRechargeControllerBase {
       data: {
         ...data,
 
+        performedByUser: data.performedByUser
+          ? {
+              connect: data.performedByUser,
+            }
+          : undefined,
+
         pop: {
           connect: data.pop,
         },
       },
       select: {
         amount: true,
+        createdAt: true,
         date: true,
         id: true,
         method: true,
-        performedBy: true,
+
+        performedByUser: {
+          select: {
+            id: true,
+          },
+        },
 
         pop: {
           select: {
@@ -73,6 +85,7 @@ export class PopRechargeControllerBase {
         },
 
         reference: true,
+        updatedAt: true,
       },
     });
   }
@@ -95,10 +108,16 @@ export class PopRechargeControllerBase {
       ...args,
       select: {
         amount: true,
+        createdAt: true,
         date: true,
         id: true,
         method: true,
-        performedBy: true,
+
+        performedByUser: {
+          select: {
+            id: true,
+          },
+        },
 
         pop: {
           select: {
@@ -107,6 +126,7 @@ export class PopRechargeControllerBase {
         },
 
         reference: true,
+        updatedAt: true,
       },
     });
   }
@@ -130,10 +150,16 @@ export class PopRechargeControllerBase {
       where: params,
       select: {
         amount: true,
+        createdAt: true,
         date: true,
         id: true,
         method: true,
-        performedBy: true,
+
+        performedByUser: {
+          select: {
+            id: true,
+          },
+        },
 
         pop: {
           select: {
@@ -142,6 +168,7 @@ export class PopRechargeControllerBase {
         },
 
         reference: true,
+        updatedAt: true,
       },
     });
     if (result === null) {
@@ -177,16 +204,28 @@ export class PopRechargeControllerBase {
         data: {
           ...data,
 
+          performedByUser: data.performedByUser
+            ? {
+                connect: data.performedByUser,
+              }
+            : undefined,
+
           pop: {
             connect: data.pop,
           },
         },
         select: {
           amount: true,
+          createdAt: true,
           date: true,
           id: true,
           method: true,
-          performedBy: true,
+
+          performedByUser: {
+            select: {
+              id: true,
+            },
+          },
 
           pop: {
             select: {
@@ -195,6 +234,7 @@ export class PopRechargeControllerBase {
           },
 
           reference: true,
+          updatedAt: true,
         },
       });
     } catch (error) {
@@ -226,10 +266,16 @@ export class PopRechargeControllerBase {
         where: params,
         select: {
           amount: true,
+          createdAt: true,
           date: true,
           id: true,
           method: true,
-          performedBy: true,
+
+          performedByUser: {
+            select: {
+              id: true,
+            },
+          },
 
           pop: {
             select: {
@@ -238,6 +284,7 @@ export class PopRechargeControllerBase {
           },
 
           reference: true,
+          updatedAt: true,
         },
       });
     } catch (error) {

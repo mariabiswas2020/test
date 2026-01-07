@@ -6,6 +6,7 @@ export type TransactionUpdateInput = {
   amount?: Decimal;
   collector?: UserWhereUniqueInput | null;
   customer?: CustomerWhereUniqueInput;
+  deletedAt?: Date | null;
   discount?: Decimal;
   method?: "CASH" | "BKASH" | "NAGAD" | "ROCKET" | "BANK";
   note?: string | null;

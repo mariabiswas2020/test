@@ -72,6 +72,7 @@ export class ProductItemControllerBase {
           : undefined,
       },
       select: {
+        createdAt: true,
         id: true,
         isUsedProduct: true,
 
@@ -95,6 +96,7 @@ export class ProductItemControllerBase {
 
         serialNumber: true,
         status: true,
+        updatedAt: true,
       },
     });
   }
@@ -116,6 +118,7 @@ export class ProductItemControllerBase {
     return this.service.productItems({
       ...args,
       select: {
+        createdAt: true,
         id: true,
         isUsedProduct: true,
 
@@ -139,6 +142,7 @@ export class ProductItemControllerBase {
 
         serialNumber: true,
         status: true,
+        updatedAt: true,
       },
     });
   }
@@ -161,6 +165,7 @@ export class ProductItemControllerBase {
     const result = await this.service.productItem({
       where: params,
       select: {
+        createdAt: true,
         id: true,
         isUsedProduct: true,
 
@@ -184,6 +189,7 @@ export class ProductItemControllerBase {
 
         serialNumber: true,
         status: true,
+        updatedAt: true,
       },
     });
     if (result === null) {
@@ -236,6 +242,7 @@ export class ProductItemControllerBase {
             : undefined,
         },
         select: {
+          createdAt: true,
           id: true,
           isUsedProduct: true,
 
@@ -259,6 +266,7 @@ export class ProductItemControllerBase {
 
           serialNumber: true,
           status: true,
+          updatedAt: true,
         },
       });
     } catch (error) {
@@ -289,6 +297,7 @@ export class ProductItemControllerBase {
       return await this.service.deleteProductItem({
         where: params,
         select: {
+          createdAt: true,
           id: true,
           isUsedProduct: true,
 
@@ -312,6 +321,7 @@ export class ProductItemControllerBase {
 
           serialNumber: true,
           status: true,
+          updatedAt: true,
         },
       });
     } catch (error) {

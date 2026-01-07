@@ -11,26 +11,28 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { StringFilter } from "../../util/StringFilter";
+import { UserWhereUniqueInput } from "../../user/base/UserWhereUniqueInput";
+import { ValidateNested, IsOptional } from "class-validator";
 import { Type } from "class-transformer";
-import { IsOptional, ValidateNested } from "class-validator";
 import { DecimalFilter } from "../../util/DecimalFilter";
 import { StringNullableFilter } from "../../util/StringNullableFilter";
 import { DateTimeFilter } from "../../util/DateTimeFilter";
+import { StringFilter } from "../../util/StringFilter";
 import { PopWhereUniqueInput } from "../../pop/base/PopWhereUniqueInput";
 
 @InputType()
 class ExpenseWhereInput {
   @ApiProperty({
     required: false,
-    type: StringFilter,
+    type: () => UserWhereUniqueInput,
   })
-  @Type(() => StringFilter)
+  @ValidateNested()
+  @Type(() => UserWhereUniqueInput)
   @IsOptional()
-  @Field(() => StringFilter, {
+  @Field(() => UserWhereUniqueInput, {
     nullable: true,
   })
-  addedBy?: StringFilter;
+  addedByUser?: UserWhereUniqueInput;
 
   @ApiProperty({
     required: false,
@@ -53,6 +55,17 @@ class ExpenseWhereInput {
     nullable: true,
   })
   category?: StringNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
+  @Type(() => DateTimeFilter)
+  @IsOptional()
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
+  createdAt?: DateTimeFilter;
 
   @ApiProperty({
     required: false,
@@ -98,6 +111,17 @@ class ExpenseWhereInput {
     nullable: true,
   })
   title?: StringFilter;
+
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
+  @Type(() => DateTimeFilter)
+  @IsOptional()
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
+  updatedAt?: DateTimeFilter;
 }
 
 export { ExpenseWhereInput as ExpenseWhereInput };

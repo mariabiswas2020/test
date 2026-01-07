@@ -11,6 +11,7 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { ObjectType, Field, Float } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
+
 import {
   IsString,
   MaxLength,
@@ -18,8 +19,10 @@ import {
   ValidateNested,
   IsNumber,
   Max,
+  IsDate,
   IsEnum,
 } from "class-validator";
+
 import { Area } from "../../area/base/Area";
 import { Type } from "class-transformer";
 import { Decimal } from "decimal.js";
@@ -28,6 +31,7 @@ import { Expense } from "../../expense/base/Expense";
 import { ProductItem } from "../../productItem/base/ProductItem";
 import { PopRecharge } from "../../popRecharge/base/PopRecharge";
 import { Reseller } from "../../reseller/base/Reseller";
+import { MikroTikRouter } from "../../mikroTikRouter/base/MikroTikRouter";
 import { EnumPopType } from "./EnumPopType";
 
 @ObjectType()
@@ -61,6 +65,14 @@ class Pop {
   @Max(99999999999)
   @Field(() => Float)
   balance!: Decimal;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  createdAt!: Date;
 
   @ApiProperty({
     required: false,
@@ -135,6 +147,15 @@ class Pop {
 
   @ApiProperty({
     required: false,
+    type: () => [MikroTikRouter],
+  })
+  @ValidateNested()
+  @Type(() => MikroTikRouter)
+  @IsOptional()
+  routers?: Array<MikroTikRouter>;
+
+  @ApiProperty({
+    required: false,
     type: () => [Pop],
   })
   @ValidateNested()
@@ -151,6 +172,14 @@ class Pop {
     nullable: true,
   })
   type?: "MAIN" | "RESELLER" | "SUB_POP";
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  updatedAt!: Date;
 }
 
 export { Pop as Pop };

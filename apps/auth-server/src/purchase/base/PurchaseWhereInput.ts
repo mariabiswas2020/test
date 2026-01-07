@@ -32,6 +32,17 @@ class PurchaseWhereInput {
   @Field(() => DateTimeFilter, {
     nullable: true,
   })
+  createdAt?: DateTimeFilter;
+
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
+  @Type(() => DateTimeFilter)
+  @IsOptional()
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
   date?: DateTimeFilter;
 
   @ApiProperty({
@@ -102,6 +113,17 @@ class PurchaseWhereInput {
     nullable: true,
   })
   totalAmount?: DecimalFilter;
+
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
+  @Type(() => DateTimeFilter)
+  @IsOptional()
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
+  updatedAt?: DateTimeFilter;
 }
 
 export { PurchaseWhereInput as PurchaseWhereInput };

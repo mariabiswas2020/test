@@ -31,6 +31,7 @@ export const BillSheetList = (props: ListProps): React.ReactElement => {
         <TextField label="Month" source="month" />
         <TextField label="Payable" source="payable" />
         <TextField label="Status" source="status" />
+        <DateField source="updatedAt" label="Updated At" />
         <TextField label="Year" source="year" />{" "}
       </Datagrid>
     </List>

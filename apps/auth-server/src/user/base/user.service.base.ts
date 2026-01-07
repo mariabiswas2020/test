@@ -14,10 +14,19 @@ import { PrismaService } from "../../prisma/prisma.service";
 import {
   Prisma,
   User as PrismaUser,
+  Account as PrismaAccount,
   ActivityLog as PrismaActivityLog,
+  SupportTicket as PrismaSupportTicket,
   Transaction as PrismaTransaction,
+  Expense as PrismaExpense,
+  Invoice as PrismaInvoice,
   MarketingLead as PrismaMarketingLead,
+  UserPermission as PrismaUserPermission,
+  PopRecharge as PrismaPopRecharge,
+  Session as PrismaSession,
+  Subscription as PrismaSubscription,
   Token as PrismaToken,
+  Usage as PrismaUsage,
   Employee as PrismaEmployee,
   Reseller as PrismaReseller,
 } from "@prisma/client";
@@ -45,6 +54,17 @@ export class UserServiceBase {
     return this.prisma.user.delete(args);
   }
 
+  async findAccounts(
+    parentId: string,
+    args: Prisma.AccountFindManyArgs
+  ): Promise<PrismaAccount[]> {
+    return this.prisma.user
+      .findUniqueOrThrow({
+        where: { id: parentId },
+      })
+      .accounts(args);
+  }
+
   async findActivityLogs(
     parentId: string,
     args: Prisma.ActivityLogFindManyArgs
@@ -54,6 +74,17 @@ export class UserServiceBase {
         where: { id: parentId },
       })
       .activityLogs(args);
+  }
+
+  async findAssignedTickets(
+    parentId: string,
+    args: Prisma.SupportTicketFindManyArgs
+  ): Promise<PrismaSupportTicket[]> {
+    return this.prisma.user
+      .findUniqueOrThrow({
+        where: { id: parentId },
+      })
+      .assignedTickets(args);
   }
 
   async findCollectedBills(
@@ -67,6 +98,28 @@ export class UserServiceBase {
       .collectedBills(args);
   }
 
+  async findExpenses(
+    parentId: string,
+    args: Prisma.ExpenseFindManyArgs
+  ): Promise<PrismaExpense[]> {
+    return this.prisma.user
+      .findUniqueOrThrow({
+        where: { id: parentId },
+      })
+      .expenses(args);
+  }
+
+  async findInvoices(
+    parentId: string,
+    args: Prisma.InvoiceFindManyArgs
+  ): Promise<PrismaInvoice[]> {
+    return this.prisma.user
+      .findUniqueOrThrow({
+        where: { id: parentId },
+      })
+      .invoices(args);
+  }
+
   async findMarketingLeads(
     parentId: string,
     args: Prisma.MarketingLeadFindManyArgs
@@ -78,6 +131,50 @@ export class UserServiceBase {
       .marketingLeads(args);
   }
 
+  async findPermissions(
+    parentId: string,
+    args: Prisma.UserPermissionFindManyArgs
+  ): Promise<PrismaUserPermission[]> {
+    return this.prisma.user
+      .findUniqueOrThrow({
+        where: { id: parentId },
+      })
+      .permissions(args);
+  }
+
+  async findPopRecharges(
+    parentId: string,
+    args: Prisma.PopRechargeFindManyArgs
+  ): Promise<PrismaPopRecharge[]> {
+    return this.prisma.user
+      .findUniqueOrThrow({
+        where: { id: parentId },
+      })
+      .popRecharges(args);
+  }
+
+  async findSessions(
+    parentId: string,
+    args: Prisma.SessionFindManyArgs
+  ): Promise<PrismaSession[]> {
+    return this.prisma.user
+      .findUniqueOrThrow({
+        where: { id: parentId },
+      })
+      .sessions(args);
+  }
+
+  async findSubscriptions(
+    parentId: string,
+    args: Prisma.SubscriptionFindManyArgs
+  ): Promise<PrismaSubscription[]> {
+    return this.prisma.user
+      .findUniqueOrThrow({
+        where: { id: parentId },
+      })
+      .subscriptions(args);
+  }
+
   async findSupportTickets(
     parentId: string,
     args: Prisma.TokenFindManyArgs
@@ -87,6 +184,28 @@ export class UserServiceBase {
         where: { id: parentId },
       })
       .supportTickets(args);
+  }
+
+  async findTickets(
+    parentId: string,
+    args: Prisma.SupportTicketFindManyArgs
+  ): Promise<PrismaSupportTicket[]> {
+    return this.prisma.user
+      .findUniqueOrThrow({
+        where: { id: parentId },
+      })
+      .tickets(args);
+  }
+
+  async findUsages(
+    parentId: string,
+    args: Prisma.UsageFindManyArgs
+  ): Promise<PrismaUsage[]> {
+    return this.prisma.user
+      .findUniqueOrThrow({
+        where: { id: parentId },
+      })
+      .usages(args);
   }
 
   async getEmployeeProfile(parentId: string): Promise<PrismaEmployee | null> {

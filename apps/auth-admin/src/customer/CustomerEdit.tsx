@@ -10,14 +10,16 @@ import {
   NumberInput,
   ReferenceArrayInput,
   SelectArrayInput,
-  BooleanInput,
   DateTimeInput,
+  BooleanInput,
 } from "react-admin";
 
 import { AreaTitle } from "../area/AreaTitle";
 import { BillSheetTitle } from "../billSheet/BillSheetTitle";
 import { PackageModelTitle } from "../packageModel/PackageModelTitle";
 import { PopTitle } from "../pop/PopTitle";
+import { CustomerSessionTitle } from "../customerSession/CustomerSessionTitle";
+import { SupportTicketTitle } from "../supportTicket/SupportTicketTitle";
 import { TokenTitle } from "../token/TokenTitle";
 import { TransactionTitle } from "../transaction/TransactionTitle";
 
@@ -39,6 +41,7 @@ export const CustomerEdit = (props: EditProps): React.ReactElement => {
         </ReferenceArrayInput>
         <NumberInput step={1} label="Billing Cycle" source="billingCycle" />
         <TextInput label="Customer Id" source="customerId" />
+        <DateTimeInput label="Deleted At" source="deletedAt" />
         <NumberInput label="Due Amount" source="dueAmount" />
         <TextInput label="Email" source="email" />
         <TextInput label="Ip Address" source="ipAddress" />
@@ -60,6 +63,13 @@ export const CustomerEdit = (props: EditProps): React.ReactElement => {
         </ReferenceInput>
         <TextInput label="Pppoe Password" source="pppoePassword" />
         <TextInput label="Pppoe Username" source="pppoeUsername" />
+        <ReferenceArrayInput source="sessions" reference="CustomerSession">
+          <SelectArrayInput
+            optionText={CustomerSessionTitle}
+            parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+            format={(value: any) => value && value.map((v: any) => v.id)}
+          />
+        </ReferenceArrayInput>
         <SelectInput
           source="status"
           label="Status"
@@ -82,6 +92,13 @@ export const CustomerEdit = (props: EditProps): React.ReactElement => {
           label="Temp Extension Expires At"
           source="tempExtensionExpiresAt"
         />
+        <ReferenceArrayInput source="tickets" reference="SupportTicket">
+          <SelectArrayInput
+            optionText={SupportTicketTitle}
+            parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+            format={(value: any) => value && value.map((v: any) => v.id)}
+          />
+        </ReferenceArrayInput>
         <ReferenceArrayInput source="tokens" reference="Token">
           <SelectArrayInput
             optionText={TokenTitle}

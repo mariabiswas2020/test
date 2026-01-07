@@ -38,6 +38,9 @@ import { ProductItemWhereUniqueInput } from "../../productItem/base/ProductItemW
 import { PopRechargeFindManyArgs } from "../../popRecharge/base/PopRechargeFindManyArgs";
 import { PopRecharge } from "../../popRecharge/base/PopRecharge";
 import { PopRechargeWhereUniqueInput } from "../../popRecharge/base/PopRechargeWhereUniqueInput";
+import { MikroTikRouterFindManyArgs } from "../../mikroTikRouter/base/MikroTikRouterFindManyArgs";
+import { MikroTikRouter } from "../../mikroTikRouter/base/MikroTikRouter";
+import { MikroTikRouterWhereUniqueInput } from "../../mikroTikRouter/base/MikroTikRouterWhereUniqueInput";
 
 @swagger.ApiBearerAuth()
 @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
@@ -93,6 +96,7 @@ export class PopControllerBase {
         },
 
         balance: true,
+        createdAt: true,
         id: true,
         name: true,
 
@@ -109,6 +113,7 @@ export class PopControllerBase {
         },
 
         type: true,
+        updatedAt: true,
       },
     });
   }
@@ -139,6 +144,7 @@ export class PopControllerBase {
         },
 
         balance: true,
+        createdAt: true,
         id: true,
         name: true,
 
@@ -155,6 +161,7 @@ export class PopControllerBase {
         },
 
         type: true,
+        updatedAt: true,
       },
     });
   }
@@ -184,6 +191,7 @@ export class PopControllerBase {
         },
 
         balance: true,
+        createdAt: true,
         id: true,
         name: true,
 
@@ -200,6 +208,7 @@ export class PopControllerBase {
         },
 
         type: true,
+        updatedAt: true,
       },
     });
     if (result === null) {
@@ -263,6 +272,7 @@ export class PopControllerBase {
           },
 
           balance: true,
+          createdAt: true,
           id: true,
           name: true,
 
@@ -279,6 +289,7 @@ export class PopControllerBase {
           },
 
           type: true,
+          updatedAt: true,
         },
       });
     } catch (error) {
@@ -318,6 +329,7 @@ export class PopControllerBase {
           },
 
           balance: true,
+          createdAt: true,
           id: true,
           name: true,
 
@@ -334,6 +346,7 @@ export class PopControllerBase {
           },
 
           type: true,
+          updatedAt: true,
         },
       });
     } catch (error) {
@@ -375,6 +388,7 @@ export class PopControllerBase {
         connectionDate: true,
         createdAt: true,
         customerId: true,
+        deletedAt: true,
         dueAmount: true,
         email: true,
         id: true,
@@ -497,9 +511,15 @@ export class PopControllerBase {
     const results = await this.service.findExpenses(params.id, {
       ...query,
       select: {
-        addedBy: true,
+        addedByUser: {
+          select: {
+            id: true,
+          },
+        },
+
         amount: true,
         category: true,
+        createdAt: true,
         date: true,
         id: true,
 
@@ -510,6 +530,7 @@ export class PopControllerBase {
         },
 
         title: true,
+        updatedAt: true,
       },
     });
     if (results === null) {
@@ -602,6 +623,7 @@ export class PopControllerBase {
     const results = await this.service.findProducts(params.id, {
       ...query,
       select: {
+        createdAt: true,
         id: true,
         isUsedProduct: true,
 
@@ -625,6 +647,7 @@ export class PopControllerBase {
 
         serialNumber: true,
         status: true,
+        updatedAt: true,
       },
     });
     if (results === null) {
@@ -718,10 +741,16 @@ export class PopControllerBase {
       ...query,
       select: {
         amount: true,
+        createdAt: true,
         date: true,
         id: true,
         method: true,
-        performedBy: true,
+
+        performedByUser: {
+          select: {
+            id: true,
+          },
+        },
 
         pop: {
           select: {
@@ -730,6 +759,7 @@ export class PopControllerBase {
         },
 
         reference: true,
+        updatedAt: true,
       },
     });
     if (results === null) {
@@ -807,6 +837,114 @@ export class PopControllerBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
+  @common.Get("/:id/routers")
+  @ApiNestedQuery(MikroTikRouterFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "MikroTikRouter",
+    action: "read",
+    possession: "any",
+  })
+  async findRouters(
+    @common.Req() request: Request,
+    @common.Param() params: PopWhereUniqueInput
+  ): Promise<MikroTikRouter[]> {
+    const query = plainToClass(MikroTikRouterFindManyArgs, request.query);
+    const results = await this.service.findRouters(params.id, {
+      ...query,
+      select: {
+        apiPassword: true,
+        apiPort: true,
+        apiUser: true,
+        createdAt: true,
+        host: true,
+        id: true,
+        isActive: true,
+        name: true,
+
+        pop: {
+          select: {
+            id: true,
+          },
+        },
+
+        updatedAt: true,
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        `No resource was found for ${JSON.stringify(params)}`
+      );
+    }
+    return results;
+  }
+
+  @common.Post("/:id/routers")
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "update",
+    possession: "any",
+  })
+  async connectRouters(
+    @common.Param() params: PopWhereUniqueInput,
+    @common.Body() body: MikroTikRouterWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      routers: {
+        connect: body,
+      },
+    };
+    await this.service.updatePop({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch("/:id/routers")
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "update",
+    possession: "any",
+  })
+  async updateRouters(
+    @common.Param() params: PopWhereUniqueInput,
+    @common.Body() body: MikroTikRouterWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      routers: {
+        set: body,
+      },
+    };
+    await this.service.updatePop({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete("/:id/routers")
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "update",
+    possession: "any",
+  })
+  async disconnectRouters(
+    @common.Param() params: PopWhereUniqueInput,
+    @common.Body() body: MikroTikRouterWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      routers: {
+        disconnect: body,
+      },
+    };
+    await this.service.updatePop({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id/subPops")
   @ApiNestedQuery(PopFindManyArgs)
   @nestAccessControl.UseRoles({
@@ -831,6 +969,7 @@ export class PopControllerBase {
         },
 
         balance: true,
+        createdAt: true,
         id: true,
         name: true,
 
@@ -847,6 +986,7 @@ export class PopControllerBase {
         },
 
         type: true,
+        updatedAt: true,
       },
     });
     if (results === null) {

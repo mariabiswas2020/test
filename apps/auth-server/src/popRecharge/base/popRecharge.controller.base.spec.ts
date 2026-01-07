@@ -19,33 +19,37 @@ const nonExistingId = "nonExistingId";
 const existingId = "existingId";
 const CREATE_INPUT = {
   amount: 42.424242424,
+  createdAt: new Date(),
   date: new Date(),
   id: "exampleId",
-  performedBy: "examplePerformedBy",
   reference: "exampleReference",
+  updatedAt: new Date(),
 };
 const CREATE_RESULT = {
   amount: 42.424242424,
+  createdAt: new Date(),
   date: new Date(),
   id: "exampleId",
-  performedBy: "examplePerformedBy",
   reference: "exampleReference",
+  updatedAt: new Date(),
 };
 const FIND_MANY_RESULT = [
   {
     amount: 42.424242424,
+    createdAt: new Date(),
     date: new Date(),
     id: "exampleId",
-    performedBy: "examplePerformedBy",
     reference: "exampleReference",
+    updatedAt: new Date(),
   },
 ];
 const FIND_ONE_RESULT = {
   amount: 42.424242424,
+  createdAt: new Date(),
   date: new Date(),
   id: "exampleId",
-  performedBy: "examplePerformedBy",
   reference: "exampleReference",
+  updatedAt: new Date(),
 };
 
 const service = {
@@ -130,7 +134,9 @@ describe("PopRecharge", () => {
       .expect(HttpStatus.CREATED)
       .expect({
         ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
         date: CREATE_RESULT.date.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
       });
   });
 
@@ -141,7 +147,9 @@ describe("PopRecharge", () => {
       .expect([
         {
           ...FIND_MANY_RESULT[0],
+          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
           date: FIND_MANY_RESULT[0].date.toISOString(),
+          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
         },
       ]);
   });
@@ -163,7 +171,9 @@ describe("PopRecharge", () => {
       .expect(HttpStatus.OK)
       .expect({
         ...FIND_ONE_RESULT,
+        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
         date: FIND_ONE_RESULT.date.toISOString(),
+        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
       });
   });
 
@@ -175,7 +185,9 @@ describe("PopRecharge", () => {
       .expect(HttpStatus.CREATED)
       .expect({
         ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
         date: CREATE_RESULT.date.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
       })
       .then(function () {
         agent

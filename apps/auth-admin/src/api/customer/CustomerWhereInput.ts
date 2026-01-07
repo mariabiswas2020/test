@@ -5,10 +5,12 @@ import { BillSheetListRelationFilter } from "../billSheet/BillSheetListRelationF
 import { IntFilter } from "../../util/IntFilter";
 import { DateTimeFilter } from "../../util/DateTimeFilter";
 import { StringFilter } from "../../util/StringFilter";
+import { DateTimeNullableFilter } from "../../util/DateTimeNullableFilter";
 import { PackageModelWhereUniqueInput } from "../packageModel/PackageModelWhereUniqueInput";
 import { PopWhereUniqueInput } from "../pop/PopWhereUniqueInput";
+import { CustomerSessionListRelationFilter } from "../customerSession/CustomerSessionListRelationFilter";
 import { BooleanFilter } from "../../util/BooleanFilter";
-import { DateTimeNullableFilter } from "../../util/DateTimeNullableFilter";
+import { SupportTicketListRelationFilter } from "../supportTicket/SupportTicketListRelationFilter";
 import { TokenListRelationFilter } from "../token/TokenListRelationFilter";
 import { TransactionListRelationFilter } from "../transaction/TransactionListRelationFilter";
 
@@ -21,6 +23,7 @@ export type CustomerWhereInput = {
   connectionDate?: DateTimeFilter;
   createdAt?: DateTimeFilter;
   customerId?: StringFilter;
+  deletedAt?: DateTimeNullableFilter;
   dueAmount?: DecimalFilter;
   email?: StringNullableFilter;
   id?: StringFilter;
@@ -35,6 +38,7 @@ export type CustomerWhereInput = {
   pop?: PopWhereUniqueInput;
   pppoePassword?: StringNullableFilter;
   pppoeUsername?: StringNullableFilter;
+  sessions?: CustomerSessionListRelationFilter;
   status?:
     | "ACTIVE"
     | "INACTIVE"
@@ -44,6 +48,7 @@ export type CustomerWhereInput = {
     | "DISCONNECTED";
   tempExtensionActive?: BooleanFilter;
   tempExtensionExpiresAt?: DateTimeNullableFilter;
+  tickets?: SupportTicketListRelationFilter;
   tokens?: TokenListRelationFilter;
   transactions?: TransactionListRelationFilter;
   updatedAt?: DateTimeFilter;

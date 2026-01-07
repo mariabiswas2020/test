@@ -19,6 +19,7 @@ import { PopTitle } from "./PopTitle";
 import { ProductItemTitle } from "../productItem/ProductItemTitle";
 import { PopRechargeTitle } from "../popRecharge/PopRechargeTitle";
 import { ResellerTitle } from "../reseller/ResellerTitle";
+import { MikroTikRouterTitle } from "../mikroTikRouter/MikroTikRouterTitle";
 
 export const PopEdit = (props: EditProps): React.ReactElement => {
   return (
@@ -72,6 +73,13 @@ export const PopEdit = (props: EditProps): React.ReactElement => {
         >
           <SelectInput optionText={ResellerTitle} />
         </ReferenceInput>
+        <ReferenceArrayInput source="routers" reference="MikroTikRouter">
+          <SelectArrayInput
+            optionText={MikroTikRouterTitle}
+            parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+            format={(value: any) => value && value.map((v: any) => v.id)}
+          />
+        </ReferenceArrayInput>
         <ReferenceArrayInput source="subPops" reference="Pop">
           <SelectArrayInput
             optionText={PopTitle}

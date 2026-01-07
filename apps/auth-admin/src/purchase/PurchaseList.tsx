@@ -19,6 +19,7 @@ export const PurchaseList = (props: ListProps): React.ReactElement => {
       pagination={<Pagination />}
     >
       <Datagrid rowClick="show" bulkActionButtons={false}>
+        <DateField source="createdAt" label="Created At" />
         <DateField source="date" label="Date" />
         <TextField label="ID" source="id" />
         <TextField label="Invoice No" source="invoiceNo" />
@@ -29,7 +30,8 @@ export const PurchaseList = (props: ListProps): React.ReactElement => {
         >
           <TextField source={SUPPLIER_TITLE_FIELD} />
         </ReferenceField>
-        <TextField label="Total Amount" source="totalAmount" />{" "}
+        <TextField label="Total Amount" source="totalAmount" />
+        <DateField source="updatedAt" label="Updated At" />{" "}
       </Datagrid>
     </List>
   );

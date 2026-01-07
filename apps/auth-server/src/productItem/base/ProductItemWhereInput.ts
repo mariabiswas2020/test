@@ -11,9 +11,10 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { StringFilter } from "../../util/StringFilter";
+import { DateTimeFilter } from "../../util/DateTimeFilter";
 import { Type } from "class-transformer";
 import { IsOptional, ValidateNested, IsEnum } from "class-validator";
+import { StringFilter } from "../../util/StringFilter";
 import { BooleanFilter } from "../../util/BooleanFilter";
 import { PopWhereUniqueInput } from "../../pop/base/PopWhereUniqueInput";
 import { ProductWhereUniqueInput } from "../../product/base/ProductWhereUniqueInput";
@@ -22,6 +23,17 @@ import { EnumProductItemStatus } from "./EnumProductItemStatus";
 
 @InputType()
 class ProductItemWhereInput {
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
+  @Type(() => DateTimeFilter)
+  @IsOptional()
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
+  createdAt?: DateTimeFilter;
+
   @ApiProperty({
     required: false,
     type: StringFilter,
@@ -101,6 +113,17 @@ class ProductItemWhereInput {
     nullable: true,
   })
   status?: "IN_STOCK" | "SOLD" | "DEPLOYED" | "RETURNED" | "DAMAGED";
+
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
+  @Type(() => DateTimeFilter)
+  @IsOptional()
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
+  updatedAt?: DateTimeFilter;
 }
 
 export { ProductItemWhereInput as ProductItemWhereInput };

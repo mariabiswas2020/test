@@ -34,6 +34,8 @@ import { ProductItemFindManyArgs } from "../../productItem/base/ProductItemFindM
 import { ProductItem } from "../../productItem/base/ProductItem";
 import { PopRechargeFindManyArgs } from "../../popRecharge/base/PopRechargeFindManyArgs";
 import { PopRecharge } from "../../popRecharge/base/PopRecharge";
+import { MikroTikRouterFindManyArgs } from "../../mikroTikRouter/base/MikroTikRouterFindManyArgs";
+import { MikroTikRouter } from "../../mikroTikRouter/base/MikroTikRouter";
 import { Area } from "../../area/base/Area";
 import { Reseller } from "../../reseller/base/Reseller";
 import { PopService } from "../pop.service";
@@ -254,6 +256,26 @@ export class PopResolverBase {
     @graphql.Args() args: PopRechargeFindManyArgs
   ): Promise<PopRecharge[]> {
     const results = await this.service.findRechargeHistory(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [MikroTikRouter], { name: "routers" })
+  @nestAccessControl.UseRoles({
+    resource: "MikroTikRouter",
+    action: "read",
+    possession: "any",
+  })
+  async findRouters(
+    @graphql.Parent() parent: Pop,
+    @graphql.Args() args: MikroTikRouterFindManyArgs
+  ): Promise<MikroTikRouter[]> {
+    const results = await this.service.findRouters(parent.id, args);
 
     if (!results) {
       return [];

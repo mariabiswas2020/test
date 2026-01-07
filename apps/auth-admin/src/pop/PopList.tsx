@@ -5,6 +5,7 @@ import {
   ListProps,
   TextField,
   ReferenceField,
+  DateField,
 } from "react-admin";
 import Pagination from "../Components/Pagination";
 import { AREA_TITLE_FIELD } from "../area/AreaTitle";
@@ -20,6 +21,7 @@ export const PopList = (props: ListProps): React.ReactElement => {
           <TextField source={AREA_TITLE_FIELD} />
         </ReferenceField>
         <TextField label="Balance" source="balance" />
+        <DateField source="createdAt" label="Created At" />
         <TextField label="ID" source="id" />
         <TextField label="Name" source="name" />
         <ReferenceField label="Parent Pop" source="pop.id" reference="Pop">
@@ -32,7 +34,8 @@ export const PopList = (props: ListProps): React.ReactElement => {
         >
           <TextField source={RESELLER_TITLE_FIELD} />
         </ReferenceField>
-        <TextField label="Type" source="type" />{" "}
+        <TextField label="Type" source="type" />
+        <DateField source="updatedAt" label="Updated At" />{" "}
       </Datagrid>
     </List>
   );

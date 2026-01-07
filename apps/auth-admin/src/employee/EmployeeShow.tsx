@@ -14,11 +14,13 @@ export const EmployeeShow = (props: ShowProps): React.ReactElement => {
     <Show {...props}>
       <SimpleShowLayout>
         <TextField label="Address" source="address" />
+        <DateField source="createdAt" label="Created At" />
         <TextField label="Designation" source="designation" />
         <TextField label="ID" source="id" />
         <DateField source="joinDate" label="Join Date" />
         <TextField label="Nid" source="nid" />
         <TextField label="Salary" source="salary" />
+        <DateField source="updatedAt" label="Updated At" />
         <ReferenceField label="User" source="user.id" reference="User">
           <TextField source={USER_TITLE_FIELD} />
         </ReferenceField>

@@ -12,6 +12,7 @@ https://docs.amplication.com/how-to/custom-code
 import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import {
+  IsDate,
   IsString,
   IsBoolean,
   ValidateNested,
@@ -19,14 +20,22 @@ import {
   MaxLength,
   IsEnum,
 } from "class-validator";
-import { Pop } from "../../pop/base/Pop";
 import { Type } from "class-transformer";
+import { Pop } from "../../pop/base/Pop";
 import { Product } from "../../product/base/Product";
 import { Purchase } from "../../purchase/base/Purchase";
 import { EnumProductItemStatus } from "./EnumProductItemStatus";
 
 @ObjectType()
 class ProductItem {
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  createdAt!: Date;
+
   @ApiProperty({
     required: true,
     type: String,
@@ -87,6 +96,14 @@ class ProductItem {
     nullable: true,
   })
   status?: "IN_STOCK" | "SOLD" | "DEPLOYED" | "RETURNED" | "DAMAGED";
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  updatedAt!: Date;
 }
 
 export { ProductItem as ProductItem };

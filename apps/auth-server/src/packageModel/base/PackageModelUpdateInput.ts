@@ -23,6 +23,7 @@ import {
 } from "class-validator";
 import { Type } from "class-transformer";
 import { Decimal } from "decimal.js";
+import { ResellerPackageUpdateManyWithoutPackageModelsInput } from "./ResellerPackageUpdateManyWithoutPackageModelsInput";
 import { EnumPackageModelType } from "./EnumPackageModelType";
 
 @InputType()
@@ -74,6 +75,18 @@ class PackageModelUpdateInput {
     nullable: true,
   })
   price?: Decimal;
+
+  @ApiProperty({
+    required: false,
+    type: () => ResellerPackageUpdateManyWithoutPackageModelsInput,
+  })
+  @ValidateNested()
+  @Type(() => ResellerPackageUpdateManyWithoutPackageModelsInput)
+  @IsOptional()
+  @Field(() => ResellerPackageUpdateManyWithoutPackageModelsInput, {
+    nullable: true,
+  })
+  resellerPricing?: ResellerPackageUpdateManyWithoutPackageModelsInput;
 
   @ApiProperty({
     required: false,

@@ -4,14 +4,15 @@ import {
   Create,
   SimpleForm,
   CreateProps,
-  NumberInput,
-  TextInput,
   ReferenceArrayInput,
   SelectArrayInput,
+  NumberInput,
+  TextInput,
   ReferenceInput,
   SelectInput,
 } from "react-admin";
 
+import { ResellerPackageTitle } from "../resellerPackage/ResellerPackageTitle";
 import { PopTitle } from "../pop/PopTitle";
 import { ResellerRechargeLogTitle } from "../resellerRechargeLog/ResellerRechargeLogTitle";
 import { UserTitle } from "../user/UserTitle";
@@ -20,6 +21,16 @@ export const ResellerCreate = (props: CreateProps): React.ReactElement => {
   return (
     <Create {...props}>
       <SimpleForm>
+        <ReferenceArrayInput
+          source="assignedPackages"
+          reference="ResellerPackage"
+        >
+          <SelectArrayInput
+            optionText={ResellerPackageTitle}
+            parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+            format={(value: any) => value && value.map((v: any) => v.id)}
+          />
+        </ReferenceArrayInput>
         <NumberInput label="Balance" source="balance" />
         <TextInput label="Business Name" source="businessName" />
         <ReferenceArrayInput source="pops" reference="Pop">

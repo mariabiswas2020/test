@@ -29,6 +29,9 @@ import { PackageModelUpdateInput } from "./PackageModelUpdateInput";
 import { CustomerFindManyArgs } from "../../customer/base/CustomerFindManyArgs";
 import { Customer } from "../../customer/base/Customer";
 import { CustomerWhereUniqueInput } from "../../customer/base/CustomerWhereUniqueInput";
+import { ResellerPackageFindManyArgs } from "../../resellerPackage/base/ResellerPackageFindManyArgs";
+import { ResellerPackage } from "../../resellerPackage/base/ResellerPackage";
+import { ResellerPackageWhereUniqueInput } from "../../resellerPackage/base/ResellerPackageWhereUniqueInput";
 
 @swagger.ApiBearerAuth()
 @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
@@ -57,12 +60,14 @@ export class PackageModelControllerBase {
     return await this.service.createPackageModel({
       data: data,
       select: {
+        createdAt: true,
         id: true,
         mikroTikProfile: true,
         name: true,
         price: true,
         speed: true,
         type: true,
+        updatedAt: true,
       },
     });
   }
@@ -84,12 +89,14 @@ export class PackageModelControllerBase {
     return this.service.packageModels({
       ...args,
       select: {
+        createdAt: true,
         id: true,
         mikroTikProfile: true,
         name: true,
         price: true,
         speed: true,
         type: true,
+        updatedAt: true,
       },
     });
   }
@@ -112,12 +119,14 @@ export class PackageModelControllerBase {
     const result = await this.service.packageModel({
       where: params,
       select: {
+        createdAt: true,
         id: true,
         mikroTikProfile: true,
         name: true,
         price: true,
         speed: true,
         type: true,
+        updatedAt: true,
       },
     });
     if (result === null) {
@@ -152,12 +161,14 @@ export class PackageModelControllerBase {
         where: params,
         data: data,
         select: {
+          createdAt: true,
           id: true,
           mikroTikProfile: true,
           name: true,
           price: true,
           speed: true,
           type: true,
+          updatedAt: true,
         },
       });
     } catch (error) {
@@ -188,12 +199,14 @@ export class PackageModelControllerBase {
       return await this.service.deletePackageModel({
         where: params,
         select: {
+          createdAt: true,
           id: true,
           mikroTikProfile: true,
           name: true,
           price: true,
           speed: true,
           type: true,
+          updatedAt: true,
         },
       });
     } catch (error) {
@@ -235,6 +248,7 @@ export class PackageModelControllerBase {
         connectionDate: true,
         createdAt: true,
         customerId: true,
+        deletedAt: true,
         dueAmount: true,
         email: true,
         id: true,
@@ -331,6 +345,116 @@ export class PackageModelControllerBase {
   ): Promise<void> {
     const data = {
       customers: {
+        disconnect: body,
+      },
+    };
+    await this.service.updatePackageModel({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @common.Get("/:id/resellerPricing")
+  @ApiNestedQuery(ResellerPackageFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "ResellerPackage",
+    action: "read",
+    possession: "any",
+  })
+  async findResellerPricing(
+    @common.Req() request: Request,
+    @common.Param() params: PackageModelWhereUniqueInput
+  ): Promise<ResellerPackage[]> {
+    const query = plainToClass(ResellerPackageFindManyArgs, request.query);
+    const results = await this.service.findResellerPricing(params.id, {
+      ...query,
+      select: {
+        createdAt: true,
+        id: true,
+        isActive: true,
+
+        packageField: {
+          select: {
+            id: true,
+          },
+        },
+
+        reseller: {
+          select: {
+            id: true,
+          },
+        },
+
+        updatedAt: true,
+        wholesalePrice: true,
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        `No resource was found for ${JSON.stringify(params)}`
+      );
+    }
+    return results;
+  }
+
+  @common.Post("/:id/resellerPricing")
+  @nestAccessControl.UseRoles({
+    resource: "PackageModel",
+    action: "update",
+    possession: "any",
+  })
+  async connectResellerPricing(
+    @common.Param() params: PackageModelWhereUniqueInput,
+    @common.Body() body: ResellerPackageWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      resellerPricing: {
+        connect: body,
+      },
+    };
+    await this.service.updatePackageModel({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch("/:id/resellerPricing")
+  @nestAccessControl.UseRoles({
+    resource: "PackageModel",
+    action: "update",
+    possession: "any",
+  })
+  async updateResellerPricing(
+    @common.Param() params: PackageModelWhereUniqueInput,
+    @common.Body() body: ResellerPackageWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      resellerPricing: {
+        set: body,
+      },
+    };
+    await this.service.updatePackageModel({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete("/:id/resellerPricing")
+  @nestAccessControl.UseRoles({
+    resource: "PackageModel",
+    action: "update",
+    possession: "any",
+  })
+  async disconnectResellerPricing(
+    @common.Param() params: PackageModelWhereUniqueInput,
+    @common.Body() body: ResellerPackageWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      resellerPricing: {
         disconnect: body,
       },
     };

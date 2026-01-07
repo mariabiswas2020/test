@@ -18,14 +18,15 @@ import {
   IsDate,
   IsString,
   IsEnum,
-  MaxLength,
-  IsOptional,
   ValidateNested,
+  IsOptional,
+  MaxLength,
 } from "class-validator";
 
 import { Decimal } from "decimal.js";
 import { Type } from "class-transformer";
 import { EnumPopRechargeMethod } from "./EnumPopRechargeMethod";
+import { User } from "../../user/base/User";
 import { Pop } from "../../pop/base/Pop";
 
 @ObjectType()
@@ -38,6 +39,14 @@ class PopRecharge {
   @Max(99999999999)
   @Field(() => Float)
   amount!: Decimal;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  createdAt!: Date;
 
   @ApiProperty({
     required: true,
@@ -67,15 +76,12 @@ class PopRecharge {
 
   @ApiProperty({
     required: false,
-    type: String,
+    type: () => User,
   })
-  @IsString()
-  @MaxLength(256)
+  @ValidateNested()
+  @Type(() => User)
   @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  performedBy!: string | null;
+  performedByUser?: User | null;
 
   @ApiProperty({
     required: true,
@@ -96,6 +102,14 @@ class PopRecharge {
     nullable: true,
   })
   reference!: string | null;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  updatedAt!: Date;
 }
 
 export { PopRecharge as PopRecharge };

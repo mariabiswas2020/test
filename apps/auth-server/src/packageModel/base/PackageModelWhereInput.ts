@@ -11,16 +11,29 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { CustomerListRelationFilter } from "../../customer/base/CustomerListRelationFilter";
-import { ValidateNested, IsOptional, IsEnum } from "class-validator";
+import { DateTimeFilter } from "../../util/DateTimeFilter";
 import { Type } from "class-transformer";
+import { IsOptional, ValidateNested, IsEnum } from "class-validator";
+import { CustomerListRelationFilter } from "../../customer/base/CustomerListRelationFilter";
 import { StringFilter } from "../../util/StringFilter";
 import { StringNullableFilter } from "../../util/StringNullableFilter";
 import { DecimalFilter } from "../../util/DecimalFilter";
+import { ResellerPackageListRelationFilter } from "../../resellerPackage/base/ResellerPackageListRelationFilter";
 import { EnumPackageModelType } from "./EnumPackageModelType";
 
 @InputType()
 class PackageModelWhereInput {
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
+  @Type(() => DateTimeFilter)
+  @IsOptional()
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
+  createdAt?: DateTimeFilter;
+
   @ApiProperty({
     required: false,
     type: () => CustomerListRelationFilter,
@@ -79,6 +92,18 @@ class PackageModelWhereInput {
 
   @ApiProperty({
     required: false,
+    type: () => ResellerPackageListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => ResellerPackageListRelationFilter)
+  @IsOptional()
+  @Field(() => ResellerPackageListRelationFilter, {
+    nullable: true,
+  })
+  resellerPricing?: ResellerPackageListRelationFilter;
+
+  @ApiProperty({
+    required: false,
     type: StringNullableFilter,
   })
   @Type(() => StringNullableFilter)
@@ -98,6 +123,17 @@ class PackageModelWhereInput {
     nullable: true,
   })
   type?: "RETAIL" | "WHOLESALE";
+
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
+  @Type(() => DateTimeFilter)
+  @IsOptional()
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
+  updatedAt?: DateTimeFilter;
 }
 
 export { PackageModelWhereInput as PackageModelWhereInput };

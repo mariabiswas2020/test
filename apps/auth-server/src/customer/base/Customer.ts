@@ -31,7 +31,9 @@ import { Decimal } from "decimal.js";
 import { BillSheet } from "../../billSheet/base/BillSheet";
 import { PackageModel } from "../../packageModel/base/PackageModel";
 import { Pop } from "../../pop/base/Pop";
+import { CustomerSession } from "../../customerSession/base/CustomerSession";
 import { EnumCustomerStatus } from "./EnumCustomerStatus";
+import { SupportTicket } from "../../supportTicket/base/SupportTicket";
 import { Token } from "../../token/base/Token";
 import { Transaction } from "../../transaction/base/Transaction";
 
@@ -109,6 +111,17 @@ class Customer {
   @MaxLength(256)
   @Field(() => String)
   customerId!: string;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  @Field(() => Date, {
+    nullable: true,
+  })
+  deletedAt!: Date | null;
 
   @ApiProperty({
     required: true,
@@ -255,6 +268,15 @@ class Customer {
   pppoeUsername!: string | null;
 
   @ApiProperty({
+    required: false,
+    type: () => [CustomerSession],
+  })
+  @ValidateNested()
+  @Type(() => CustomerSession)
+  @IsOptional()
+  sessions?: Array<CustomerSession>;
+
+  @ApiProperty({
     required: true,
     enum: EnumCustomerStatus,
   })
@@ -288,6 +310,15 @@ class Customer {
     nullable: true,
   })
   tempExtensionExpiresAt!: Date | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => [SupportTicket],
+  })
+  @ValidateNested()
+  @Type(() => SupportTicket)
+  @IsOptional()
+  tickets?: Array<SupportTicket>;
 
   @ApiProperty({
     required: false,

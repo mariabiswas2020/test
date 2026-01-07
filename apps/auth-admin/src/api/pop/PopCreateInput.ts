@@ -6,6 +6,7 @@ import { PopWhereUniqueInput } from "./PopWhereUniqueInput";
 import { ProductItemCreateNestedManyWithoutPopsInput } from "./ProductItemCreateNestedManyWithoutPopsInput";
 import { PopRechargeCreateNestedManyWithoutPopsInput } from "./PopRechargeCreateNestedManyWithoutPopsInput";
 import { ResellerWhereUniqueInput } from "../reseller/ResellerWhereUniqueInput";
+import { MikroTikRouterCreateNestedManyWithoutPopsInput } from "./MikroTikRouterCreateNestedManyWithoutPopsInput";
 import { PopCreateNestedManyWithoutPopsInput } from "./PopCreateNestedManyWithoutPopsInput";
 
 export type PopCreateInput = {
@@ -19,6 +20,7 @@ export type PopCreateInput = {
   products?: ProductItemCreateNestedManyWithoutPopsInput;
   rechargeHistory?: PopRechargeCreateNestedManyWithoutPopsInput;
   reseller?: ResellerWhereUniqueInput | null;
+  routers?: MikroTikRouterCreateNestedManyWithoutPopsInput;
   subPops?: PopCreateNestedManyWithoutPopsInput;
   type: "MAIN" | "RESELLER" | "SUB_POP";
 };

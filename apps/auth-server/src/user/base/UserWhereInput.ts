@@ -11,23 +11,44 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { ActivityLogListRelationFilter } from "../../activityLog/base/ActivityLogListRelationFilter";
+import { AccountListRelationFilter } from "../../account/base/AccountListRelationFilter";
 import { ValidateNested, IsOptional, IsEnum } from "class-validator";
 import { Type } from "class-transformer";
+import { ActivityLogListRelationFilter } from "../../activityLog/base/ActivityLogListRelationFilter";
+import { SupportTicketListRelationFilter } from "../../supportTicket/base/SupportTicketListRelationFilter";
 import { TransactionListRelationFilter } from "../../transaction/base/TransactionListRelationFilter";
 import { DateTimeFilter } from "../../util/DateTimeFilter";
 import { StringNullableFilter } from "../../util/StringNullableFilter";
+import { DateTimeNullableFilter } from "../../util/DateTimeNullableFilter";
 import { EmployeeWhereUniqueInput } from "../../employee/base/EmployeeWhereUniqueInput";
+import { ExpenseListRelationFilter } from "../../expense/base/ExpenseListRelationFilter";
 import { StringFilter } from "../../util/StringFilter";
+import { InvoiceListRelationFilter } from "../../invoice/base/InvoiceListRelationFilter";
 import { BooleanFilter } from "../../util/BooleanFilter";
 import { MarketingLeadListRelationFilter } from "../../marketingLead/base/MarketingLeadListRelationFilter";
-import { JsonFilter } from "../../util/JsonFilter";
+import { UserPermissionListRelationFilter } from "../../userPermission/base/UserPermissionListRelationFilter";
+import { PopRechargeListRelationFilter } from "../../popRecharge/base/PopRechargeListRelationFilter";
 import { ResellerWhereUniqueInput } from "../../reseller/base/ResellerWhereUniqueInput";
 import { EnumUserRoles } from "./EnumUserRoles";
+import { SessionListRelationFilter } from "../../session/base/SessionListRelationFilter";
+import { SubscriptionListRelationFilter } from "../../subscription/base/SubscriptionListRelationFilter";
 import { TokenListRelationFilter } from "../../token/base/TokenListRelationFilter";
+import { UsageListRelationFilter } from "../../usage/base/UsageListRelationFilter";
 
 @InputType()
 class UserWhereInput {
+  @ApiProperty({
+    required: false,
+    type: () => AccountListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => AccountListRelationFilter)
+  @IsOptional()
+  @Field(() => AccountListRelationFilter, {
+    nullable: true,
+  })
+  accounts?: AccountListRelationFilter;
+
   @ApiProperty({
     required: false,
     type: () => ActivityLogListRelationFilter,
@@ -39,6 +60,18 @@ class UserWhereInput {
     nullable: true,
   })
   activityLogs?: ActivityLogListRelationFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => SupportTicketListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => SupportTicketListRelationFilter)
+  @IsOptional()
+  @Field(() => SupportTicketListRelationFilter, {
+    nullable: true,
+  })
+  assignedTickets?: SupportTicketListRelationFilter;
 
   @ApiProperty({
     required: false,
@@ -76,6 +109,17 @@ class UserWhereInput {
 
   @ApiProperty({
     required: false,
+    type: DateTimeNullableFilter,
+  })
+  @Type(() => DateTimeNullableFilter)
+  @IsOptional()
+  @Field(() => DateTimeNullableFilter, {
+    nullable: true,
+  })
+  emailVerified?: DateTimeNullableFilter;
+
+  @ApiProperty({
+    required: false,
     type: () => EmployeeWhereUniqueInput,
   })
   @ValidateNested()
@@ -85,6 +129,18 @@ class UserWhereInput {
     nullable: true,
   })
   employeeProfile?: EmployeeWhereUniqueInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => ExpenseListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => ExpenseListRelationFilter)
+  @IsOptional()
+  @Field(() => ExpenseListRelationFilter, {
+    nullable: true,
+  })
+  expenses?: ExpenseListRelationFilter;
 
   @ApiProperty({
     required: false,
@@ -107,6 +163,29 @@ class UserWhereInput {
     nullable: true,
   })
   id?: StringFilter;
+
+  @ApiProperty({
+    required: false,
+    type: StringNullableFilter,
+  })
+  @Type(() => StringNullableFilter)
+  @IsOptional()
+  @Field(() => StringNullableFilter, {
+    nullable: true,
+  })
+  image?: StringNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => InvoiceListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => InvoiceListRelationFilter)
+  @IsOptional()
+  @Field(() => InvoiceListRelationFilter, {
+    nullable: true,
+  })
+  invoices?: InvoiceListRelationFilter;
 
   @ApiProperty({
     required: false,
@@ -144,14 +223,37 @@ class UserWhereInput {
 
   @ApiProperty({
     required: false,
-    type: JsonFilter,
+    type: StringNullableFilter,
   })
-  @Type(() => JsonFilter)
+  @Type(() => StringNullableFilter)
   @IsOptional()
-  @Field(() => JsonFilter, {
+  @Field(() => StringNullableFilter, {
     nullable: true,
   })
-  permissionRoutes?: JsonFilter;
+  name?: StringNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: StringNullableFilter,
+  })
+  @Type(() => StringNullableFilter)
+  @IsOptional()
+  @Field(() => StringNullableFilter, {
+    nullable: true,
+  })
+  password?: StringNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => UserPermissionListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => UserPermissionListRelationFilter)
+  @IsOptional()
+  @Field(() => UserPermissionListRelationFilter, {
+    nullable: true,
+  })
+  permissions?: UserPermissionListRelationFilter;
 
   @ApiProperty({
     required: false,
@@ -163,6 +265,18 @@ class UserWhereInput {
     nullable: true,
   })
   phone?: StringNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => PopRechargeListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => PopRechargeListRelationFilter)
+  @IsOptional()
+  @Field(() => PopRechargeListRelationFilter, {
+    nullable: true,
+  })
+  popRecharges?: PopRechargeListRelationFilter;
 
   @ApiProperty({
     required: false,
@@ -186,6 +300,8 @@ class UserWhereInput {
     nullable: true,
   })
   roles?:
+    | "USER"
+    | "ADMIN"
     | "SUPER_ADMIN"
     | "MANAGER"
     | "ACCOUNTANT"
@@ -195,6 +311,30 @@ class UserWhereInput {
     | "MARKETING_AGENT"
     | "RESELLER"
     | "SUB_RESELLER";
+
+  @ApiProperty({
+    required: false,
+    type: () => SessionListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => SessionListRelationFilter)
+  @IsOptional()
+  @Field(() => SessionListRelationFilter, {
+    nullable: true,
+  })
+  sessions?: SessionListRelationFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => SubscriptionListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => SubscriptionListRelationFilter)
+  @IsOptional()
+  @Field(() => SubscriptionListRelationFilter, {
+    nullable: true,
+  })
+  subscriptions?: SubscriptionListRelationFilter;
 
   @ApiProperty({
     required: false,
@@ -210,6 +350,18 @@ class UserWhereInput {
 
   @ApiProperty({
     required: false,
+    type: () => SupportTicketListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => SupportTicketListRelationFilter)
+  @IsOptional()
+  @Field(() => SupportTicketListRelationFilter, {
+    nullable: true,
+  })
+  tickets?: SupportTicketListRelationFilter;
+
+  @ApiProperty({
+    required: false,
     type: DateTimeFilter,
   })
   @Type(() => DateTimeFilter)
@@ -221,14 +373,26 @@ class UserWhereInput {
 
   @ApiProperty({
     required: false,
-    type: StringFilter,
+    type: () => UsageListRelationFilter,
   })
-  @Type(() => StringFilter)
+  @ValidateNested()
+  @Type(() => UsageListRelationFilter)
   @IsOptional()
-  @Field(() => StringFilter, {
+  @Field(() => UsageListRelationFilter, {
     nullable: true,
   })
-  username?: StringFilter;
+  usages?: UsageListRelationFilter;
+
+  @ApiProperty({
+    required: false,
+    type: StringNullableFilter,
+  })
+  @Type(() => StringNullableFilter)
+  @IsOptional()
+  @Field(() => StringNullableFilter, {
+    nullable: true,
+  })
+  username?: StringNullableFilter;
 }
 
 export { UserWhereInput as UserWhereInput };

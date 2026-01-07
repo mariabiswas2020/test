@@ -21,6 +21,7 @@ export const PurchaseShow = (props: ShowProps): React.ReactElement => {
   return (
     <Show {...props}>
       <SimpleShowLayout>
+        <DateField source="createdAt" label="Created At" />
         <DateField source="date" label="Date" />
         <TextField label="ID" source="id" />
         <TextField label="Invoice No" source="invoiceNo" />
@@ -32,6 +33,7 @@ export const PurchaseShow = (props: ShowProps): React.ReactElement => {
           <TextField source={SUPPLIER_TITLE_FIELD} />
         </ReferenceField>
         <TextField label="Total Amount" source="totalAmount" />
+        <DateField source="updatedAt" label="Updated At" />
         <ReferenceManyField
           reference="PurchaseItem"
           target="purchaseId"
@@ -63,6 +65,7 @@ export const PurchaseShow = (props: ShowProps): React.ReactElement => {
           label="ProductItems"
         >
           <Datagrid rowClick="show" bulkActionButtons={false}>
+            <DateField source="createdAt" label="Created At" />
             <TextField label="ID" source="id" />
             <BooleanField label="Is Used Product" source="isUsedProduct" />
             <ReferenceField
@@ -88,6 +91,7 @@ export const PurchaseShow = (props: ShowProps): React.ReactElement => {
             </ReferenceField>
             <TextField label="Serial Number" source="serialNumber" />
             <TextField label="Status" source="status" />
+            <DateField source="updatedAt" label="Updated At" />
           </Datagrid>
         </ReferenceManyField>
       </SimpleShowLayout>

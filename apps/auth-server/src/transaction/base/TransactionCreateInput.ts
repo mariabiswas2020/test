@@ -11,15 +11,18 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field, Float } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
+
 import {
   IsNumber,
   Max,
   ValidateNested,
   IsOptional,
+  IsDate,
   IsEnum,
   IsString,
   MaxLength,
 } from "class-validator";
+
 import { Decimal } from "decimal.js";
 import { UserWhereUniqueInput } from "../../user/base/UserWhereUniqueInput";
 import { Type } from "class-transformer";
@@ -58,6 +61,17 @@ class TransactionCreateInput {
   @Type(() => CustomerWhereUniqueInput)
   @Field(() => CustomerWhereUniqueInput)
   customer!: CustomerWhereUniqueInput;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  @Field(() => Date, {
+    nullable: true,
+  })
+  deletedAt?: Date | null;
 
   @ApiProperty({
     required: true,

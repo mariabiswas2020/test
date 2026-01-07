@@ -58,9 +58,11 @@ export class AreaControllerBase {
     return await this.service.createArea({
       data: data,
       select: {
+        createdAt: true,
         description: true,
         id: true,
         name: true,
+        updatedAt: true,
       },
     });
   }
@@ -82,9 +84,11 @@ export class AreaControllerBase {
     return this.service.areas({
       ...args,
       select: {
+        createdAt: true,
         description: true,
         id: true,
         name: true,
+        updatedAt: true,
       },
     });
   }
@@ -107,9 +111,11 @@ export class AreaControllerBase {
     const result = await this.service.area({
       where: params,
       select: {
+        createdAt: true,
         description: true,
         id: true,
         name: true,
+        updatedAt: true,
       },
     });
     if (result === null) {
@@ -144,9 +150,11 @@ export class AreaControllerBase {
         where: params,
         data: data,
         select: {
+          createdAt: true,
           description: true,
           id: true,
           name: true,
+          updatedAt: true,
         },
       });
     } catch (error) {
@@ -177,9 +185,11 @@ export class AreaControllerBase {
       return await this.service.deleteArea({
         where: params,
         select: {
+          createdAt: true,
           description: true,
           id: true,
           name: true,
+          updatedAt: true,
         },
       });
     } catch (error) {
@@ -221,6 +231,7 @@ export class AreaControllerBase {
         connectionDate: true,
         createdAt: true,
         customerId: true,
+        deletedAt: true,
         dueAmount: true,
         email: true,
         id: true,
@@ -352,6 +363,7 @@ export class AreaControllerBase {
         },
 
         balance: true,
+        createdAt: true,
         id: true,
         name: true,
 
@@ -368,6 +380,7 @@ export class AreaControllerBase {
         },
 
         type: true,
+        updatedAt: true,
       },
     });
     if (results === null) {

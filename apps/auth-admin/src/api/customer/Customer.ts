@@ -3,6 +3,8 @@ import { Decimal } from "decimal.js";
 import { BillSheet } from "../billSheet/BillSheet";
 import { PackageModel } from "../packageModel/PackageModel";
 import { Pop } from "../pop/Pop";
+import { CustomerSession } from "../customerSession/CustomerSession";
+import { SupportTicket } from "../supportTicket/SupportTicket";
 import { Token } from "../token/Token";
 import { Transaction } from "../transaction/Transaction";
 
@@ -15,6 +17,7 @@ export type Customer = {
   connectionDate: Date;
   createdAt: Date;
   customerId: string;
+  deletedAt: Date | null;
   dueAmount: Decimal;
   email: string | null;
   id: string;
@@ -29,6 +32,7 @@ export type Customer = {
   pop?: Pop;
   pppoePassword: string | null;
   pppoeUsername: string | null;
+  sessions?: Array<CustomerSession>;
   status?:
     | "ACTIVE"
     | "INACTIVE"
@@ -38,6 +42,7 @@ export type Customer = {
     | "DISCONNECTED";
   tempExtensionActive: boolean;
   tempExtensionExpiresAt: Date | null;
+  tickets?: Array<SupportTicket>;
   tokens?: Array<Token>;
   transactions?: Array<Transaction>;
   updatedAt: Date;

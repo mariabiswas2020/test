@@ -8,6 +8,7 @@ export type CustomerOrderByInput = {
   connectionDate?: SortOrder;
   createdAt?: SortOrder;
   customerId?: SortOrder;
+  deletedAt?: SortOrder;
   dueAmount?: SortOrder;
   email?: SortOrder;
   id?: SortOrder;

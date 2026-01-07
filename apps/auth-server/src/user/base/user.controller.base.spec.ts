@@ -20,10 +20,13 @@ const existingId = "existingId";
 const CREATE_INPUT = {
   createdAt: new Date(),
   email: "exampleEmail",
+  emailVerified: new Date(),
   firstName: "exampleFirstName",
   id: "exampleId",
+  image: "exampleImage",
   isActive: "true",
   lastName: "exampleLastName",
+  name: "exampleName",
   password: "examplePassword",
   phone: "examplePhone",
   updatedAt: new Date(),
@@ -32,10 +35,13 @@ const CREATE_INPUT = {
 const CREATE_RESULT = {
   createdAt: new Date(),
   email: "exampleEmail",
+  emailVerified: new Date(),
   firstName: "exampleFirstName",
   id: "exampleId",
+  image: "exampleImage",
   isActive: "true",
   lastName: "exampleLastName",
+  name: "exampleName",
   password: "examplePassword",
   phone: "examplePhone",
   updatedAt: new Date(),
@@ -45,10 +51,13 @@ const FIND_MANY_RESULT = [
   {
     createdAt: new Date(),
     email: "exampleEmail",
+    emailVerified: new Date(),
     firstName: "exampleFirstName",
     id: "exampleId",
+    image: "exampleImage",
     isActive: "true",
     lastName: "exampleLastName",
+    name: "exampleName",
     password: "examplePassword",
     phone: "examplePhone",
     updatedAt: new Date(),
@@ -58,10 +67,13 @@ const FIND_MANY_RESULT = [
 const FIND_ONE_RESULT = {
   createdAt: new Date(),
   email: "exampleEmail",
+  emailVerified: new Date(),
   firstName: "exampleFirstName",
   id: "exampleId",
+  image: "exampleImage",
   isActive: "true",
   lastName: "exampleLastName",
+  name: "exampleName",
   password: "examplePassword",
   phone: "examplePhone",
   updatedAt: new Date(),
@@ -151,6 +163,7 @@ describe("User", () => {
       .expect({
         ...CREATE_RESULT,
         createdAt: CREATE_RESULT.createdAt.toISOString(),
+        emailVerified: CREATE_RESULT.emailVerified.toISOString(),
         updatedAt: CREATE_RESULT.updatedAt.toISOString(),
       });
   });
@@ -163,6 +176,7 @@ describe("User", () => {
         {
           ...FIND_MANY_RESULT[0],
           createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
+          emailVerified: FIND_MANY_RESULT[0].emailVerified.toISOString(),
           updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
         },
       ]);
@@ -186,6 +200,7 @@ describe("User", () => {
       .expect({
         ...FIND_ONE_RESULT,
         createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
+        emailVerified: FIND_ONE_RESULT.emailVerified.toISOString(),
         updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
       });
   });
@@ -199,6 +214,7 @@ describe("User", () => {
       .expect({
         ...CREATE_RESULT,
         createdAt: CREATE_RESULT.createdAt.toISOString(),
+        emailVerified: CREATE_RESULT.emailVerified.toISOString(),
         updatedAt: CREATE_RESULT.updatedAt.toISOString(),
       })
       .then(function () {

@@ -20,36 +20,44 @@ const existingId = "existingId";
 const CREATE_INPUT = {
   amount: 42.424242424,
   date: new Date(),
+  deletedAt: new Date(),
   discount: 42.424242424,
   id: "exampleId",
   note: "exampleNote",
   trxId: "exampleTrxId",
+  updatedAt: new Date(),
 };
 const CREATE_RESULT = {
   amount: 42.424242424,
   date: new Date(),
+  deletedAt: new Date(),
   discount: 42.424242424,
   id: "exampleId",
   note: "exampleNote",
   trxId: "exampleTrxId",
+  updatedAt: new Date(),
 };
 const FIND_MANY_RESULT = [
   {
     amount: 42.424242424,
     date: new Date(),
+    deletedAt: new Date(),
     discount: 42.424242424,
     id: "exampleId",
     note: "exampleNote",
     trxId: "exampleTrxId",
+    updatedAt: new Date(),
   },
 ];
 const FIND_ONE_RESULT = {
   amount: 42.424242424,
   date: new Date(),
+  deletedAt: new Date(),
   discount: 42.424242424,
   id: "exampleId",
   note: "exampleNote",
   trxId: "exampleTrxId",
+  updatedAt: new Date(),
 };
 
 const service = {
@@ -135,6 +143,8 @@ describe("Transaction", () => {
       .expect({
         ...CREATE_RESULT,
         date: CREATE_RESULT.date.toISOString(),
+        deletedAt: CREATE_RESULT.deletedAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
       });
   });
 
@@ -146,6 +156,8 @@ describe("Transaction", () => {
         {
           ...FIND_MANY_RESULT[0],
           date: FIND_MANY_RESULT[0].date.toISOString(),
+          deletedAt: FIND_MANY_RESULT[0].deletedAt.toISOString(),
+          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
         },
       ]);
   });
@@ -168,6 +180,8 @@ describe("Transaction", () => {
       .expect({
         ...FIND_ONE_RESULT,
         date: FIND_ONE_RESULT.date.toISOString(),
+        deletedAt: FIND_ONE_RESULT.deletedAt.toISOString(),
+        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
       });
   });
 
@@ -180,6 +194,8 @@ describe("Transaction", () => {
       .expect({
         ...CREATE_RESULT,
         date: CREATE_RESULT.date.toISOString(),
+        deletedAt: CREATE_RESULT.deletedAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
       })
       .then(function () {
         agent

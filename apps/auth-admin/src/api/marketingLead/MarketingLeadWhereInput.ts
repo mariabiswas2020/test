@@ -16,4 +16,5 @@ export type MarketingLeadWhereInput = {
   proposedPackage?: StringNullableFilter;
   remarks?: StringNullableFilter;
   status?: "NEW" | "CONTACTED" | "SUCCESS" | "REJECTED";
+  updatedAt?: DateTimeFilter;
 };

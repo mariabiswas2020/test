@@ -8,5 +8,6 @@ export type BillSheet = {
   month: string;
   payable: Decimal;
   status?: "PAID" | "UNPAID" | "PARTIAL";
+  updatedAt: Date;
   year: number;
 };

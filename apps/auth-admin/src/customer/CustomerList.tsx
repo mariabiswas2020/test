@@ -33,6 +33,7 @@ export const CustomerList = (props: ListProps): React.ReactElement => {
         <DateField source="connectionDate" label="Connection Date" />
         <DateField source="createdAt" label="Created At" />
         <TextField label="Customer Id" source="customerId" />
+        <TextField label="Deleted At" source="deletedAt" />
         <TextField label="Due Amount" source="dueAmount" />
         <TextField label="Email" source="email" />
         <TextField label="ID" source="id" />

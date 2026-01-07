@@ -11,22 +11,35 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field, Float } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
+import { ResellerPackageCreateNestedManyWithoutResellersInput } from "./ResellerPackageCreateNestedManyWithoutResellersInput";
 import {
+  ValidateNested,
+  IsOptional,
   IsNumber,
   Max,
   IsString,
   MaxLength,
-  IsOptional,
-  ValidateNested,
 } from "class-validator";
+import { Type } from "class-transformer";
 import { Decimal } from "decimal.js";
 import { PopCreateNestedManyWithoutResellersInput } from "./PopCreateNestedManyWithoutResellersInput";
-import { Type } from "class-transformer";
 import { ResellerRechargeLogCreateNestedManyWithoutResellersInput } from "./ResellerRechargeLogCreateNestedManyWithoutResellersInput";
 import { UserWhereUniqueInput } from "../../user/base/UserWhereUniqueInput";
 
 @InputType()
 class ResellerCreateInput {
+  @ApiProperty({
+    required: false,
+    type: () => ResellerPackageCreateNestedManyWithoutResellersInput,
+  })
+  @ValidateNested()
+  @Type(() => ResellerPackageCreateNestedManyWithoutResellersInput)
+  @IsOptional()
+  @Field(() => ResellerPackageCreateNestedManyWithoutResellersInput, {
+    nullable: true,
+  })
+  assignedPackages?: ResellerPackageCreateNestedManyWithoutResellersInput;
+
   @ApiProperty({
     required: true,
     type: Number,

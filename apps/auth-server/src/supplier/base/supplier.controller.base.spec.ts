@@ -19,29 +19,37 @@ const nonExistingId = "nonExistingId";
 const existingId = "existingId";
 const CREATE_INPUT = {
   company: "exampleCompany",
+  createdAt: new Date(),
   id: "exampleId",
   name: "exampleName",
   phone: "examplePhone",
+  updatedAt: new Date(),
 };
 const CREATE_RESULT = {
   company: "exampleCompany",
+  createdAt: new Date(),
   id: "exampleId",
   name: "exampleName",
   phone: "examplePhone",
+  updatedAt: new Date(),
 };
 const FIND_MANY_RESULT = [
   {
     company: "exampleCompany",
+    createdAt: new Date(),
     id: "exampleId",
     name: "exampleName",
     phone: "examplePhone",
+    updatedAt: new Date(),
   },
 ];
 const FIND_ONE_RESULT = {
   company: "exampleCompany",
+  createdAt: new Date(),
   id: "exampleId",
   name: "exampleName",
   phone: "examplePhone",
+  updatedAt: new Date(),
 };
 
 const service = {
@@ -124,14 +132,24 @@ describe("Supplier", () => {
       .post("/suppliers")
       .send(CREATE_INPUT)
       .expect(HttpStatus.CREATED)
-      .expect(CREATE_RESULT);
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      });
   });
 
   test("GET /suppliers", async () => {
     await request(app.getHttpServer())
       .get("/suppliers")
       .expect(HttpStatus.OK)
-      .expect([FIND_MANY_RESULT[0]]);
+      .expect([
+        {
+          ...FIND_MANY_RESULT[0],
+          createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
+          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
+        },
+      ]);
   });
 
   test("GET /suppliers/:id non existing", async () => {
@@ -149,7 +167,11 @@ describe("Supplier", () => {
     await request(app.getHttpServer())
       .get(`${"/suppliers"}/${existingId}`)
       .expect(HttpStatus.OK)
-      .expect(FIND_ONE_RESULT);
+      .expect({
+        ...FIND_ONE_RESULT,
+        createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
+        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+      });
   });
 
   test("POST /suppliers existing resource", async () => {
@@ -158,7 +180,11 @@ describe("Supplier", () => {
       .post("/suppliers")
       .send(CREATE_INPUT)
       .expect(HttpStatus.CREATED)
-      .expect(CREATE_RESULT)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      })
       .then(function () {
         agent
           .post("/suppliers")

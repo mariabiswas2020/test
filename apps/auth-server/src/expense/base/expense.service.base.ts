@@ -13,6 +13,7 @@ import { PrismaService } from "../../prisma/prisma.service";
 import {
   Prisma,
   Expense as PrismaExpense,
+  User as PrismaUser,
   Pop as PrismaPop,
 } from "@prisma/client";
 
@@ -39,6 +40,14 @@ export class ExpenseServiceBase {
   }
   async deleteExpense(args: Prisma.ExpenseDeleteArgs): Promise<PrismaExpense> {
     return this.prisma.expense.delete(args);
+  }
+
+  async getAddedByUser(parentId: string): Promise<PrismaUser | null> {
+    return this.prisma.expense
+      .findUnique({
+        where: { id: parentId },
+      })
+      .addedByUser();
   }
 
   async getPop(parentId: string): Promise<PrismaPop | null> {

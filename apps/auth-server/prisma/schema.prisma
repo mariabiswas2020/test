@@ -8,83 +8,108 @@ generator client {
 }
 
 model User {
-  activityLogs     ActivityLog[]
-  collectedBills   Transaction[]
-  createdAt        DateTime        @default(now())
-  email            String?         @unique
-  employeeProfile  Employee?
-  firstName        String?
-  id               String          @id @default(cuid())
-  isActive         Boolean         @default(true)
-  lastName         String?
-  marketingLeads   MarketingLead[]
-  password         String
-  permissionRoutes Json?
-  phone            String?
-  resellerProfile  Reseller?
-  roles            EnumUserRoles   @default(MANAGER)
-  supportTickets   Token[]
-  updatedAt        DateTime        @updatedAt
-  username         String          @unique
+  accounts        Account[]
+  activityLogs    ActivityLog[]
+  assignedTickets SupportTicket[]  @relation(name: "assignedTickets")
+  collectedBills  Transaction[]
+  createdAt       DateTime         @default(now())
+  email           String?          @unique @db.VarChar(255)
+  emailVerified   DateTime?
+  employeeProfile Employee?
+  expenses        Expense[]
+  firstName       String?          @db.VarChar(100)
+  id              String           @id @default(cuid())
+  image           String?
+  invoices        Invoice[]
+  isActive        Boolean          @default(true)
+  lastName        String?          @db.VarChar(100)
+  marketingLeads  MarketingLead[]
+  name            String?
+  password        String?
+  permissions     UserPermission[]
+  phone           String?          @db.VarChar(20)
+  popRecharges    PopRecharge[]
+  resellerProfile Reseller?
+  roles           EnumUserRoles    @default(USER)
+  sessions        Session[]
+  subscriptions   Subscription[]
+  supportTickets  Token[]
+  tickets         SupportTicket[]  @relation(name: "SupportTicketUserUserTickets")
+  updatedAt       DateTime         @updatedAt
+  usages          Usage[]
+  username        String?          @unique @db.VarChar(50)
 }
 
 model Employee {
   address     String?
-  designation String
+  createdAt   DateTime @default(now())
+  designation String   @db.VarChar(100)
   id          String   @id @default(cuid())
   joinDate    DateTime @default(now())
-  nid         String?
-  salary      Decimal?
+  nid         String?  @db.VarChar(50)
+  salary      Decimal? @db.Decimal(10, 2)
+  updatedAt   DateTime @updatedAt
   user        User     @relation(fields: [userId], references: [id])
   userId      String   @unique
 }
 
 model Area {
+  createdAt   DateTime   @default(now())
   customers   Customer[]
   description String?
   id          String     @id @default(cuid())
-  name        String
+  name        String     @db.VarChar(100)
   pops        Pop[]
+  updatedAt   DateTime   @updatedAt
 }
 
 model Pop {
   address         String?
-  area            Area?         @relation(fields: [areaId], references: [id])
+  area            Area?            @relation(fields: [areaId], references: [id])
   areaId          String?
-  balance         Decimal       @default(0.0)
+  balance         Decimal          @default(0.0) @db.Decimal(12, 2)
+  createdAt       DateTime         @default(now())
   customers       Customer[]
   expenses        Expense[]
-  id              String        @id @default(cuid())
-  name            String
-  parentPop       Pop?          @relation(name: "parentPop", fields: [parentId], references: [id])
+  id              String           @id @default(cuid())
+  name            String           @db.VarChar(100)
+  parentPop       Pop?             @relation(name: "parentPop", fields: [parentId], references: [id])
   parentId        String?
   products        ProductItem[]
   rechargeHistory PopRecharge[]
-  reseller        Reseller?     @relation(fields: [resellerId], references: [id])
+  reseller        Reseller?        @relation(fields: [resellerId], references: [id])
   resellerId      String?
-  subPops         Pop[]         @relation(name: "parentPop")
-  type            EnumPopType   @default(MAIN)
+  routers         MikroTikRouter[]
+  subPops         Pop[]            @relation(name: "parentPop")
+  type            EnumPopType      @default(MAIN)
+  updatedAt       DateTime         @updatedAt
 }
 
 model PopRecharge {
-  amount      Decimal
-  date        DateTime              @default(now())
-  id          String                @id @default(cuid())
-  method      EnumPopRechargeMethod @default(CASH)
-  performedBy String?
-  pop         Pop                   @relation(fields: [popId], references: [id])
-  popId       String
-  reference   String?
+  amount          Decimal               @db.Decimal(12, 2)
+  createdAt       DateTime              @default(now())
+  date            DateTime              @default(now())
+  id              String                @id @default(cuid())
+  method          EnumPopRechargeMethod @default(CASH)
+  performedByUser User?                 @relation(fields: [performedBy], references: [id])
+  performedBy     String?
+  pop             Pop                   @relation(fields: [popId], references: [id])
+  popId           String
+  reference       String?               @db.VarChar(100)
+  updatedAt       DateTime              @updatedAt
 }
 
 model PackageModel {
+  createdAt       DateTime             @default(now())
   customers       Customer[]
   id              String               @id @default(cuid())
-  mikroTikProfile String?
-  name            String
-  price           Decimal
-  speed           String?
+  mikroTikProfile String?              @db.VarChar(100)
+  name            String               @db.VarChar(100)
+  price           Decimal              @db.Decimal(10, 2)
+  resellerPricing ResellerPackage[]
+  speed           String?              @db.VarChar(50)
   type            EnumPackageModelType @default(RETAIL)
+  updatedAt       DateTime             @updatedAt
 
   @@map("Package")
 }
@@ -93,48 +118,54 @@ model Customer {
   address                String?
   area                   Area?              @relation(fields: [areaId], references: [id])
   areaId                 String?
-  balance                Decimal            @default(0.0)
+  balance                Decimal            @default(0.0) @db.Decimal(12, 2)
   billSheets             BillSheet[]
   billingCycle           Int                @default(1)
   connectionDate         DateTime           @default(now())
   createdAt              DateTime           @default(now())
-  customerId             String             @unique
-  dueAmount              Decimal            @default(0.0)
-  email                  String?
+  customerId             String             @unique @db.VarChar(50)
+  deletedAt              DateTime?
+  dueAmount              Decimal            @default(0.0) @db.Decimal(12, 2)
+  email                  String?            @db.VarChar(255)
   id                     String             @id @default(cuid())
-  ipAddress              String?
-  macAddress             String?
-  monthlyBill            Decimal
-  name                   String
-  nid                    String?
-  onuMac                 String?
+  ipAddress              String?            @db.VarChar(45)
+  macAddress             String?            @db.VarChar(17)
+  monthlyBill            Decimal            @db.Decimal(10, 2)
+  name                   String             @db.VarChar(200)
+  nid                    String?            @db.VarChar(50)
+  onuMac                 String?            @db.VarChar(17)
   packageField           PackageModel       @relation(fields: [packageId], references: [id])
   packageId              String
-  phone                  String
+  phone                  String             @db.VarChar(20)
   pop                    Pop                @relation(fields: [popId], references: [id])
   popId                  String
-  pppoePassword          String?
-  pppoeUsername          String?            @unique
+  pppoePassword          String?            @db.VarChar(100)
+  pppoeUsername          String?            @unique @db.VarChar(64)
+  sessions               CustomerSession[]
   status                 EnumCustomerStatus @default(PENDING)
   tempExtensionActive    Boolean            @default(false)
   tempExtensionExpiresAt DateTime?
+  tickets                SupportTicket[]
   tokens                 Token[]
   transactions           Transaction[]
   updatedAt              DateTime           @updatedAt
 }
 
 model Reseller {
-  balance      Decimal               @default(0.0)
-  businessName String?
-  id           String                @id @default(cuid())
-  pops         Pop[]
-  rechargeLogs ResellerRechargeLog[]
-  user         User                  @relation(fields: [userId], references: [id])
-  userId       String                @unique
+  assignedPackages ResellerPackage[]
+  balance          Decimal               @default(0.0) @db.Decimal(12, 2)
+  businessName     String?               @db.VarChar(200)
+  createdAt        DateTime              @default(now())
+  id               String                @id @default(cuid())
+  pops             Pop[]
+  rechargeLogs     ResellerRechargeLog[]
+  updatedAt        DateTime              @updatedAt
+  user             User                  @relation(fields: [userId], references: [id])
+  userId           String                @unique
 }
 
 model ResellerRechargeLog {
-  amount     Decimal
+  amount     Decimal                     @db.Decimal(12, 2)
   date       DateTime                    @default(now())
   id         String                      @id @default(cuid())
   note       String?
@@ -148,61 +179,72 @@ model BillSheet {
   customerId  String
   generatedAt DateTime            @default(now())
   id          String              @id @default(cuid())
-  month       String
-  payable     Decimal
+  month       String              @db.VarChar(20)
+  payable     Decimal             @db.Decimal(10, 2)
   status      EnumBillSheetStatus @default(UNPAID)
+  updatedAt   DateTime            @updatedAt
   year        Int
 
   @@unique([customerId, month, year])
 }
 
 model Transaction {
-  amount      Decimal
+  amount      Decimal               @db.Decimal(12, 2)
   collector   User?                 @relation(fields: [collectedBy], references: [id])
   collectedBy String?
   customer    Customer              @relation(fields: [customerId], references: [id])
   customerId  String
   date        DateTime              @default(now())
-  discount    Decimal               @default(0.0)
+  deletedAt   DateTime?
+  discount    Decimal               @default(0.0) @db.Decimal(10, 2)
   id          String                @id @default(cuid())
   method      EnumTransactionMethod
   note        String?
-  trxId       String?               @unique
+  trxId       String?               @unique @db.VarChar(50)
   type        EnumTransactionType
+  updatedAt   DateTime              @updatedAt
 }
 
 model Expense {
-  addedBy  String
-  amount   Decimal
-  category String?
-  date     DateTime @default(now())
-  id       String   @id @default(cuid())
-  pop      Pop?     @relation(fields: [popId], references: [id])
-  popId    String?
-  title    String
+  addedByUser User     @relation(fields: [addedBy], references: [id])
+  addedBy     String
+  amount      Decimal  @db.Decimal(12, 2)
+  category    String?  @db.VarChar(100)
+  createdAt   DateTime @default(now())
+  date        DateTime @default(now())
+  id          String   @id @default(cuid())
+  pop         Pop?     @relation(fields: [popId], references: [id])
+  popId       String?
+  title       String   @db.VarChar(200)
+  updatedAt   DateTime @updatedAt
 }
 
 model Supplier {
-  company   String?
+  company   String?    @db.VarChar(200)
+  createdAt DateTime   @default(now())
   id        String     @id @default(cuid())
-  name      String
-  phone     String?
+  name      String     @db.VarChar(200)
+  phone     String?    @db.VarChar(20)
   purchases Purchase[]
+  updatedAt DateTime   @updatedAt
 }
 
 model Product {
-  brand        String?
-  category     String?
+  brand        String?        @db.VarChar(100)
+  category     String?        @db.VarChar(100)
+  createdAt    DateTime       @default(now())
   hasWarranty  Boolean        @default(false)
   id           String         @id @default(cuid())
   items        ProductItem[]
-  name         String
+  name         String         @db.VarChar(200)
   purchases    PurchaseItem[]
-  unit         String?
+  unit         String?        @db.VarChar(50)
+  updatedAt    DateTime       @updatedAt
   warrantyDays Int?
 }
 
 model ProductItem {
+  createdAt     DateTime              @default(now())
   id            String                @id @default(cuid())
   isUsedProduct Boolean               @default(false)
   locationPop   Pop?                  @relation(fields: [locationPopId], references: [id])
@@ -211,19 +253,22 @@ model ProductItem {
   productId     String
   purchase      Purchase?             @relation(fields: [purchaseId], references: [id])
   purchaseId    String?
-  serialNumber  String                @unique
+  serialNumber  String                @unique @db.VarChar(100)
   status        EnumProductItemStatus @default(IN_STOCK)
+  updatedAt     DateTime              @updatedAt
 }
 
 model Purchase {
+  createdAt   DateTime       @default(now())
   date        DateTime       @default(now())
   id          String         @id @default(cuid())
-  invoiceNo   String?
+  invoiceNo   String?        @db.VarChar(100)
   items       PurchaseItem[]
   stockItems  ProductItem[]
   supplier    Supplier       @relation(fields: [supplierId], references: [id])
   supplierId  String
-  totalAmount Decimal
+  totalAmount Decimal        @db.Decimal(12, 2)
+  updatedAt   DateTime       @updatedAt
 }
 
 model PurchaseItem {
@@ -233,7 +278,7 @@ model PurchaseItem {
   purchase   Purchase @relation(fields: [purchaseId], references: [id])
   purchaseId String
   quantity   Int
-  unitPrice  Decimal
+  unitPrice  Decimal  @db.Decimal(10, 2)
 }
 
 model MarketingLead {
@@ -243,12 +288,13 @@ model MarketingLead {
   createdAt       DateTime                @default(now())
   id              String                  @id @default(cuid())
   mapLocation     String?
-  name            String
-  phone           String
-  priceQuote      Decimal?
-  proposedPackage String?
+  name            String                  @db.VarChar(200)
+  phone           String                  @db.VarChar(20)
+  priceQuote      Decimal?                @db.Decimal(10, 2)
+  proposedPackage String?                 @db.VarChar(100)
   remarks         String?
   status          EnumMarketingLeadStatus @default(NEW)
+  updatedAt       DateTime                @updatedAt
 }
 
 model TokenCategory {
@@ -274,22 +320,314 @@ model Token {
 }
 
 model ActivityLog {
-  action    String
+  action    String   @db.VarChar(100)
   createdAt DateTime @default(now())
   details   Json?
   id        String   @id @default(cuid())
-  ipAddress String?
+  ipAddress String?  @db.VarChar(45)
   user      User     @relation(fields: [userId], references: [id])
   userId    String
 }
 
 model Setting {
-  id    String @id @default(cuid())
-  key   String @unique
-  value String
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  key       String   @unique @db.VarChar(100)
+  updatedAt DateTime @updatedAt
+  value     String   @db.Text
+}
+
+model Account {
+  accessToken       String? @map("access_token") @db.Text
+  expiresAt         Int?    @map("expires_at")
+  id                String  @id @default(cuid())
+  idToken           String? @map("id_token") @db.Text
+  provider          String
+  providerAccountId String
+  refreshToken      String? @map("refresh_token") @db.Text
+  scope             String?
+  sessionState      String? @map("session_state")
+  tokenType         String? @map("token_type")
+  typeField         String  @map("type")
+  user              User    @relation(fields: [userId], references: [id])
+  userId            String
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  expires      DateTime
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  expires    DateTime
+  id         String   @id @unique @default(cuid()) @map("token")
+  identifier String
+
+  @@unique([identifier, id])
+  @@map("verification_tokens")
+}
+
+model Permission {
+  createdAt   DateTime         @default(now())
+  description String?          @db.VarChar(500)
+  id          String           @id @default(cuid())
+  route       String           @unique @db.VarChar(255)
+  updatedAt   DateTime         @updatedAt
+  users       UserPermission[]
+
+  @@map("permissions")
+}
+
+model UserPermission {
+  grantedAt    DateTime   @default(now())
+  grantedBy    String?
+  id           String     @id @default(cuid())
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  permissionId String
+  user         User       @relation(fields: [userId], references: [id])
+  userId       String
+
+  @@unique([userId, permissionId])
+  @@index([userId])
+  @@index([permissionId])
+  @@map("user_permissions")
+}
+
+model Plan {
+  createdAt     DateTime       @default(now())
+  description   String         @db.Text
+  features      String
+  id            String         @id @default(cuid())
+  isActive      Boolean        @default(true)
+  name          String         @db.VarChar(100)
+  price         Float
+  speed         EnumPlanSpeed
+  speedDisplay  String         @db.VarChar(50)
+  subscriptions Subscription[]
+  updatedAt     DateTime       @updatedAt
+
+  @@index([isActive])
+  @@map("plans")
+}
+
+model Subscription {
+  createdAt DateTime               @default(now())
+  endDate   DateTime?
+  id        String                 @id @default(cuid())
+  plan      Plan                   @relation(fields: [planId], references: [id])
+  planId    String
+  startDate DateTime               @default(now())
+  status    EnumSubscriptionStatus @default(ACTIVE)
+  updatedAt DateTime               @updatedAt
+  user      User                   @relation(fields: [userId], references: [id])
+  userId    String
+
+  @@index([userId])
+  @@index([planId])
+  @@index([status])
+  @@map("subscriptions")
+}
+
+model Usage {
+  createdAt DateTime @default(now())
+  date      DateTime @default(now())
+  download  Float
+  id        String   @id @default(cuid())
+  total     Float
+  upload    Float
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+
+  @@index([userId, date])
+  @@index([userId])
+  @@map("usage")
+}
+
+model Invoice {
+  amount      Float
+  createdAt   DateTime          @default(now())
+  description String?           @db.VarChar(500)
+  dueDate     DateTime
+  id          String            @id @default(cuid())
+  paidDate    DateTime?
+  status      EnumInvoiceStatus @default(PENDING)
+  updatedAt   DateTime          @updatedAt
+  user        User              @relation(fields: [userId], references: [id])
+  userId      String
+
+  @@index([userId, status])
+  @@index([userId])
+  @@index([dueDate])
+  @@map("invoices")
+}
+
+model NetworkStatus {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  latency   Float
+  region    String   @db.VarChar(100)
+  timestamp DateTime @default(now())
+  uptime    Float
+
+  @@index([region, timestamp])
+  @@index([region])
+  @@map("network_status")
+}
+
+model ResellerPackage {
+  createdAt      DateTime     @default(now())
+  id             String       @id @default(cuid())
+  isActive       Boolean      @default(true)
+  packageField   PackageModel @relation(fields: [packageId], references: [id])
+  packageId      String
+  reseller       Reseller     @relation(fields: [resellerId], references: [id])
+  resellerId     String
+  updatedAt      DateTime     @updatedAt
+  wholesalePrice Decimal      @db.Decimal(10, 2)
+
+  @@unique([resellerId, packageId])
+  @@index([resellerId])
+  @@index([packageId])
+  @@map("reseller_packages")
+}
+
+model MikroTikRouter {
+  apiPassword String   @db.VarChar(255)
+  apiPort     Int      @default(8728)
+  apiUser     String   @db.VarChar(100)
+  createdAt   DateTime @default(now())
+  host        String   @db.VarChar(255)
+  id          String   @id @default(cuid())
+  isActive    Boolean  @default(true)
+  name        String   @db.VarChar(100)
+  pop         Pop?     @relation(fields: [popId], references: [id])
+  popId       String?
+  updatedAt   DateTime @updatedAt
+
+  @@index([popId])
+  @@index([isActive])
+  @@map("mikrotik_routers")
+}
+
+model CustomerSession {
+  bytesIn    BigInt    @default(0)
+  bytesOut   BigInt    @default(0)
+  customer   Customer  @relation(fields: [customerId], references: [id])
+  customerId String
+  endedAt    DateTime?
+  id         String    @id @default(cuid())
+  ipAddress  String?   @db.VarChar(45)
+  lastSeenAt DateTime  @default(now())
+  macAddress String?   @db.VarChar(17)
+  sessionId  String?   @db.VarChar(100)
+  startedAt  DateTime  @default(now())
+
+  @@index([customerId])
+  @@index([startedAt])
+  @@index([lastSeenAt])
+  @@map("customer_sessions")
+}
+
+model TicketCategory {
+  createdAt DateTime        @default(now())
+  id        String          @id @default(cuid())
+  price     Decimal         @default(0.0) @db.Decimal(10, 2)
+  tickets   SupportTicket[]
+  title     String          @db.VarChar(100)
+  updatedAt DateTime        @updatedAt
+
+  @@map("ticket_categories")
+}
+
+model SupportTicket {
+  assignee    User?                     @relation(name: "assignedTickets", fields: [assignedTo], references: [id])
+  assignedTo  String?
+  category    TicketCategory?           @relation(fields: [categoryId], references: [id])
+  categoryId  String?
+  closedAt    DateTime?
+  createdAt   DateTime                  @default(now())
+  customer    Customer?                 @relation(fields: [customerId], references: [id])
+  customerId  String?
+  description String                    @db.Text
+  id          String                    @id @default(cuid())
+  priority    EnumSupportTicketPriority @default(MEDIUM)
+  resolvedAt  DateTime?
+  status      EnumSupportTicketStatus   @default(OPEN)
+  subject     String?                   @db.VarChar(255)
+  ticketNo    String?                   @unique @db.VarChar(50)
+  updatedAt   DateTime                  @updatedAt
+  user        User?                     @relation(name: "SupportTicketUserUserTickets", fields: [userId], references: [id])
+  userId      String?
+
+  @@index([status])
+  @@index([userId])
+  @@index([customerId])
+  @@index([assignedTo])
+  @@index([createdAt])
+  @@index([categoryId])
+  @@index([priority])
+  @@map("support_tickets")
+}
+
+model SmsGateway {
+  apiKey    String?  @db.VarChar(255)
+  apiSecret String?  @db.VarChar(255)
+  apiUrl    String   @db.VarChar(500)
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  isActive  Boolean  @default(true)
+  isDefault Boolean  @default(false)
+  logs      SmsLog[]
+  name      String   @db.VarChar(100)
+  provider  String   @db.VarChar(50)
+  senderId  String?  @db.VarChar(20)
+  updatedAt DateTime @updatedAt
+
+  @@map("sms_gateways")
+}
+
+model SmsTemplate {
+  content   String              @db.Text
+  createdAt DateTime            @default(now())
+  id        String              @id @default(cuid())
+  isActive  Boolean             @default(true)
+  name      String              @db.VarChar(100)
+  type      EnumSmsTemplateType
+  updatedAt DateTime            @updatedAt
+
+  @@index([type])
+  @@map("sms_templates")
+}
+
+model SmsLog {
+  createdAt DateTime         @default(now())
+  errorMsg  String?
+  gateway   SmsGateway?      @relation(fields: [gatewayId], references: [id])
+  gatewayId String?
+  id        String           @id @default(cuid())
+  message   String           @db.Text
+  phone     String           @db.VarChar(20)
+  sentAt    DateTime?
+  status    EnumSmsLogStatus @default(PENDING)
+
+  @@index([status])
+  @@index([phone])
+  @@index([createdAt])
+  @@index([gatewayId])
+  @@map("sms_logs")
 }
 
 enum EnumUserRoles {
+  USER
+  ADMIN
   SUPER_ADMIN
   MANAGER
   ACCOUNTANT
@@ -377,4 +715,53 @@ enum EnumTokenStatus {
   IN_PROGRESS
   RESOLVED
   CLOSED
+}
+
+enum EnumPlanSpeed {
+  MBPS_100
+  MBPS_500
+  GBPS_1
+}
+
+enum EnumSubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
+  SUSPENDED
+}
+
+enum EnumInvoiceStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum EnumSupportTicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum EnumSupportTicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum EnumSmsTemplateType {
+  BILLING_REMINDER
+  PAYMENT_CONFIRMATION
+  CONNECTION_NOTICE
+  EXPIRY_WARNING
+  CUSTOM
+}
+
+enum EnumSmsLogStatus {
+  PENDING
+  SENT
+  DELIVERED
+  FAILED
 }

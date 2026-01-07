@@ -24,6 +24,7 @@ const CREATE_INPUT = {
   connectionDate: new Date(),
   createdAt: new Date(),
   customerId: "exampleCustomerId",
+  deletedAt: new Date(),
   dueAmount: 42.424242424,
   email: "exampleEmail",
   id: "exampleId",
@@ -47,6 +48,7 @@ const CREATE_RESULT = {
   connectionDate: new Date(),
   createdAt: new Date(),
   customerId: "exampleCustomerId",
+  deletedAt: new Date(),
   dueAmount: 42.424242424,
   email: "exampleEmail",
   id: "exampleId",
@@ -71,6 +73,7 @@ const FIND_MANY_RESULT = [
     connectionDate: new Date(),
     createdAt: new Date(),
     customerId: "exampleCustomerId",
+    deletedAt: new Date(),
     dueAmount: 42.424242424,
     email: "exampleEmail",
     id: "exampleId",
@@ -95,6 +98,7 @@ const FIND_ONE_RESULT = {
   connectionDate: new Date(),
   createdAt: new Date(),
   customerId: "exampleCustomerId",
+  deletedAt: new Date(),
   dueAmount: 42.424242424,
   email: "exampleEmail",
   id: "exampleId",
@@ -196,6 +200,7 @@ describe("Customer", () => {
         ...CREATE_RESULT,
         connectionDate: CREATE_RESULT.connectionDate.toISOString(),
         createdAt: CREATE_RESULT.createdAt.toISOString(),
+        deletedAt: CREATE_RESULT.deletedAt.toISOString(),
         tempExtensionExpiresAt:
           CREATE_RESULT.tempExtensionExpiresAt.toISOString(),
         updatedAt: CREATE_RESULT.updatedAt.toISOString(),
@@ -211,6 +216,7 @@ describe("Customer", () => {
           ...FIND_MANY_RESULT[0],
           connectionDate: FIND_MANY_RESULT[0].connectionDate.toISOString(),
           createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
+          deletedAt: FIND_MANY_RESULT[0].deletedAt.toISOString(),
           tempExtensionExpiresAt:
             FIND_MANY_RESULT[0].tempExtensionExpiresAt.toISOString(),
           updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
@@ -237,6 +243,7 @@ describe("Customer", () => {
         ...FIND_ONE_RESULT,
         connectionDate: FIND_ONE_RESULT.connectionDate.toISOString(),
         createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
+        deletedAt: FIND_ONE_RESULT.deletedAt.toISOString(),
         tempExtensionExpiresAt:
           FIND_ONE_RESULT.tempExtensionExpiresAt.toISOString(),
         updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
@@ -253,6 +260,7 @@ describe("Customer", () => {
         ...CREATE_RESULT,
         connectionDate: CREATE_RESULT.connectionDate.toISOString(),
         createdAt: CREATE_RESULT.createdAt.toISOString(),
+        deletedAt: CREATE_RESULT.deletedAt.toISOString(),
         tempExtensionExpiresAt:
           CREATE_RESULT.tempExtensionExpiresAt.toISOString(),
         updatedAt: CREATE_RESULT.updatedAt.toISOString(),

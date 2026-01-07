@@ -20,9 +20,9 @@ import {
   IsNumber,
   Max,
   IsInt,
+  IsDate,
   IsEnum,
   IsBoolean,
-  IsDate,
 } from "class-validator";
 
 import { AreaWhereUniqueInput } from "../../area/base/AreaWhereUniqueInput";
@@ -31,7 +31,9 @@ import { Decimal } from "decimal.js";
 import { BillSheetCreateNestedManyWithoutCustomersInput } from "./BillSheetCreateNestedManyWithoutCustomersInput";
 import { PackageModelWhereUniqueInput } from "../../packageModel/base/PackageModelWhereUniqueInput";
 import { PopWhereUniqueInput } from "../../pop/base/PopWhereUniqueInput";
+import { CustomerSessionCreateNestedManyWithoutCustomersInput } from "./CustomerSessionCreateNestedManyWithoutCustomersInput";
 import { EnumCustomerStatus } from "./EnumCustomerStatus";
+import { SupportTicketCreateNestedManyWithoutCustomersInput } from "./SupportTicketCreateNestedManyWithoutCustomersInput";
 import { TokenCreateNestedManyWithoutCustomersInput } from "./TokenCreateNestedManyWithoutCustomersInput";
 import { TransactionCreateNestedManyWithoutCustomersInput } from "./TransactionCreateNestedManyWithoutCustomersInput";
 
@@ -99,6 +101,17 @@ class CustomerCreateInput {
   @MaxLength(256)
   @Field(() => String)
   customerId!: string;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  @Field(() => Date, {
+    nullable: true,
+  })
+  deletedAt?: Date | null;
 
   @ApiProperty({
     required: true,
@@ -239,6 +252,18 @@ class CustomerCreateInput {
   pppoeUsername?: string | null;
 
   @ApiProperty({
+    required: false,
+    type: () => CustomerSessionCreateNestedManyWithoutCustomersInput,
+  })
+  @ValidateNested()
+  @Type(() => CustomerSessionCreateNestedManyWithoutCustomersInput)
+  @IsOptional()
+  @Field(() => CustomerSessionCreateNestedManyWithoutCustomersInput, {
+    nullable: true,
+  })
+  sessions?: CustomerSessionCreateNestedManyWithoutCustomersInput;
+
+  @ApiProperty({
     required: true,
     enum: EnumCustomerStatus,
   })
@@ -270,6 +295,18 @@ class CustomerCreateInput {
     nullable: true,
   })
   tempExtensionExpiresAt?: Date | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => SupportTicketCreateNestedManyWithoutCustomersInput,
+  })
+  @ValidateNested()
+  @Type(() => SupportTicketCreateNestedManyWithoutCustomersInput)
+  @IsOptional()
+  @Field(() => SupportTicketCreateNestedManyWithoutCustomersInput, {
+    nullable: true,
+  })
+  tickets?: SupportTicketCreateNestedManyWithoutCustomersInput;
 
   @ApiProperty({
     required: false,

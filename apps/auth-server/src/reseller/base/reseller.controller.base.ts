@@ -26,6 +26,9 @@ import { Reseller } from "./Reseller";
 import { ResellerFindManyArgs } from "./ResellerFindManyArgs";
 import { ResellerWhereUniqueInput } from "./ResellerWhereUniqueInput";
 import { ResellerUpdateInput } from "./ResellerUpdateInput";
+import { ResellerPackageFindManyArgs } from "../../resellerPackage/base/ResellerPackageFindManyArgs";
+import { ResellerPackage } from "../../resellerPackage/base/ResellerPackage";
+import { ResellerPackageWhereUniqueInput } from "../../resellerPackage/base/ResellerPackageWhereUniqueInput";
 import { PopFindManyArgs } from "../../pop/base/PopFindManyArgs";
 import { Pop } from "../../pop/base/Pop";
 import { PopWhereUniqueInput } from "../../pop/base/PopWhereUniqueInput";
@@ -68,7 +71,9 @@ export class ResellerControllerBase {
       select: {
         balance: true,
         businessName: true,
+        createdAt: true,
         id: true,
+        updatedAt: true,
 
         user: {
           select: {
@@ -98,7 +103,9 @@ export class ResellerControllerBase {
       select: {
         balance: true,
         businessName: true,
+        createdAt: true,
         id: true,
+        updatedAt: true,
 
         user: {
           select: {
@@ -129,7 +136,9 @@ export class ResellerControllerBase {
       select: {
         balance: true,
         businessName: true,
+        createdAt: true,
         id: true,
+        updatedAt: true,
 
         user: {
           select: {
@@ -178,7 +187,9 @@ export class ResellerControllerBase {
         select: {
           balance: true,
           businessName: true,
+          createdAt: true,
           id: true,
+          updatedAt: true,
 
           user: {
             select: {
@@ -217,7 +228,9 @@ export class ResellerControllerBase {
         select: {
           balance: true,
           businessName: true,
+          createdAt: true,
           id: true,
+          updatedAt: true,
 
           user: {
             select: {
@@ -234,6 +247,116 @@ export class ResellerControllerBase {
       }
       throw error;
     }
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @common.Get("/:id/assignedPackages")
+  @ApiNestedQuery(ResellerPackageFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "ResellerPackage",
+    action: "read",
+    possession: "any",
+  })
+  async findAssignedPackages(
+    @common.Req() request: Request,
+    @common.Param() params: ResellerWhereUniqueInput
+  ): Promise<ResellerPackage[]> {
+    const query = plainToClass(ResellerPackageFindManyArgs, request.query);
+    const results = await this.service.findAssignedPackages(params.id, {
+      ...query,
+      select: {
+        createdAt: true,
+        id: true,
+        isActive: true,
+
+        packageField: {
+          select: {
+            id: true,
+          },
+        },
+
+        reseller: {
+          select: {
+            id: true,
+          },
+        },
+
+        updatedAt: true,
+        wholesalePrice: true,
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        `No resource was found for ${JSON.stringify(params)}`
+      );
+    }
+    return results;
+  }
+
+  @common.Post("/:id/assignedPackages")
+  @nestAccessControl.UseRoles({
+    resource: "Reseller",
+    action: "update",
+    possession: "any",
+  })
+  async connectAssignedPackages(
+    @common.Param() params: ResellerWhereUniqueInput,
+    @common.Body() body: ResellerPackageWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      assignedPackages: {
+        connect: body,
+      },
+    };
+    await this.service.updateReseller({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch("/:id/assignedPackages")
+  @nestAccessControl.UseRoles({
+    resource: "Reseller",
+    action: "update",
+    possession: "any",
+  })
+  async updateAssignedPackages(
+    @common.Param() params: ResellerWhereUniqueInput,
+    @common.Body() body: ResellerPackageWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      assignedPackages: {
+        set: body,
+      },
+    };
+    await this.service.updateReseller({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete("/:id/assignedPackages")
+  @nestAccessControl.UseRoles({
+    resource: "Reseller",
+    action: "update",
+    possession: "any",
+  })
+  async disconnectAssignedPackages(
+    @common.Param() params: ResellerWhereUniqueInput,
+    @common.Body() body: ResellerPackageWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      assignedPackages: {
+        disconnect: body,
+      },
+    };
+    await this.service.updateReseller({
+      where: params,
+      data,
+      select: { id: true },
+    });
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
@@ -261,6 +384,7 @@ export class ResellerControllerBase {
         },
 
         balance: true,
+        createdAt: true,
         id: true,
         name: true,
 
@@ -277,6 +401,7 @@ export class ResellerControllerBase {
         },
 
         type: true,
+        updatedAt: true,
       },
     });
     if (results === null) {

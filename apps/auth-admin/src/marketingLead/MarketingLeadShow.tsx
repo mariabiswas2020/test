@@ -26,6 +26,7 @@ export const MarketingLeadShow = (props: ShowProps): React.ReactElement => {
         <TextField label="Proposed Package" source="proposedPackage" />
         <TextField label="Remarks" source="remarks" />
         <TextField label="Status" source="status" />
+        <DateField source="updatedAt" label="Updated At" />
       </SimpleShowLayout>
     </Show>
   );

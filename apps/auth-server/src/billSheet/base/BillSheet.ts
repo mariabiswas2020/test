@@ -82,6 +82,14 @@ class BillSheet {
 
   @ApiProperty({
     required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  updatedAt!: Date;
+
+  @ApiProperty({
+    required: true,
     type: Number,
   })
   @IsInt()

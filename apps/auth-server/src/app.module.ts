@@ -36,6 +36,24 @@ import { TokenCategoryModule } from "./tokenCategory/tokenCategory.module";
 import { TokenModule } from "./token/token.module";
 import { ActivityLogModule } from "./activityLog/activityLog.module";
 import { SettingModule } from "./setting/setting.module";
+import { AccountModule } from "./account/account.module";
+import { SessionModule } from "./session/session.module";
+import { VerificationTokenModule } from "./verificationToken/verificationToken.module";
+import { PermissionModule } from "./permission/permission.module";
+import { UserPermissionModule } from "./userPermission/userPermission.module";
+import { PlanModule } from "./plan/plan.module";
+import { SubscriptionModule } from "./subscription/subscription.module";
+import { UsageModule } from "./usage/usage.module";
+import { InvoiceModule } from "./invoice/invoice.module";
+import { NetworkStatusModule } from "./networkStatus/networkStatus.module";
+import { ResellerPackageModule } from "./resellerPackage/resellerPackage.module";
+import { MikroTikRouterModule } from "./mikroTikRouter/mikroTikRouter.module";
+import { CustomerSessionModule } from "./customerSession/customerSession.module";
+import { TicketCategoryModule } from "./ticketCategory/ticketCategory.module";
+import { SupportTicketModule } from "./supportTicket/supportTicket.module";
+import { SmsGatewayModule } from "./smsGateway/smsGateway.module";
+import { SmsTemplateModule } from "./smsTemplate/smsTemplate.module";
+import { SmsLogModule } from "./smsLog/smsLog.module";
 import { HealthModule } from "./health/health.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { SecretsManagerModule } from "./providers/secrets/secretsManager.module";
@@ -80,6 +98,24 @@ import { AuthModule } from "./auth/auth.module";
     TokenModule,
     ActivityLogModule,
     SettingModule,
+    AccountModule,
+    SessionModule,
+    VerificationTokenModule,
+    PermissionModule,
+    UserPermissionModule,
+    PlanModule,
+    SubscriptionModule,
+    UsageModule,
+    InvoiceModule,
+    NetworkStatusModule,
+    ResellerPackageModule,
+    MikroTikRouterModule,
+    CustomerSessionModule,
+    TicketCategoryModule,
+    SupportTicketModule,
+    SmsGatewayModule,
+    SmsTemplateModule,
+    SmsLogModule,
     HealthModule,
     PrismaModule,
     SecretsManagerModule,

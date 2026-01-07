@@ -7,6 +7,7 @@ import {
   NumberInput,
   ReferenceInput,
   SelectInput,
+  DateTimeInput,
   TextInput,
 } from "react-admin";
 
@@ -32,6 +33,7 @@ export const TransactionCreate = (props: CreateProps): React.ReactElement => {
         >
           <SelectInput optionText={CustomerTitle} />
         </ReferenceInput>
+        <DateTimeInput label="Deleted At" source="deletedAt" />
         <NumberInput label="Discount" source="discount" />
         <SelectInput
           source="method"

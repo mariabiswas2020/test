@@ -7,5 +7,6 @@ export type BillSheetOrderByInput = {
   month?: SortOrder;
   payable?: SortOrder;
   status?: SortOrder;
+  updatedAt?: SortOrder;
   year?: SortOrder;
 };

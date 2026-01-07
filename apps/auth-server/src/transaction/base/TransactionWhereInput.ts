@@ -17,6 +17,7 @@ import { IsOptional, ValidateNested, IsEnum } from "class-validator";
 import { UserWhereUniqueInput } from "../../user/base/UserWhereUniqueInput";
 import { CustomerWhereUniqueInput } from "../../customer/base/CustomerWhereUniqueInput";
 import { DateTimeFilter } from "../../util/DateTimeFilter";
+import { DateTimeNullableFilter } from "../../util/DateTimeNullableFilter";
 import { StringFilter } from "../../util/StringFilter";
 import { EnumTransactionMethod } from "./EnumTransactionMethod";
 import { StringNullableFilter } from "../../util/StringNullableFilter";
@@ -69,6 +70,17 @@ class TransactionWhereInput {
     nullable: true,
   })
   date?: DateTimeFilter;
+
+  @ApiProperty({
+    required: false,
+    type: DateTimeNullableFilter,
+  })
+  @Type(() => DateTimeNullableFilter)
+  @IsOptional()
+  @Field(() => DateTimeNullableFilter, {
+    nullable: true,
+  })
+  deletedAt?: DateTimeNullableFilter;
 
   @ApiProperty({
     required: false,
@@ -135,6 +147,17 @@ class TransactionWhereInput {
     nullable: true,
   })
   type?: "BILL_PAYMENT" | "CONNECTION_FEE" | "OPENING_BALANCE" | "ADJUSTMENT";
+
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
+  @Type(() => DateTimeFilter)
+  @IsOptional()
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
+  updatedAt?: DateTimeFilter;
 }
 
 export { TransactionWhereInput as TransactionWhereInput };

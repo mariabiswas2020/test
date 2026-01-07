@@ -1,6 +1,7 @@
 import { StringNullableFilter } from "../../util/StringNullableFilter";
 import { AreaWhereUniqueInput } from "../area/AreaWhereUniqueInput";
 import { DecimalFilter } from "../../util/DecimalFilter";
+import { DateTimeFilter } from "../../util/DateTimeFilter";
 import { CustomerListRelationFilter } from "../customer/CustomerListRelationFilter";
 import { ExpenseListRelationFilter } from "../expense/ExpenseListRelationFilter";
 import { StringFilter } from "../../util/StringFilter";
@@ -8,12 +9,14 @@ import { PopWhereUniqueInput } from "./PopWhereUniqueInput";
 import { ProductItemListRelationFilter } from "../productItem/ProductItemListRelationFilter";
 import { PopRechargeListRelationFilter } from "../popRecharge/PopRechargeListRelationFilter";
 import { ResellerWhereUniqueInput } from "../reseller/ResellerWhereUniqueInput";
+import { MikroTikRouterListRelationFilter } from "../mikroTikRouter/MikroTikRouterListRelationFilter";
 import { PopListRelationFilter } from "./PopListRelationFilter";
 
 export type PopWhereInput = {
   address?: StringNullableFilter;
   area?: AreaWhereUniqueInput;
   balance?: DecimalFilter;
+  createdAt?: DateTimeFilter;
   customers?: CustomerListRelationFilter;
   expenses?: ExpenseListRelationFilter;
   id?: StringFilter;
@@ -22,6 +25,8 @@ export type PopWhereInput = {
   products?: ProductItemListRelationFilter;
   rechargeHistory?: PopRechargeListRelationFilter;
   reseller?: ResellerWhereUniqueInput;
+  routers?: MikroTikRouterListRelationFilter;
   subPops?: PopListRelationFilter;
   type?: "MAIN" | "RESELLER" | "SUB_POP";
+  updatedAt?: DateTimeFilter;
 };

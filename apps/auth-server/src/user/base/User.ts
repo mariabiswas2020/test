@@ -11,7 +11,7 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { ActivityLog } from "../../activityLog/base/ActivityLog";
+import { Account } from "../../account/base/Account";
 import {
   ValidateNested,
   IsOptional,
@@ -22,18 +22,33 @@ import {
   IsEnum,
 } from "class-validator";
 import { Type } from "class-transformer";
+import { ActivityLog } from "../../activityLog/base/ActivityLog";
+import { SupportTicket } from "../../supportTicket/base/SupportTicket";
 import { Transaction } from "../../transaction/base/Transaction";
 import { Employee } from "../../employee/base/Employee";
+import { Expense } from "../../expense/base/Expense";
+import { Invoice } from "../../invoice/base/Invoice";
 import { MarketingLead } from "../../marketingLead/base/MarketingLead";
-import { IsJSONValue } from "../../validators";
-import { GraphQLJSON } from "graphql-type-json";
-import { JsonValue } from "type-fest";
+import { UserPermission } from "../../userPermission/base/UserPermission";
+import { PopRecharge } from "../../popRecharge/base/PopRecharge";
 import { Reseller } from "../../reseller/base/Reseller";
 import { EnumUserRoles } from "./EnumUserRoles";
+import { Session } from "../../session/base/Session";
+import { Subscription } from "../../subscription/base/Subscription";
 import { Token } from "../../token/base/Token";
+import { Usage } from "../../usage/base/Usage";
 
 @ObjectType()
 class User {
+  @ApiProperty({
+    required: false,
+    type: () => [Account],
+  })
+  @ValidateNested()
+  @Type(() => Account)
+  @IsOptional()
+  accounts?: Array<Account>;
+
   @ApiProperty({
     required: false,
     type: () => [ActivityLog],
@@ -42,6 +57,15 @@ class User {
   @Type(() => ActivityLog)
   @IsOptional()
   activityLogs?: Array<ActivityLog>;
+
+  @ApiProperty({
+    required: false,
+    type: () => [SupportTicket],
+  })
+  @ValidateNested()
+  @Type(() => SupportTicket)
+  @IsOptional()
+  assignedTickets?: Array<SupportTicket>;
 
   @ApiProperty({
     required: false,
@@ -73,12 +97,32 @@ class User {
 
   @ApiProperty({
     required: false,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  @Field(() => Date, {
+    nullable: true,
+  })
+  emailVerified!: Date | null;
+
+  @ApiProperty({
+    required: false,
     type: () => Employee,
   })
   @ValidateNested()
   @Type(() => Employee)
   @IsOptional()
   employeeProfile?: Employee | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => [Expense],
+  })
+  @ValidateNested()
+  @Type(() => Expense)
+  @IsOptional()
+  expenses?: Array<Expense>;
 
   @ApiProperty({
     required: false,
@@ -99,6 +143,27 @@ class User {
   @IsString()
   @Field(() => String)
   id!: string;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @MaxLength(256)
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  image!: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => [Invoice],
+  })
+  @ValidateNested()
+  @Type(() => Invoice)
+  @IsOptional()
+  invoices?: Array<Invoice>;
 
   @ApiProperty({
     required: true,
@@ -131,13 +196,36 @@ class User {
 
   @ApiProperty({
     required: false,
+    type: String,
   })
-  @IsJSONValue()
+  @IsString()
+  @MaxLength(256)
   @IsOptional()
-  @Field(() => GraphQLJSON, {
+  @Field(() => String, {
     nullable: true,
   })
-  permissionRoutes!: JsonValue;
+  name!: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @MaxLength(256)
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  password!: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => [UserPermission],
+  })
+  @ValidateNested()
+  @Type(() => UserPermission)
+  @IsOptional()
+  permissions?: Array<UserPermission>;
 
   @ApiProperty({
     required: false,
@@ -150,6 +238,15 @@ class User {
     nullable: true,
   })
   phone!: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => [PopRecharge],
+  })
+  @ValidateNested()
+  @Type(() => PopRecharge)
+  @IsOptional()
+  popRecharges?: Array<PopRecharge>;
 
   @ApiProperty({
     required: false,
@@ -169,6 +266,8 @@ class User {
     nullable: true,
   })
   roles?:
+    | "USER"
+    | "ADMIN"
     | "SUPER_ADMIN"
     | "MANAGER"
     | "ACCOUNTANT"
@@ -181,12 +280,39 @@ class User {
 
   @ApiProperty({
     required: false,
+    type: () => [Session],
+  })
+  @ValidateNested()
+  @Type(() => Session)
+  @IsOptional()
+  sessions?: Array<Session>;
+
+  @ApiProperty({
+    required: false,
+    type: () => [Subscription],
+  })
+  @ValidateNested()
+  @Type(() => Subscription)
+  @IsOptional()
+  subscriptions?: Array<Subscription>;
+
+  @ApiProperty({
+    required: false,
     type: () => [Token],
   })
   @ValidateNested()
   @Type(() => Token)
   @IsOptional()
   supportTickets?: Array<Token>;
+
+  @ApiProperty({
+    required: false,
+    type: () => [SupportTicket],
+  })
+  @ValidateNested()
+  @Type(() => SupportTicket)
+  @IsOptional()
+  tickets?: Array<SupportTicket>;
 
   @ApiProperty({
     required: true,
@@ -197,12 +323,25 @@ class User {
   updatedAt!: Date;
 
   @ApiProperty({
-    required: true,
+    required: false,
+    type: () => [Usage],
+  })
+  @ValidateNested()
+  @Type(() => Usage)
+  @IsOptional()
+  usages?: Array<Usage>;
+
+  @ApiProperty({
+    required: false,
     type: String,
   })
   @IsString()
-  @Field(() => String)
-  username!: string;
+  @MaxLength(256)
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  username!: string | null;
 }
 
 export { User as User };

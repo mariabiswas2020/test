@@ -6,10 +6,11 @@ import {
   EditProps,
   NumberInput,
   SelectInput,
-  TextInput,
   ReferenceInput,
+  TextInput,
 } from "react-admin";
 
+import { UserTitle } from "../user/UserTitle";
 import { PopTitle } from "../pop/PopTitle";
 
 export const PopRechargeEdit = (props: EditProps): React.ReactElement => {
@@ -30,7 +31,13 @@ export const PopRechargeEdit = (props: EditProps): React.ReactElement => {
           optionText="label"
           optionValue="value"
         />
-        <TextInput label="Performed By" source="performedBy" />
+        <ReferenceInput
+          source="performedByUser.id"
+          reference="User"
+          label="Performed By User"
+        >
+          <SelectInput optionText={UserTitle} />
+        </ReferenceInput>
         <ReferenceInput source="pop.id" reference="Pop" label="Pop">
           <SelectInput optionText={PopTitle} />
         </ReferenceInput>

@@ -20,11 +20,13 @@ import { BillSheetListRelationFilter } from "../../billSheet/base/BillSheetListR
 import { IntFilter } from "../../util/IntFilter";
 import { DateTimeFilter } from "../../util/DateTimeFilter";
 import { StringFilter } from "../../util/StringFilter";
+import { DateTimeNullableFilter } from "../../util/DateTimeNullableFilter";
 import { PackageModelWhereUniqueInput } from "../../packageModel/base/PackageModelWhereUniqueInput";
 import { PopWhereUniqueInput } from "../../pop/base/PopWhereUniqueInput";
+import { CustomerSessionListRelationFilter } from "../../customerSession/base/CustomerSessionListRelationFilter";
 import { EnumCustomerStatus } from "./EnumCustomerStatus";
 import { BooleanFilter } from "../../util/BooleanFilter";
-import { DateTimeNullableFilter } from "../../util/DateTimeNullableFilter";
+import { SupportTicketListRelationFilter } from "../../supportTicket/base/SupportTicketListRelationFilter";
 import { TokenListRelationFilter } from "../../token/base/TokenListRelationFilter";
 import { TransactionListRelationFilter } from "../../transaction/base/TransactionListRelationFilter";
 
@@ -119,6 +121,17 @@ class CustomerWhereInput {
     nullable: true,
   })
   customerId?: StringFilter;
+
+  @ApiProperty({
+    required: false,
+    type: DateTimeNullableFilter,
+  })
+  @Type(() => DateTimeNullableFilter)
+  @IsOptional()
+  @Field(() => DateTimeNullableFilter, {
+    nullable: true,
+  })
+  deletedAt?: DateTimeNullableFilter;
 
   @ApiProperty({
     required: false,
@@ -278,6 +291,18 @@ class CustomerWhereInput {
 
   @ApiProperty({
     required: false,
+    type: () => CustomerSessionListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => CustomerSessionListRelationFilter)
+  @IsOptional()
+  @Field(() => CustomerSessionListRelationFilter, {
+    nullable: true,
+  })
+  sessions?: CustomerSessionListRelationFilter;
+
+  @ApiProperty({
+    required: false,
     enum: EnumCustomerStatus,
   })
   @IsEnum(EnumCustomerStatus)
@@ -314,6 +339,18 @@ class CustomerWhereInput {
     nullable: true,
   })
   tempExtensionExpiresAt?: DateTimeNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => SupportTicketListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => SupportTicketListRelationFilter)
+  @IsOptional()
+  @Field(() => SupportTicketListRelationFilter, {
+    nullable: true,
+  })
+  tickets?: SupportTicketListRelationFilter;
 
   @ApiProperty({
     required: false,

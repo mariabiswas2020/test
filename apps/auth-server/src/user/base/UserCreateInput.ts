@@ -11,28 +11,47 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { ActivityLogCreateNestedManyWithoutUsersInput } from "./ActivityLogCreateNestedManyWithoutUsersInput";
+import { AccountCreateNestedManyWithoutUsersInput } from "./AccountCreateNestedManyWithoutUsersInput";
 import {
   ValidateNested,
   IsOptional,
   IsString,
+  IsDate,
   MaxLength,
   IsBoolean,
   IsEnum,
 } from "class-validator";
 import { Type } from "class-transformer";
+import { ActivityLogCreateNestedManyWithoutUsersInput } from "./ActivityLogCreateNestedManyWithoutUsersInput";
+import { SupportTicketCreateNestedManyWithoutUsersInput } from "./SupportTicketCreateNestedManyWithoutUsersInput";
 import { TransactionCreateNestedManyWithoutUsersInput } from "./TransactionCreateNestedManyWithoutUsersInput";
 import { EmployeeWhereUniqueInput } from "../../employee/base/EmployeeWhereUniqueInput";
+import { ExpenseCreateNestedManyWithoutUsersInput } from "./ExpenseCreateNestedManyWithoutUsersInput";
+import { InvoiceCreateNestedManyWithoutUsersInput } from "./InvoiceCreateNestedManyWithoutUsersInput";
 import { MarketingLeadCreateNestedManyWithoutUsersInput } from "./MarketingLeadCreateNestedManyWithoutUsersInput";
-import { IsJSONValue } from "../../validators";
-import { GraphQLJSON } from "graphql-type-json";
-import { InputJsonValue } from "../../types";
+import { UserPermissionCreateNestedManyWithoutUsersInput } from "./UserPermissionCreateNestedManyWithoutUsersInput";
+import { PopRechargeCreateNestedManyWithoutUsersInput } from "./PopRechargeCreateNestedManyWithoutUsersInput";
 import { ResellerWhereUniqueInput } from "../../reseller/base/ResellerWhereUniqueInput";
 import { EnumUserRoles } from "./EnumUserRoles";
+import { SessionCreateNestedManyWithoutUsersInput } from "./SessionCreateNestedManyWithoutUsersInput";
+import { SubscriptionCreateNestedManyWithoutUsersInput } from "./SubscriptionCreateNestedManyWithoutUsersInput";
 import { TokenCreateNestedManyWithoutUsersInput } from "./TokenCreateNestedManyWithoutUsersInput";
+import { UsageCreateNestedManyWithoutUsersInput } from "./UsageCreateNestedManyWithoutUsersInput";
 
 @InputType()
 class UserCreateInput {
+  @ApiProperty({
+    required: false,
+    type: () => AccountCreateNestedManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => AccountCreateNestedManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => AccountCreateNestedManyWithoutUsersInput, {
+    nullable: true,
+  })
+  accounts?: AccountCreateNestedManyWithoutUsersInput;
+
   @ApiProperty({
     required: false,
     type: () => ActivityLogCreateNestedManyWithoutUsersInput,
@@ -44,6 +63,18 @@ class UserCreateInput {
     nullable: true,
   })
   activityLogs?: ActivityLogCreateNestedManyWithoutUsersInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => SupportTicketCreateNestedManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => SupportTicketCreateNestedManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => SupportTicketCreateNestedManyWithoutUsersInput, {
+    nullable: true,
+  })
+  assignedTickets?: SupportTicketCreateNestedManyWithoutUsersInput;
 
   @ApiProperty({
     required: false,
@@ -70,6 +101,17 @@ class UserCreateInput {
 
   @ApiProperty({
     required: false,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  @Field(() => Date, {
+    nullable: true,
+  })
+  emailVerified?: Date | null;
+
+  @ApiProperty({
+    required: false,
     type: () => EmployeeWhereUniqueInput,
   })
   @ValidateNested()
@@ -82,6 +124,18 @@ class UserCreateInput {
 
   @ApiProperty({
     required: false,
+    type: () => ExpenseCreateNestedManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => ExpenseCreateNestedManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => ExpenseCreateNestedManyWithoutUsersInput, {
+    nullable: true,
+  })
+  expenses?: ExpenseCreateNestedManyWithoutUsersInput;
+
+  @ApiProperty({
+    required: false,
     type: String,
   })
   @IsString()
@@ -91,6 +145,30 @@ class UserCreateInput {
     nullable: true,
   })
   firstName?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @MaxLength(256)
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  image?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => InvoiceCreateNestedManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => InvoiceCreateNestedManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => InvoiceCreateNestedManyWithoutUsersInput, {
+    nullable: true,
+  })
+  invoices?: InvoiceCreateNestedManyWithoutUsersInput;
 
   @ApiProperty({
     required: true,
@@ -125,22 +203,40 @@ class UserCreateInput {
   marketingLeads?: MarketingLeadCreateNestedManyWithoutUsersInput;
 
   @ApiProperty({
-    required: true,
+    required: false,
     type: String,
   })
   @IsString()
-  @Field(() => String)
-  password!: string;
+  @MaxLength(256)
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  name?: string | null;
 
   @ApiProperty({
     required: false,
+    type: String,
   })
-  @IsJSONValue()
+  @IsString()
+  @MaxLength(256)
   @IsOptional()
-  @Field(() => GraphQLJSON, {
+  @Field(() => String, {
     nullable: true,
   })
-  permissionRoutes?: InputJsonValue;
+  password?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => UserPermissionCreateNestedManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => UserPermissionCreateNestedManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => UserPermissionCreateNestedManyWithoutUsersInput, {
+    nullable: true,
+  })
+  permissions?: UserPermissionCreateNestedManyWithoutUsersInput;
 
   @ApiProperty({
     required: false,
@@ -153,6 +249,18 @@ class UserCreateInput {
     nullable: true,
   })
   phone?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => PopRechargeCreateNestedManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => PopRechargeCreateNestedManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => PopRechargeCreateNestedManyWithoutUsersInput, {
+    nullable: true,
+  })
+  popRecharges?: PopRechargeCreateNestedManyWithoutUsersInput;
 
   @ApiProperty({
     required: false,
@@ -173,6 +281,8 @@ class UserCreateInput {
   @IsEnum(EnumUserRoles)
   @Field(() => EnumUserRoles)
   roles!:
+    | "USER"
+    | "ADMIN"
     | "SUPER_ADMIN"
     | "MANAGER"
     | "ACCOUNTANT"
@@ -182,6 +292,30 @@ class UserCreateInput {
     | "MARKETING_AGENT"
     | "RESELLER"
     | "SUB_RESELLER";
+
+  @ApiProperty({
+    required: false,
+    type: () => SessionCreateNestedManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => SessionCreateNestedManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => SessionCreateNestedManyWithoutUsersInput, {
+    nullable: true,
+  })
+  sessions?: SessionCreateNestedManyWithoutUsersInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => SubscriptionCreateNestedManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => SubscriptionCreateNestedManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => SubscriptionCreateNestedManyWithoutUsersInput, {
+    nullable: true,
+  })
+  subscriptions?: SubscriptionCreateNestedManyWithoutUsersInput;
 
   @ApiProperty({
     required: false,
@@ -196,12 +330,40 @@ class UserCreateInput {
   supportTickets?: TokenCreateNestedManyWithoutUsersInput;
 
   @ApiProperty({
-    required: true,
+    required: false,
+    type: () => SupportTicketCreateNestedManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => SupportTicketCreateNestedManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => SupportTicketCreateNestedManyWithoutUsersInput, {
+    nullable: true,
+  })
+  tickets?: SupportTicketCreateNestedManyWithoutUsersInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => UsageCreateNestedManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => UsageCreateNestedManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => UsageCreateNestedManyWithoutUsersInput, {
+    nullable: true,
+  })
+  usages?: UsageCreateNestedManyWithoutUsersInput;
+
+  @ApiProperty({
+    required: false,
     type: String,
   })
   @IsString()
-  @Field(() => String)
-  username!: string;
+  @MaxLength(256)
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  username?: string | null;
 }
 
 export { UserCreateInput as UserCreateInput };

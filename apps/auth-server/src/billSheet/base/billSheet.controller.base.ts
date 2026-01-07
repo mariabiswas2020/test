@@ -71,6 +71,7 @@ export class BillSheetControllerBase {
         month: true,
         payable: true,
         status: true,
+        updatedAt: true,
         year: true,
       },
     });
@@ -104,6 +105,7 @@ export class BillSheetControllerBase {
         month: true,
         payable: true,
         status: true,
+        updatedAt: true,
         year: true,
       },
     });
@@ -138,6 +140,7 @@ export class BillSheetControllerBase {
         month: true,
         payable: true,
         status: true,
+        updatedAt: true,
         year: true,
       },
     });
@@ -190,6 +193,7 @@ export class BillSheetControllerBase {
           month: true,
           payable: true,
           status: true,
+          updatedAt: true,
           year: true,
         },
       });
@@ -232,6 +236,7 @@ export class BillSheetControllerBase {
           month: true,
           payable: true,
           status: true,
+          updatedAt: true,
           year: true,
         },
       });

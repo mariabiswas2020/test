@@ -12,4 +12,5 @@ export type MarketingLeadOrderByInput = {
   proposedPackage?: SortOrder;
   remarks?: SortOrder;
   status?: SortOrder;
+  updatedAt?: SortOrder;
 };

@@ -29,6 +29,12 @@ import { CustomerUpdateInput } from "./CustomerUpdateInput";
 import { BillSheetFindManyArgs } from "../../billSheet/base/BillSheetFindManyArgs";
 import { BillSheet } from "../../billSheet/base/BillSheet";
 import { BillSheetWhereUniqueInput } from "../../billSheet/base/BillSheetWhereUniqueInput";
+import { CustomerSessionFindManyArgs } from "../../customerSession/base/CustomerSessionFindManyArgs";
+import { CustomerSession } from "../../customerSession/base/CustomerSession";
+import { CustomerSessionWhereUniqueInput } from "../../customerSession/base/CustomerSessionWhereUniqueInput";
+import { SupportTicketFindManyArgs } from "../../supportTicket/base/SupportTicketFindManyArgs";
+import { SupportTicket } from "../../supportTicket/base/SupportTicket";
+import { SupportTicketWhereUniqueInput } from "../../supportTicket/base/SupportTicketWhereUniqueInput";
 import { TokenFindManyArgs } from "../../token/base/TokenFindManyArgs";
 import { Token } from "../../token/base/Token";
 import { TokenWhereUniqueInput } from "../../token/base/TokenWhereUniqueInput";
@@ -92,6 +98,7 @@ export class CustomerControllerBase {
         connectionDate: true,
         createdAt: true,
         customerId: true,
+        deletedAt: true,
         dueAmount: true,
         email: true,
         id: true,
@@ -156,6 +163,7 @@ export class CustomerControllerBase {
         connectionDate: true,
         createdAt: true,
         customerId: true,
+        deletedAt: true,
         dueAmount: true,
         email: true,
         id: true,
@@ -221,6 +229,7 @@ export class CustomerControllerBase {
         connectionDate: true,
         createdAt: true,
         customerId: true,
+        deletedAt: true,
         dueAmount: true,
         email: true,
         id: true,
@@ -314,6 +323,7 @@ export class CustomerControllerBase {
           connectionDate: true,
           createdAt: true,
           customerId: true,
+          deletedAt: true,
           dueAmount: true,
           email: true,
           id: true,
@@ -387,6 +397,7 @@ export class CustomerControllerBase {
           connectionDate: true,
           createdAt: true,
           customerId: true,
+          deletedAt: true,
           dueAmount: true,
           email: true,
           id: true,
@@ -456,6 +467,7 @@ export class CustomerControllerBase {
         month: true,
         payable: true,
         status: true,
+        updatedAt: true,
         year: true,
       },
     });
@@ -523,6 +535,241 @@ export class CustomerControllerBase {
   ): Promise<void> {
     const data = {
       billSheets: {
+        disconnect: body,
+      },
+    };
+    await this.service.updateCustomer({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @common.Get("/:id/sessions")
+  @ApiNestedQuery(CustomerSessionFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "CustomerSession",
+    action: "read",
+    possession: "any",
+  })
+  async findSessions(
+    @common.Req() request: Request,
+    @common.Param() params: CustomerWhereUniqueInput
+  ): Promise<CustomerSession[]> {
+    const query = plainToClass(CustomerSessionFindManyArgs, request.query);
+    const results = await this.service.findSessions(params.id, {
+      ...query,
+      select: {
+        bytesIn: true,
+        bytesOut: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
+        endedAt: true,
+        id: true,
+        ipAddress: true,
+        lastSeenAt: true,
+        macAddress: true,
+        sessionId: true,
+        startedAt: true,
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        `No resource was found for ${JSON.stringify(params)}`
+      );
+    }
+    return results;
+  }
+
+  @common.Post("/:id/sessions")
+  @nestAccessControl.UseRoles({
+    resource: "Customer",
+    action: "update",
+    possession: "any",
+  })
+  async connectSessions(
+    @common.Param() params: CustomerWhereUniqueInput,
+    @common.Body() body: CustomerSessionWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      sessions: {
+        connect: body,
+      },
+    };
+    await this.service.updateCustomer({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch("/:id/sessions")
+  @nestAccessControl.UseRoles({
+    resource: "Customer",
+    action: "update",
+    possession: "any",
+  })
+  async updateSessions(
+    @common.Param() params: CustomerWhereUniqueInput,
+    @common.Body() body: CustomerSessionWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      sessions: {
+        set: body,
+      },
+    };
+    await this.service.updateCustomer({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete("/:id/sessions")
+  @nestAccessControl.UseRoles({
+    resource: "Customer",
+    action: "update",
+    possession: "any",
+  })
+  async disconnectSessions(
+    @common.Param() params: CustomerWhereUniqueInput,
+    @common.Body() body: CustomerSessionWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      sessions: {
+        disconnect: body,
+      },
+    };
+    await this.service.updateCustomer({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @common.Get("/:id/tickets")
+  @ApiNestedQuery(SupportTicketFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "SupportTicket",
+    action: "read",
+    possession: "any",
+  })
+  async findTickets(
+    @common.Req() request: Request,
+    @common.Param() params: CustomerWhereUniqueInput
+  ): Promise<SupportTicket[]> {
+    const query = plainToClass(SupportTicketFindManyArgs, request.query);
+    const results = await this.service.findTickets(params.id, {
+      ...query,
+      select: {
+        assignee: {
+          select: {
+            id: true,
+          },
+        },
+
+        category: {
+          select: {
+            id: true,
+          },
+        },
+
+        closedAt: true,
+        createdAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
+        description: true,
+        id: true,
+        priority: true,
+        resolvedAt: true,
+        status: true,
+        subject: true,
+        ticketNo: true,
+        updatedAt: true,
+
+        user: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        `No resource was found for ${JSON.stringify(params)}`
+      );
+    }
+    return results;
+  }
+
+  @common.Post("/:id/tickets")
+  @nestAccessControl.UseRoles({
+    resource: "Customer",
+    action: "update",
+    possession: "any",
+  })
+  async connectTickets(
+    @common.Param() params: CustomerWhereUniqueInput,
+    @common.Body() body: SupportTicketWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      tickets: {
+        connect: body,
+      },
+    };
+    await this.service.updateCustomer({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch("/:id/tickets")
+  @nestAccessControl.UseRoles({
+    resource: "Customer",
+    action: "update",
+    possession: "any",
+  })
+  async updateTickets(
+    @common.Param() params: CustomerWhereUniqueInput,
+    @common.Body() body: SupportTicketWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      tickets: {
+        set: body,
+      },
+    };
+    await this.service.updateCustomer({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete("/:id/tickets")
+  @nestAccessControl.UseRoles({
+    resource: "Customer",
+    action: "update",
+    possession: "any",
+  })
+  async disconnectTickets(
+    @common.Param() params: CustomerWhereUniqueInput,
+    @common.Body() body: SupportTicketWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      tickets: {
         disconnect: body,
       },
     };
@@ -681,12 +928,14 @@ export class CustomerControllerBase {
         },
 
         date: true,
+        deletedAt: true,
         discount: true,
         id: true,
         method: true,
         note: true,
         trxId: true,
         type: true,
+        updatedAt: true,
       },
     });
     if (results === null) {

@@ -20,6 +20,7 @@ export const UserList = (props: ListProps): React.ReactElement => {
       <Datagrid rowClick="show" bulkActionButtons={false}>
         <DateField source="createdAt" label="Created At" />
         <TextField label="Email" source="email" />
+        <TextField label="Email Verified" source="emailVerified" />
         <ReferenceField
           label="Employee Profile"
           source="employee.id"
@@ -29,9 +30,11 @@ export const UserList = (props: ListProps): React.ReactElement => {
         </ReferenceField>
         <TextField label="First Name" source="firstName" />
         <TextField label="ID" source="id" />
+        <TextField label="Image" source="image" />
         <BooleanField label="Is Active" source="isActive" />
         <TextField label="Last Name" source="lastName" />
-        <TextField label="Permission Routes" source="permissionRoutes" />
+        <TextField label="Name" source="name" />
+        <TextField label="Password" source="password" />
         <TextField label="Phone" source="phone" />
         <ReferenceField
           label="Reseller Profile"

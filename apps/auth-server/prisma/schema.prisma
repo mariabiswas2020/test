@@ -18,7 +18,7 @@ model User {
   employeeProfile Employee?
   expenses        Expense[]
   firstName       String?          @db.VarChar(100)
-  id              String           @id @default(cuid())
+  id              String           @id @default(uuid())
   image           String?
   invoices        Invoice[]
   isActive        Boolean          @default(true)
@@ -340,7 +340,7 @@ model Setting {
 model Account {
   accessToken       String? @map("access_token") @db.Text
   expiresAt         Int?    @map("expires_at")
-  id                String  @id @default(cuid())
+  id                String  @id @default(uuid())
   idToken           String? @map("id_token") @db.Text
   provider          String
   providerAccountId String

@@ -27,6 +27,9 @@ export class PurchaseItemControllerBase {
   constructor(protected readonly service: PurchaseItemService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: PurchaseItem })
+  @swagger.ApiBody({
+    type: PurchaseItemCreateInput,
+  })
   async createPurchaseItem(
     @common.Body() data: PurchaseItemCreateInput
   ): Promise<PurchaseItem> {
@@ -129,6 +132,9 @@ export class PurchaseItemControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: PurchaseItem })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiBody({
+    type: PurchaseItemUpdateInput,
+  })
   async updatePurchaseItem(
     @common.Param() params: PurchaseItemWhereUniqueInput,
     @common.Body() data: PurchaseItemUpdateInput

@@ -33,6 +33,9 @@ export class AreaControllerBase {
   constructor(protected readonly service: AreaService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Area })
+  @swagger.ApiBody({
+    type: AreaCreateInput,
+  })
   async createArea(@common.Body() data: AreaCreateInput): Promise<Area> {
     return await this.service.createArea({
       data: data,
@@ -84,6 +87,9 @@ export class AreaControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Area })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiBody({
+    type: AreaUpdateInput,
+  })
   async updateArea(
     @common.Param() params: AreaWhereUniqueInput,
     @common.Body() data: AreaUpdateInput

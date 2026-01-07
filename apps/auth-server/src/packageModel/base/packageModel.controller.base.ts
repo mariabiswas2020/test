@@ -30,6 +30,9 @@ export class PackageModelControllerBase {
   constructor(protected readonly service: PackageModelService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: PackageModel })
+  @swagger.ApiBody({
+    type: PackageModelCreateInput,
+  })
   async createPackageModel(
     @common.Body() data: PackageModelCreateInput
   ): Promise<PackageModel> {
@@ -92,6 +95,9 @@ export class PackageModelControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: PackageModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiBody({
+    type: PackageModelUpdateInput,
+  })
   async updatePackageModel(
     @common.Param() params: PackageModelWhereUniqueInput,
     @common.Body() data: PackageModelUpdateInput

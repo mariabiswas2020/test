@@ -27,6 +27,9 @@ export class TransactionControllerBase {
   constructor(protected readonly service: TransactionService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Transaction })
+  @swagger.ApiBody({
+    type: TransactionCreateInput,
+  })
   async createTransaction(
     @common.Body() data: TransactionCreateInput
   ): Promise<Transaction> {
@@ -146,6 +149,9 @@ export class TransactionControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Transaction })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiBody({
+    type: TransactionUpdateInput,
+  })
   async updateTransaction(
     @common.Param() params: TransactionWhereUniqueInput,
     @common.Body() data: TransactionUpdateInput

@@ -27,6 +27,9 @@ export class ExpenseControllerBase {
   constructor(protected readonly service: ExpenseService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Expense })
+  @swagger.ApiBody({
+    type: ExpenseCreateInput,
+  })
   async createExpense(
     @common.Body() data: ExpenseCreateInput
   ): Promise<Expense> {
@@ -118,6 +121,9 @@ export class ExpenseControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Expense })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiBody({
+    type: ExpenseUpdateInput,
+  })
   async updateExpense(
     @common.Param() params: ExpenseWhereUniqueInput,
     @common.Body() data: ExpenseUpdateInput

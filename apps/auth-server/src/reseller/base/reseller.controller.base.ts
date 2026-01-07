@@ -33,6 +33,9 @@ export class ResellerControllerBase {
   constructor(protected readonly service: ResellerService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Reseller })
+  @swagger.ApiBody({
+    type: ResellerCreateInput,
+  })
   async createReseller(
     @common.Body() data: ResellerCreateInput
   ): Promise<Reseller> {
@@ -110,6 +113,9 @@ export class ResellerControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Reseller })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiBody({
+    type: ResellerUpdateInput,
+  })
   async updateReseller(
     @common.Param() params: ResellerWhereUniqueInput,
     @common.Body() data: ResellerUpdateInput

@@ -10,6 +10,7 @@ import {
   ReferenceInput,
   SelectInput,
   BooleanInput,
+  PasswordInput,
 } from "react-admin";
 
 import { ActivityLogTitle } from "../activityLog/ActivityLogTitle";
@@ -55,7 +56,7 @@ export const UserCreate = (props: CreateProps): React.ReactElement => {
             format={(value: any) => value && value.map((v: any) => v.id)}
           />
         </ReferenceArrayInput>
-        <TextInput label="Password" source="password" />
+        <PasswordInput label="Password" source="password" />
         <div />
         <TextInput label="Phone" source="phone" />
         <ReferenceInput

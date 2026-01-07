@@ -18,9 +18,9 @@ async function seed() {
   const client = new PrismaClient();
   const data = {
     isActive: false,
-    password: "",
+    password: "admin",
     roles: EnumUserRoles.SUPER_ADMIN,
-    username: "",
+    username: "admin",
   };
   await client.user.upsert({
     where: {

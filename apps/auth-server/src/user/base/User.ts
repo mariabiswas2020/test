@@ -130,15 +130,6 @@ class User {
   marketingLeads?: Array<MarketingLead>;
 
   @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @MaxLength(256)
-  @Field(() => String)
-  password!: string;
-
-  @ApiProperty({
     required: false,
   })
   @IsJSONValue()
@@ -210,7 +201,6 @@ class User {
     type: String,
   })
   @IsString()
-  @MaxLength(256)
   @Field(() => String)
   username!: string;
 }

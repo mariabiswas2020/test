@@ -129,7 +129,6 @@ class UserCreateInput {
     type: String,
   })
   @IsString()
-  @MaxLength(256)
   @Field(() => String)
   password!: string;
 
@@ -201,7 +200,6 @@ class UserCreateInput {
     type: String,
   })
   @IsString()
-  @MaxLength(256)
   @Field(() => String)
   username!: string;
 }

@@ -21,7 +21,6 @@ export type UserWhereInput = {
   isActive?: BooleanFilter;
   lastName?: StringNullableFilter;
   marketingLeads?: MarketingLeadListRelationFilter;
-  password?: StringFilter;
   permissionRoutes?: JsonFilter;
   phone?: StringNullableFilter;
   resellerProfile?: ResellerWhereUniqueInput;

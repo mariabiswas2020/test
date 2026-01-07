@@ -13,6 +13,12 @@ import * as graphql from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
+import * as nestAccessControl from "nest-access-control";
+import * as gqlACGuard from "../../auth/gqlAC.guard";
+import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
+import * as common from "@nestjs/common";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { Expense } from "./Expense";
 import { ExpenseCountArgs } from "./ExpenseCountArgs";
 import { ExpenseFindManyArgs } from "./ExpenseFindManyArgs";
@@ -22,10 +28,20 @@ import { UpdateExpenseArgs } from "./UpdateExpenseArgs";
 import { DeleteExpenseArgs } from "./DeleteExpenseArgs";
 import { Pop } from "../../pop/base/Pop";
 import { ExpenseService } from "../expense.service";
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Expense)
 export class ExpenseResolverBase {
-  constructor(protected readonly service: ExpenseService) {}
+  constructor(
+    protected readonly service: ExpenseService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
 
+  @graphql.Query(() => MetaQueryPayload)
+  @nestAccessControl.UseRoles({
+    resource: "Expense",
+    action: "read",
+    possession: "any",
+  })
   async _expensesMeta(
     @graphql.Args() args: ExpenseCountArgs
   ): Promise<MetaQueryPayload> {
@@ -35,14 +51,26 @@ export class ExpenseResolverBase {
     };
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => [Expense])
+  @nestAccessControl.UseRoles({
+    resource: "Expense",
+    action: "read",
+    possession: "any",
+  })
   async expenses(
     @graphql.Args() args: ExpenseFindManyArgs
   ): Promise<Expense[]> {
     return this.service.expenses(args);
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => Expense, { nullable: true })
+  @nestAccessControl.UseRoles({
+    resource: "Expense",
+    action: "read",
+    possession: "own",
+  })
   async expense(
     @graphql.Args() args: ExpenseFindUniqueArgs
   ): Promise<Expense | null> {
@@ -53,7 +81,13 @@ export class ExpenseResolverBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => Expense)
+  @nestAccessControl.UseRoles({
+    resource: "Expense",
+    action: "create",
+    possession: "any",
+  })
   async createExpense(
     @graphql.Args() args: CreateExpenseArgs
   ): Promise<Expense> {
@@ -71,7 +105,13 @@ export class ExpenseResolverBase {
     });
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => Expense)
+  @nestAccessControl.UseRoles({
+    resource: "Expense",
+    action: "update",
+    possession: "any",
+  })
   async updateExpense(
     @graphql.Args() args: UpdateExpenseArgs
   ): Promise<Expense | null> {
@@ -99,6 +139,11 @@ export class ExpenseResolverBase {
   }
 
   @graphql.Mutation(() => Expense)
+  @nestAccessControl.UseRoles({
+    resource: "Expense",
+    action: "delete",
+    possession: "any",
+  })
   async deleteExpense(
     @graphql.Args() args: DeleteExpenseArgs
   ): Promise<Expense | null> {
@@ -114,9 +159,15 @@ export class ExpenseResolverBase {
     }
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => Pop, {
     nullable: true,
     name: "pop",
+  })
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "read",
+    possession: "any",
   })
   async getPop(@graphql.Parent() parent: Expense): Promise<Pop | null> {
     const result = await this.service.getPop(parent.id);

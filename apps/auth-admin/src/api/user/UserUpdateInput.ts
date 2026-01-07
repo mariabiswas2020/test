@@ -19,7 +19,7 @@ export type UserUpdateInput = {
   permissionRoutes?: InputJsonValue;
   phone?: string | null;
   resellerProfile?: ResellerWhereUniqueInput | null;
-  role?:
+  roles?:
     | "SUPER_ADMIN"
     | "MANAGER"
     | "ACCOUNTANT"

@@ -13,6 +13,12 @@ import * as graphql from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
+import * as nestAccessControl from "nest-access-control";
+import * as gqlACGuard from "../../auth/gqlAC.guard";
+import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
+import * as common from "@nestjs/common";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { Area } from "./Area";
 import { AreaCountArgs } from "./AreaCountArgs";
 import { AreaFindManyArgs } from "./AreaFindManyArgs";
@@ -25,10 +31,20 @@ import { Customer } from "../../customer/base/Customer";
 import { PopFindManyArgs } from "../../pop/base/PopFindManyArgs";
 import { Pop } from "../../pop/base/Pop";
 import { AreaService } from "../area.service";
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Area)
 export class AreaResolverBase {
-  constructor(protected readonly service: AreaService) {}
+  constructor(
+    protected readonly service: AreaService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
 
+  @graphql.Query(() => MetaQueryPayload)
+  @nestAccessControl.UseRoles({
+    resource: "Area",
+    action: "read",
+    possession: "any",
+  })
   async _areasMeta(
     @graphql.Args() args: AreaCountArgs
   ): Promise<MetaQueryPayload> {
@@ -38,12 +54,24 @@ export class AreaResolverBase {
     };
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => [Area])
+  @nestAccessControl.UseRoles({
+    resource: "Area",
+    action: "read",
+    possession: "any",
+  })
   async areas(@graphql.Args() args: AreaFindManyArgs): Promise<Area[]> {
     return this.service.areas(args);
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => Area, { nullable: true })
+  @nestAccessControl.UseRoles({
+    resource: "Area",
+    action: "read",
+    possession: "own",
+  })
   async area(@graphql.Args() args: AreaFindUniqueArgs): Promise<Area | null> {
     const result = await this.service.area(args);
     if (result === null) {
@@ -52,7 +80,13 @@ export class AreaResolverBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => Area)
+  @nestAccessControl.UseRoles({
+    resource: "Area",
+    action: "create",
+    possession: "any",
+  })
   async createArea(@graphql.Args() args: CreateAreaArgs): Promise<Area> {
     return await this.service.createArea({
       ...args,
@@ -60,7 +94,13 @@ export class AreaResolverBase {
     });
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => Area)
+  @nestAccessControl.UseRoles({
+    resource: "Area",
+    action: "update",
+    possession: "any",
+  })
   async updateArea(@graphql.Args() args: UpdateAreaArgs): Promise<Area | null> {
     try {
       return await this.service.updateArea({
@@ -78,6 +118,11 @@ export class AreaResolverBase {
   }
 
   @graphql.Mutation(() => Area)
+  @nestAccessControl.UseRoles({
+    resource: "Area",
+    action: "delete",
+    possession: "any",
+  })
   async deleteArea(@graphql.Args() args: DeleteAreaArgs): Promise<Area | null> {
     try {
       return await this.service.deleteArea(args);
@@ -91,7 +136,13 @@ export class AreaResolverBase {
     }
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => [Customer], { name: "customers" })
+  @nestAccessControl.UseRoles({
+    resource: "Customer",
+    action: "read",
+    possession: "any",
+  })
   async findCustomers(
     @graphql.Parent() parent: Area,
     @graphql.Args() args: CustomerFindManyArgs
@@ -105,7 +156,13 @@ export class AreaResolverBase {
     return results;
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => [Pop], { name: "pops" })
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "read",
+    possession: "any",
+  })
   async findPops(
     @graphql.Parent() parent: Area,
     @graphql.Args() args: PopFindManyArgs

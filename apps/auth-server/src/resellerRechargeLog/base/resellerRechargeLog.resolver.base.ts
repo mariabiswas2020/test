@@ -13,6 +13,12 @@ import * as graphql from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
+import * as nestAccessControl from "nest-access-control";
+import * as gqlACGuard from "../../auth/gqlAC.guard";
+import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
+import * as common from "@nestjs/common";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { ResellerRechargeLog } from "./ResellerRechargeLog";
 import { ResellerRechargeLogCountArgs } from "./ResellerRechargeLogCountArgs";
 import { ResellerRechargeLogFindManyArgs } from "./ResellerRechargeLogFindManyArgs";
@@ -22,10 +28,20 @@ import { UpdateResellerRechargeLogArgs } from "./UpdateResellerRechargeLogArgs";
 import { DeleteResellerRechargeLogArgs } from "./DeleteResellerRechargeLogArgs";
 import { Reseller } from "../../reseller/base/Reseller";
 import { ResellerRechargeLogService } from "../resellerRechargeLog.service";
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => ResellerRechargeLog)
 export class ResellerRechargeLogResolverBase {
-  constructor(protected readonly service: ResellerRechargeLogService) {}
+  constructor(
+    protected readonly service: ResellerRechargeLogService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
 
+  @graphql.Query(() => MetaQueryPayload)
+  @nestAccessControl.UseRoles({
+    resource: "ResellerRechargeLog",
+    action: "read",
+    possession: "any",
+  })
   async _resellerRechargeLogsMeta(
     @graphql.Args() args: ResellerRechargeLogCountArgs
   ): Promise<MetaQueryPayload> {
@@ -35,14 +51,26 @@ export class ResellerRechargeLogResolverBase {
     };
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => [ResellerRechargeLog])
+  @nestAccessControl.UseRoles({
+    resource: "ResellerRechargeLog",
+    action: "read",
+    possession: "any",
+  })
   async resellerRechargeLogs(
     @graphql.Args() args: ResellerRechargeLogFindManyArgs
   ): Promise<ResellerRechargeLog[]> {
     return this.service.resellerRechargeLogs(args);
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => ResellerRechargeLog, { nullable: true })
+  @nestAccessControl.UseRoles({
+    resource: "ResellerRechargeLog",
+    action: "read",
+    possession: "own",
+  })
   async resellerRechargeLog(
     @graphql.Args() args: ResellerRechargeLogFindUniqueArgs
   ): Promise<ResellerRechargeLog | null> {
@@ -53,7 +81,13 @@ export class ResellerRechargeLogResolverBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => ResellerRechargeLog)
+  @nestAccessControl.UseRoles({
+    resource: "ResellerRechargeLog",
+    action: "create",
+    possession: "any",
+  })
   async createResellerRechargeLog(
     @graphql.Args() args: CreateResellerRechargeLogArgs
   ): Promise<ResellerRechargeLog> {
@@ -69,7 +103,13 @@ export class ResellerRechargeLogResolverBase {
     });
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => ResellerRechargeLog)
+  @nestAccessControl.UseRoles({
+    resource: "ResellerRechargeLog",
+    action: "update",
+    possession: "any",
+  })
   async updateResellerRechargeLog(
     @graphql.Args() args: UpdateResellerRechargeLogArgs
   ): Promise<ResellerRechargeLog | null> {
@@ -95,6 +135,11 @@ export class ResellerRechargeLogResolverBase {
   }
 
   @graphql.Mutation(() => ResellerRechargeLog)
+  @nestAccessControl.UseRoles({
+    resource: "ResellerRechargeLog",
+    action: "delete",
+    possession: "any",
+  })
   async deleteResellerRechargeLog(
     @graphql.Args() args: DeleteResellerRechargeLogArgs
   ): Promise<ResellerRechargeLog | null> {
@@ -110,9 +155,15 @@ export class ResellerRechargeLogResolverBase {
     }
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => Reseller, {
     nullable: true,
     name: "reseller",
+  })
+  @nestAccessControl.UseRoles({
+    resource: "Reseller",
+    action: "read",
+    possession: "any",
   })
   async getReseller(
     @graphql.Parent() parent: ResellerRechargeLog

@@ -16,7 +16,11 @@ import * as errors from "../../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+import * as nestAccessControl from "nest-access-control";
+import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 import { PurchaseService } from "../purchase.service";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { PurchaseCreateInput } from "./PurchaseCreateInput";
 import { Purchase } from "./Purchase";
 import { PurchaseFindManyArgs } from "./PurchaseFindManyArgs";
@@ -29,12 +33,26 @@ import { ProductItemFindManyArgs } from "../../productItem/base/ProductItemFindM
 import { ProductItem } from "../../productItem/base/ProductItem";
 import { ProductItemWhereUniqueInput } from "../../productItem/base/ProductItemWhereUniqueInput";
 
+@swagger.ApiBearerAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class PurchaseControllerBase {
-  constructor(protected readonly service: PurchaseService) {}
+  constructor(
+    protected readonly service: PurchaseService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Purchase })
   @swagger.ApiBody({
     type: PurchaseCreateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "Purchase",
+    action: "create",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async createPurchase(
     @common.Body() data: PurchaseCreateInput
@@ -63,9 +81,18 @@ export class PurchaseControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
   @swagger.ApiOkResponse({ type: [Purchase] })
   @ApiNestedQuery(PurchaseFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "Purchase",
+    action: "read",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async purchases(@common.Req() request: Request): Promise<Purchase[]> {
     const args = plainToClass(PurchaseFindManyArgs, request.query);
     return this.service.purchases({
@@ -86,9 +113,18 @@ export class PurchaseControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Purchase })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "Purchase",
+    action: "read",
+    possession: "own",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async purchase(
     @common.Param() params: PurchaseWhereUniqueInput
   ): Promise<Purchase | null> {
@@ -116,11 +152,20 @@ export class PurchaseControllerBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Purchase })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiBody({
     type: PurchaseUpdateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "Purchase",
+    action: "update",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async updatePurchase(
     @common.Param() params: PurchaseWhereUniqueInput,
@@ -163,6 +208,14 @@ export class PurchaseControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Purchase })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "Purchase",
+    action: "delete",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async deletePurchase(
     @common.Param() params: PurchaseWhereUniqueInput
   ): Promise<Purchase | null> {
@@ -193,8 +246,14 @@ export class PurchaseControllerBase {
     }
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id/items")
   @ApiNestedQuery(PurchaseItemFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "PurchaseItem",
+    action: "read",
+    possession: "any",
+  })
   async findItems(
     @common.Req() request: Request,
     @common.Param() params: PurchaseWhereUniqueInput
@@ -230,6 +289,11 @@ export class PurchaseControllerBase {
   }
 
   @common.Post("/:id/items")
+  @nestAccessControl.UseRoles({
+    resource: "Purchase",
+    action: "update",
+    possession: "any",
+  })
   async connectItems(
     @common.Param() params: PurchaseWhereUniqueInput,
     @common.Body() body: PurchaseItemWhereUniqueInput[]
@@ -247,6 +311,11 @@ export class PurchaseControllerBase {
   }
 
   @common.Patch("/:id/items")
+  @nestAccessControl.UseRoles({
+    resource: "Purchase",
+    action: "update",
+    possession: "any",
+  })
   async updateItems(
     @common.Param() params: PurchaseWhereUniqueInput,
     @common.Body() body: PurchaseItemWhereUniqueInput[]
@@ -264,6 +333,11 @@ export class PurchaseControllerBase {
   }
 
   @common.Delete("/:id/items")
+  @nestAccessControl.UseRoles({
+    resource: "Purchase",
+    action: "update",
+    possession: "any",
+  })
   async disconnectItems(
     @common.Param() params: PurchaseWhereUniqueInput,
     @common.Body() body: PurchaseItemWhereUniqueInput[]
@@ -280,8 +354,14 @@ export class PurchaseControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id/stockItems")
   @ApiNestedQuery(ProductItemFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "ProductItem",
+    action: "read",
+    possession: "any",
+  })
   async findStockItems(
     @common.Req() request: Request,
     @common.Param() params: PurchaseWhereUniqueInput
@@ -324,6 +404,11 @@ export class PurchaseControllerBase {
   }
 
   @common.Post("/:id/stockItems")
+  @nestAccessControl.UseRoles({
+    resource: "Purchase",
+    action: "update",
+    possession: "any",
+  })
   async connectStockItems(
     @common.Param() params: PurchaseWhereUniqueInput,
     @common.Body() body: ProductItemWhereUniqueInput[]
@@ -341,6 +426,11 @@ export class PurchaseControllerBase {
   }
 
   @common.Patch("/:id/stockItems")
+  @nestAccessControl.UseRoles({
+    resource: "Purchase",
+    action: "update",
+    possession: "any",
+  })
   async updateStockItems(
     @common.Param() params: PurchaseWhereUniqueInput,
     @common.Body() body: ProductItemWhereUniqueInput[]
@@ -358,6 +448,11 @@ export class PurchaseControllerBase {
   }
 
   @common.Delete("/:id/stockItems")
+  @nestAccessControl.UseRoles({
+    resource: "Purchase",
+    action: "update",
+    possession: "any",
+  })
   async disconnectStockItems(
     @common.Param() params: PurchaseWhereUniqueInput,
     @common.Body() body: ProductItemWhereUniqueInput[]

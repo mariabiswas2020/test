@@ -16,7 +16,11 @@ import * as errors from "../../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+import * as nestAccessControl from "nest-access-control";
+import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 import { PackageModelService } from "../packageModel.service";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { PackageModelCreateInput } from "./PackageModelCreateInput";
 import { PackageModel } from "./PackageModel";
 import { PackageModelFindManyArgs } from "./PackageModelFindManyArgs";
@@ -26,12 +30,26 @@ import { CustomerFindManyArgs } from "../../customer/base/CustomerFindManyArgs";
 import { Customer } from "../../customer/base/Customer";
 import { CustomerWhereUniqueInput } from "../../customer/base/CustomerWhereUniqueInput";
 
+@swagger.ApiBearerAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class PackageModelControllerBase {
-  constructor(protected readonly service: PackageModelService) {}
+  constructor(
+    protected readonly service: PackageModelService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Post()
   @swagger.ApiCreatedResponse({ type: PackageModel })
   @swagger.ApiBody({
     type: PackageModelCreateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "PackageModel",
+    action: "create",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async createPackageModel(
     @common.Body() data: PackageModelCreateInput
@@ -49,9 +67,18 @@ export class PackageModelControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
   @swagger.ApiOkResponse({ type: [PackageModel] })
   @ApiNestedQuery(PackageModelFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "PackageModel",
+    action: "read",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async packageModels(@common.Req() request: Request): Promise<PackageModel[]> {
     const args = plainToClass(PackageModelFindManyArgs, request.query);
     return this.service.packageModels({
@@ -67,9 +94,18 @@ export class PackageModelControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: PackageModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "PackageModel",
+    action: "read",
+    possession: "own",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async packageModel(
     @common.Param() params: PackageModelWhereUniqueInput
   ): Promise<PackageModel | null> {
@@ -92,11 +128,20 @@ export class PackageModelControllerBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: PackageModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiBody({
     type: PackageModelUpdateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "PackageModel",
+    action: "update",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async updatePackageModel(
     @common.Param() params: PackageModelWhereUniqueInput,
@@ -128,6 +173,14 @@ export class PackageModelControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: PackageModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "PackageModel",
+    action: "delete",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async deletePackageModel(
     @common.Param() params: PackageModelWhereUniqueInput
   ): Promise<PackageModel | null> {
@@ -153,8 +206,14 @@ export class PackageModelControllerBase {
     }
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id/customers")
   @ApiNestedQuery(CustomerFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "Customer",
+    action: "read",
+    possession: "any",
+  })
   async findCustomers(
     @common.Req() request: Request,
     @common.Param() params: PackageModelWhereUniqueInput
@@ -217,6 +276,11 @@ export class PackageModelControllerBase {
   }
 
   @common.Post("/:id/customers")
+  @nestAccessControl.UseRoles({
+    resource: "PackageModel",
+    action: "update",
+    possession: "any",
+  })
   async connectCustomers(
     @common.Param() params: PackageModelWhereUniqueInput,
     @common.Body() body: CustomerWhereUniqueInput[]
@@ -234,6 +298,11 @@ export class PackageModelControllerBase {
   }
 
   @common.Patch("/:id/customers")
+  @nestAccessControl.UseRoles({
+    resource: "PackageModel",
+    action: "update",
+    possession: "any",
+  })
   async updateCustomers(
     @common.Param() params: PackageModelWhereUniqueInput,
     @common.Body() body: CustomerWhereUniqueInput[]
@@ -251,6 +320,11 @@ export class PackageModelControllerBase {
   }
 
   @common.Delete("/:id/customers")
+  @nestAccessControl.UseRoles({
+    resource: "PackageModel",
+    action: "update",
+    possession: "any",
+  })
   async disconnectCustomers(
     @common.Param() params: PackageModelWhereUniqueInput,
     @common.Body() body: CustomerWhereUniqueInput[]

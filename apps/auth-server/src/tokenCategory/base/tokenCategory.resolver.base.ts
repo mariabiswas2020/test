@@ -13,6 +13,12 @@ import * as graphql from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
+import * as nestAccessControl from "nest-access-control";
+import * as gqlACGuard from "../../auth/gqlAC.guard";
+import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
+import * as common from "@nestjs/common";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { TokenCategory } from "./TokenCategory";
 import { TokenCategoryCountArgs } from "./TokenCategoryCountArgs";
 import { TokenCategoryFindManyArgs } from "./TokenCategoryFindManyArgs";
@@ -23,10 +29,20 @@ import { DeleteTokenCategoryArgs } from "./DeleteTokenCategoryArgs";
 import { TokenFindManyArgs } from "../../token/base/TokenFindManyArgs";
 import { Token } from "../../token/base/Token";
 import { TokenCategoryService } from "../tokenCategory.service";
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => TokenCategory)
 export class TokenCategoryResolverBase {
-  constructor(protected readonly service: TokenCategoryService) {}
+  constructor(
+    protected readonly service: TokenCategoryService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
 
+  @graphql.Query(() => MetaQueryPayload)
+  @nestAccessControl.UseRoles({
+    resource: "TokenCategory",
+    action: "read",
+    possession: "any",
+  })
   async _tokenCategoriesMeta(
     @graphql.Args() args: TokenCategoryCountArgs
   ): Promise<MetaQueryPayload> {
@@ -36,14 +52,26 @@ export class TokenCategoryResolverBase {
     };
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => [TokenCategory])
+  @nestAccessControl.UseRoles({
+    resource: "TokenCategory",
+    action: "read",
+    possession: "any",
+  })
   async tokenCategories(
     @graphql.Args() args: TokenCategoryFindManyArgs
   ): Promise<TokenCategory[]> {
     return this.service.tokenCategories(args);
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => TokenCategory, { nullable: true })
+  @nestAccessControl.UseRoles({
+    resource: "TokenCategory",
+    action: "read",
+    possession: "own",
+  })
   async tokenCategory(
     @graphql.Args() args: TokenCategoryFindUniqueArgs
   ): Promise<TokenCategory | null> {
@@ -54,7 +82,13 @@ export class TokenCategoryResolverBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => TokenCategory)
+  @nestAccessControl.UseRoles({
+    resource: "TokenCategory",
+    action: "create",
+    possession: "any",
+  })
   async createTokenCategory(
     @graphql.Args() args: CreateTokenCategoryArgs
   ): Promise<TokenCategory> {
@@ -64,7 +98,13 @@ export class TokenCategoryResolverBase {
     });
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => TokenCategory)
+  @nestAccessControl.UseRoles({
+    resource: "TokenCategory",
+    action: "update",
+    possession: "any",
+  })
   async updateTokenCategory(
     @graphql.Args() args: UpdateTokenCategoryArgs
   ): Promise<TokenCategory | null> {
@@ -84,6 +124,11 @@ export class TokenCategoryResolverBase {
   }
 
   @graphql.Mutation(() => TokenCategory)
+  @nestAccessControl.UseRoles({
+    resource: "TokenCategory",
+    action: "delete",
+    possession: "any",
+  })
   async deleteTokenCategory(
     @graphql.Args() args: DeleteTokenCategoryArgs
   ): Promise<TokenCategory | null> {
@@ -99,7 +144,13 @@ export class TokenCategoryResolverBase {
     }
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => [Token], { name: "tokens" })
+  @nestAccessControl.UseRoles({
+    resource: "Token",
+    action: "read",
+    possession: "any",
+  })
   async findTokens(
     @graphql.Parent() parent: TokenCategory,
     @graphql.Args() args: TokenFindManyArgs

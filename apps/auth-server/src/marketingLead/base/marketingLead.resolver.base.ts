@@ -13,6 +13,12 @@ import * as graphql from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
+import * as nestAccessControl from "nest-access-control";
+import * as gqlACGuard from "../../auth/gqlAC.guard";
+import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
+import * as common from "@nestjs/common";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { MarketingLead } from "./MarketingLead";
 import { MarketingLeadCountArgs } from "./MarketingLeadCountArgs";
 import { MarketingLeadFindManyArgs } from "./MarketingLeadFindManyArgs";
@@ -22,10 +28,20 @@ import { UpdateMarketingLeadArgs } from "./UpdateMarketingLeadArgs";
 import { DeleteMarketingLeadArgs } from "./DeleteMarketingLeadArgs";
 import { User } from "../../user/base/User";
 import { MarketingLeadService } from "../marketingLead.service";
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => MarketingLead)
 export class MarketingLeadResolverBase {
-  constructor(protected readonly service: MarketingLeadService) {}
+  constructor(
+    protected readonly service: MarketingLeadService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
 
+  @graphql.Query(() => MetaQueryPayload)
+  @nestAccessControl.UseRoles({
+    resource: "MarketingLead",
+    action: "read",
+    possession: "any",
+  })
   async _marketingLeadsMeta(
     @graphql.Args() args: MarketingLeadCountArgs
   ): Promise<MetaQueryPayload> {
@@ -35,14 +51,26 @@ export class MarketingLeadResolverBase {
     };
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => [MarketingLead])
+  @nestAccessControl.UseRoles({
+    resource: "MarketingLead",
+    action: "read",
+    possession: "any",
+  })
   async marketingLeads(
     @graphql.Args() args: MarketingLeadFindManyArgs
   ): Promise<MarketingLead[]> {
     return this.service.marketingLeads(args);
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => MarketingLead, { nullable: true })
+  @nestAccessControl.UseRoles({
+    resource: "MarketingLead",
+    action: "read",
+    possession: "own",
+  })
   async marketingLead(
     @graphql.Args() args: MarketingLeadFindUniqueArgs
   ): Promise<MarketingLead | null> {
@@ -53,7 +81,13 @@ export class MarketingLeadResolverBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => MarketingLead)
+  @nestAccessControl.UseRoles({
+    resource: "MarketingLead",
+    action: "create",
+    possession: "any",
+  })
   async createMarketingLead(
     @graphql.Args() args: CreateMarketingLeadArgs
   ): Promise<MarketingLead> {
@@ -69,7 +103,13 @@ export class MarketingLeadResolverBase {
     });
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => MarketingLead)
+  @nestAccessControl.UseRoles({
+    resource: "MarketingLead",
+    action: "update",
+    possession: "any",
+  })
   async updateMarketingLead(
     @graphql.Args() args: UpdateMarketingLeadArgs
   ): Promise<MarketingLead | null> {
@@ -95,6 +135,11 @@ export class MarketingLeadResolverBase {
   }
 
   @graphql.Mutation(() => MarketingLead)
+  @nestAccessControl.UseRoles({
+    resource: "MarketingLead",
+    action: "delete",
+    possession: "any",
+  })
   async deleteMarketingLead(
     @graphql.Args() args: DeleteMarketingLeadArgs
   ): Promise<MarketingLead | null> {
@@ -110,9 +155,15 @@ export class MarketingLeadResolverBase {
     }
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => User, {
     nullable: true,
     name: "agent",
+  })
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "read",
+    possession: "any",
   })
   async getAgent(
     @graphql.Parent() parent: MarketingLead

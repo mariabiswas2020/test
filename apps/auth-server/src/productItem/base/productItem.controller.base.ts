@@ -16,19 +16,37 @@ import * as errors from "../../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+import * as nestAccessControl from "nest-access-control";
+import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 import { ProductItemService } from "../productItem.service";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { ProductItemCreateInput } from "./ProductItemCreateInput";
 import { ProductItem } from "./ProductItem";
 import { ProductItemFindManyArgs } from "./ProductItemFindManyArgs";
 import { ProductItemWhereUniqueInput } from "./ProductItemWhereUniqueInput";
 import { ProductItemUpdateInput } from "./ProductItemUpdateInput";
 
+@swagger.ApiBearerAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class ProductItemControllerBase {
-  constructor(protected readonly service: ProductItemService) {}
+  constructor(
+    protected readonly service: ProductItemService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Post()
   @swagger.ApiCreatedResponse({ type: ProductItem })
   @swagger.ApiBody({
     type: ProductItemCreateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "ProductItem",
+    action: "create",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async createProductItem(
     @common.Body() data: ProductItemCreateInput
@@ -81,9 +99,18 @@ export class ProductItemControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
   @swagger.ApiOkResponse({ type: [ProductItem] })
   @ApiNestedQuery(ProductItemFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "ProductItem",
+    action: "read",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async productItems(@common.Req() request: Request): Promise<ProductItem[]> {
     const args = plainToClass(ProductItemFindManyArgs, request.query);
     return this.service.productItems({
@@ -116,9 +143,18 @@ export class ProductItemControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: ProductItem })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "ProductItem",
+    action: "read",
+    possession: "own",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async productItem(
     @common.Param() params: ProductItemWhereUniqueInput
   ): Promise<ProductItem | null> {
@@ -158,11 +194,20 @@ export class ProductItemControllerBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: ProductItem })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiBody({
     type: ProductItemUpdateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "ProductItem",
+    action: "update",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async updateProductItem(
     @common.Param() params: ProductItemWhereUniqueInput,
@@ -229,6 +274,14 @@ export class ProductItemControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: ProductItem })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "ProductItem",
+    action: "delete",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async deleteProductItem(
     @common.Param() params: ProductItemWhereUniqueInput
   ): Promise<ProductItem | null> {

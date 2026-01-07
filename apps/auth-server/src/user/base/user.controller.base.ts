@@ -16,7 +16,11 @@ import * as errors from "../../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+import * as nestAccessControl from "nest-access-control";
+import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 import { UserService } from "../user.service";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { UserCreateInput } from "./UserCreateInput";
 import { User } from "./User";
 import { UserFindManyArgs } from "./UserFindManyArgs";
@@ -35,12 +39,26 @@ import { TokenFindManyArgs } from "../../token/base/TokenFindManyArgs";
 import { Token } from "../../token/base/Token";
 import { TokenWhereUniqueInput } from "../../token/base/TokenWhereUniqueInput";
 
+@swagger.ApiBearerAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class UserControllerBase {
-  constructor(protected readonly service: UserService) {}
+  constructor(
+    protected readonly service: UserService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Post()
   @swagger.ApiCreatedResponse({ type: User })
   @swagger.ApiBody({
     type: UserCreateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "create",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async createUser(@common.Body() data: UserCreateInput): Promise<User> {
     return await this.service.createUser({
@@ -83,16 +101,25 @@ export class UserControllerBase {
           },
         },
 
-        role: true,
+        roles: true,
         updatedAt: true,
         username: true,
       },
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
   @swagger.ApiOkResponse({ type: [User] })
   @ApiNestedQuery(UserFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "read",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async users(@common.Req() request: Request): Promise<User[]> {
     const args = plainToClass(UserFindManyArgs, request.query);
     return this.service.users({
@@ -121,16 +148,25 @@ export class UserControllerBase {
           },
         },
 
-        role: true,
+        roles: true,
         updatedAt: true,
         username: true,
       },
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "read",
+    possession: "own",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async user(
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
@@ -160,7 +196,7 @@ export class UserControllerBase {
           },
         },
 
-        role: true,
+        roles: true,
         updatedAt: true,
         username: true,
       },
@@ -173,11 +209,20 @@ export class UserControllerBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiBody({
     type: UserUpdateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async updateUser(
     @common.Param() params: UserWhereUniqueInput,
@@ -225,7 +270,7 @@ export class UserControllerBase {
             },
           },
 
-          role: true,
+          roles: true,
           updatedAt: true,
           username: true,
         },
@@ -243,6 +288,14 @@ export class UserControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "delete",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async deleteUser(
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
@@ -273,7 +326,7 @@ export class UserControllerBase {
             },
           },
 
-          role: true,
+          roles: true,
           updatedAt: true,
           username: true,
         },
@@ -288,8 +341,14 @@ export class UserControllerBase {
     }
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id/activityLogs")
   @ApiNestedQuery(ActivityLogFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "ActivityLog",
+    action: "read",
+    possession: "any",
+  })
   async findActivityLogs(
     @common.Req() request: Request,
     @common.Param() params: UserWhereUniqueInput
@@ -320,6 +379,11 @@ export class UserControllerBase {
   }
 
   @common.Post("/:id/activityLogs")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
   async connectActivityLogs(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: ActivityLogWhereUniqueInput[]
@@ -337,6 +401,11 @@ export class UserControllerBase {
   }
 
   @common.Patch("/:id/activityLogs")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
   async updateActivityLogs(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: ActivityLogWhereUniqueInput[]
@@ -354,6 +423,11 @@ export class UserControllerBase {
   }
 
   @common.Delete("/:id/activityLogs")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
   async disconnectActivityLogs(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: ActivityLogWhereUniqueInput[]
@@ -370,8 +444,14 @@ export class UserControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id/collectedBills")
   @ApiNestedQuery(TransactionFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "Transaction",
+    action: "read",
+    possession: "any",
+  })
   async findCollectedBills(
     @common.Req() request: Request,
     @common.Param() params: UserWhereUniqueInput
@@ -412,6 +492,11 @@ export class UserControllerBase {
   }
 
   @common.Post("/:id/collectedBills")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
   async connectCollectedBills(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: TransactionWhereUniqueInput[]
@@ -429,6 +514,11 @@ export class UserControllerBase {
   }
 
   @common.Patch("/:id/collectedBills")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
   async updateCollectedBills(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: TransactionWhereUniqueInput[]
@@ -446,6 +536,11 @@ export class UserControllerBase {
   }
 
   @common.Delete("/:id/collectedBills")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
   async disconnectCollectedBills(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: TransactionWhereUniqueInput[]
@@ -462,8 +557,14 @@ export class UserControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id/marketingLeads")
   @ApiNestedQuery(MarketingLeadFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "MarketingLead",
+    action: "read",
+    possession: "any",
+  })
   async findMarketingLeads(
     @common.Req() request: Request,
     @common.Param() params: UserWhereUniqueInput
@@ -500,6 +601,11 @@ export class UserControllerBase {
   }
 
   @common.Post("/:id/marketingLeads")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
   async connectMarketingLeads(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: MarketingLeadWhereUniqueInput[]
@@ -517,6 +623,11 @@ export class UserControllerBase {
   }
 
   @common.Patch("/:id/marketingLeads")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
   async updateMarketingLeads(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: MarketingLeadWhereUniqueInput[]
@@ -534,6 +645,11 @@ export class UserControllerBase {
   }
 
   @common.Delete("/:id/marketingLeads")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
   async disconnectMarketingLeads(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: MarketingLeadWhereUniqueInput[]
@@ -550,8 +666,14 @@ export class UserControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id/supportTickets")
   @ApiNestedQuery(TokenFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "Token",
+    action: "read",
+    possession: "any",
+  })
   async findSupportTickets(
     @common.Req() request: Request,
     @common.Param() params: UserWhereUniqueInput
@@ -596,6 +718,11 @@ export class UserControllerBase {
   }
 
   @common.Post("/:id/supportTickets")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
   async connectSupportTickets(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: TokenWhereUniqueInput[]
@@ -613,6 +740,11 @@ export class UserControllerBase {
   }
 
   @common.Patch("/:id/supportTickets")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
   async updateSupportTickets(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: TokenWhereUniqueInput[]
@@ -630,6 +762,11 @@ export class UserControllerBase {
   }
 
   @common.Delete("/:id/supportTickets")
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "update",
+    possession: "any",
+  })
   async disconnectSupportTickets(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() body: TokenWhereUniqueInput[]

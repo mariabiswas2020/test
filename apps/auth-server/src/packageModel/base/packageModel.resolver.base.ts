@@ -13,6 +13,12 @@ import * as graphql from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
+import * as nestAccessControl from "nest-access-control";
+import * as gqlACGuard from "../../auth/gqlAC.guard";
+import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
+import * as common from "@nestjs/common";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { PackageModel } from "./PackageModel";
 import { PackageModelCountArgs } from "./PackageModelCountArgs";
 import { PackageModelFindManyArgs } from "./PackageModelFindManyArgs";
@@ -23,10 +29,20 @@ import { DeletePackageModelArgs } from "./DeletePackageModelArgs";
 import { CustomerFindManyArgs } from "../../customer/base/CustomerFindManyArgs";
 import { Customer } from "../../customer/base/Customer";
 import { PackageModelService } from "../packageModel.service";
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => PackageModel)
 export class PackageModelResolverBase {
-  constructor(protected readonly service: PackageModelService) {}
+  constructor(
+    protected readonly service: PackageModelService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
 
+  @graphql.Query(() => MetaQueryPayload)
+  @nestAccessControl.UseRoles({
+    resource: "PackageModel",
+    action: "read",
+    possession: "any",
+  })
   async _packageModelsMeta(
     @graphql.Args() args: PackageModelCountArgs
   ): Promise<MetaQueryPayload> {
@@ -36,14 +52,26 @@ export class PackageModelResolverBase {
     };
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => [PackageModel])
+  @nestAccessControl.UseRoles({
+    resource: "PackageModel",
+    action: "read",
+    possession: "any",
+  })
   async packageModels(
     @graphql.Args() args: PackageModelFindManyArgs
   ): Promise<PackageModel[]> {
     return this.service.packageModels(args);
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => PackageModel, { nullable: true })
+  @nestAccessControl.UseRoles({
+    resource: "PackageModel",
+    action: "read",
+    possession: "own",
+  })
   async packageModel(
     @graphql.Args() args: PackageModelFindUniqueArgs
   ): Promise<PackageModel | null> {
@@ -54,7 +82,13 @@ export class PackageModelResolverBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => PackageModel)
+  @nestAccessControl.UseRoles({
+    resource: "PackageModel",
+    action: "create",
+    possession: "any",
+  })
   async createPackageModel(
     @graphql.Args() args: CreatePackageModelArgs
   ): Promise<PackageModel> {
@@ -64,7 +98,13 @@ export class PackageModelResolverBase {
     });
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => PackageModel)
+  @nestAccessControl.UseRoles({
+    resource: "PackageModel",
+    action: "update",
+    possession: "any",
+  })
   async updatePackageModel(
     @graphql.Args() args: UpdatePackageModelArgs
   ): Promise<PackageModel | null> {
@@ -84,6 +124,11 @@ export class PackageModelResolverBase {
   }
 
   @graphql.Mutation(() => PackageModel)
+  @nestAccessControl.UseRoles({
+    resource: "PackageModel",
+    action: "delete",
+    possession: "any",
+  })
   async deletePackageModel(
     @graphql.Args() args: DeletePackageModelArgs
   ): Promise<PackageModel | null> {
@@ -99,7 +144,13 @@ export class PackageModelResolverBase {
     }
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => [Customer], { name: "customers" })
+  @nestAccessControl.UseRoles({
+    resource: "Customer",
+    action: "read",
+    possession: "any",
+  })
   async findCustomers(
     @graphql.Parent() parent: PackageModel,
     @graphql.Args() args: CustomerFindManyArgs

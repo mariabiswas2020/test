@@ -16,7 +16,11 @@ import * as errors from "../../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+import * as nestAccessControl from "nest-access-control";
+import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 import { SupplierService } from "../supplier.service";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { SupplierCreateInput } from "./SupplierCreateInput";
 import { Supplier } from "./Supplier";
 import { SupplierFindManyArgs } from "./SupplierFindManyArgs";
@@ -26,12 +30,26 @@ import { PurchaseFindManyArgs } from "../../purchase/base/PurchaseFindManyArgs";
 import { Purchase } from "../../purchase/base/Purchase";
 import { PurchaseWhereUniqueInput } from "../../purchase/base/PurchaseWhereUniqueInput";
 
+@swagger.ApiBearerAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class SupplierControllerBase {
-  constructor(protected readonly service: SupplierService) {}
+  constructor(
+    protected readonly service: SupplierService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Supplier })
   @swagger.ApiBody({
     type: SupplierCreateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "Supplier",
+    action: "create",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async createSupplier(
     @common.Body() data: SupplierCreateInput
@@ -47,9 +65,18 @@ export class SupplierControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
   @swagger.ApiOkResponse({ type: [Supplier] })
   @ApiNestedQuery(SupplierFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "Supplier",
+    action: "read",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async suppliers(@common.Req() request: Request): Promise<Supplier[]> {
     const args = plainToClass(SupplierFindManyArgs, request.query);
     return this.service.suppliers({
@@ -63,9 +90,18 @@ export class SupplierControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Supplier })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "Supplier",
+    action: "read",
+    possession: "own",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async supplier(
     @common.Param() params: SupplierWhereUniqueInput
   ): Promise<Supplier | null> {
@@ -86,11 +122,20 @@ export class SupplierControllerBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Supplier })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiBody({
     type: SupplierUpdateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "Supplier",
+    action: "update",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async updateSupplier(
     @common.Param() params: SupplierWhereUniqueInput,
@@ -120,6 +165,14 @@ export class SupplierControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Supplier })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "Supplier",
+    action: "delete",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async deleteSupplier(
     @common.Param() params: SupplierWhereUniqueInput
   ): Promise<Supplier | null> {
@@ -143,8 +196,14 @@ export class SupplierControllerBase {
     }
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id/purchases")
   @ApiNestedQuery(PurchaseFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "Purchase",
+    action: "read",
+    possession: "any",
+  })
   async findPurchases(
     @common.Req() request: Request,
     @common.Param() params: SupplierWhereUniqueInput
@@ -175,6 +234,11 @@ export class SupplierControllerBase {
   }
 
   @common.Post("/:id/purchases")
+  @nestAccessControl.UseRoles({
+    resource: "Supplier",
+    action: "update",
+    possession: "any",
+  })
   async connectPurchases(
     @common.Param() params: SupplierWhereUniqueInput,
     @common.Body() body: PurchaseWhereUniqueInput[]
@@ -192,6 +256,11 @@ export class SupplierControllerBase {
   }
 
   @common.Patch("/:id/purchases")
+  @nestAccessControl.UseRoles({
+    resource: "Supplier",
+    action: "update",
+    possession: "any",
+  })
   async updatePurchases(
     @common.Param() params: SupplierWhereUniqueInput,
     @common.Body() body: PurchaseWhereUniqueInput[]
@@ -209,6 +278,11 @@ export class SupplierControllerBase {
   }
 
   @common.Delete("/:id/purchases")
+  @nestAccessControl.UseRoles({
+    resource: "Supplier",
+    action: "update",
+    possession: "any",
+  })
   async disconnectPurchases(
     @common.Param() params: SupplierWhereUniqueInput,
     @common.Body() body: PurchaseWhereUniqueInput[]

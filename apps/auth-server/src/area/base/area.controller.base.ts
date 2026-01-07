@@ -16,7 +16,11 @@ import * as errors from "../../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+import * as nestAccessControl from "nest-access-control";
+import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 import { AreaService } from "../area.service";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { AreaCreateInput } from "./AreaCreateInput";
 import { Area } from "./Area";
 import { AreaFindManyArgs } from "./AreaFindManyArgs";
@@ -29,12 +33,26 @@ import { PopFindManyArgs } from "../../pop/base/PopFindManyArgs";
 import { Pop } from "../../pop/base/Pop";
 import { PopWhereUniqueInput } from "../../pop/base/PopWhereUniqueInput";
 
+@swagger.ApiBearerAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class AreaControllerBase {
-  constructor(protected readonly service: AreaService) {}
+  constructor(
+    protected readonly service: AreaService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Area })
   @swagger.ApiBody({
     type: AreaCreateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "Area",
+    action: "create",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async createArea(@common.Body() data: AreaCreateInput): Promise<Area> {
     return await this.service.createArea({
@@ -47,9 +65,18 @@ export class AreaControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
   @swagger.ApiOkResponse({ type: [Area] })
   @ApiNestedQuery(AreaFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "Area",
+    action: "read",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async areas(@common.Req() request: Request): Promise<Area[]> {
     const args = plainToClass(AreaFindManyArgs, request.query);
     return this.service.areas({
@@ -62,9 +89,18 @@ export class AreaControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Area })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "Area",
+    action: "read",
+    possession: "own",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async area(
     @common.Param() params: AreaWhereUniqueInput
   ): Promise<Area | null> {
@@ -84,11 +120,20 @@ export class AreaControllerBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Area })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiBody({
     type: AreaUpdateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "Area",
+    action: "update",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async updateArea(
     @common.Param() params: AreaWhereUniqueInput,
@@ -117,6 +162,14 @@ export class AreaControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Area })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "Area",
+    action: "delete",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async deleteArea(
     @common.Param() params: AreaWhereUniqueInput
   ): Promise<Area | null> {
@@ -139,8 +192,14 @@ export class AreaControllerBase {
     }
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id/customers")
   @ApiNestedQuery(CustomerFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "Customer",
+    action: "read",
+    possession: "any",
+  })
   async findCustomers(
     @common.Req() request: Request,
     @common.Param() params: AreaWhereUniqueInput
@@ -203,6 +262,11 @@ export class AreaControllerBase {
   }
 
   @common.Post("/:id/customers")
+  @nestAccessControl.UseRoles({
+    resource: "Area",
+    action: "update",
+    possession: "any",
+  })
   async connectCustomers(
     @common.Param() params: AreaWhereUniqueInput,
     @common.Body() body: CustomerWhereUniqueInput[]
@@ -220,6 +284,11 @@ export class AreaControllerBase {
   }
 
   @common.Patch("/:id/customers")
+  @nestAccessControl.UseRoles({
+    resource: "Area",
+    action: "update",
+    possession: "any",
+  })
   async updateCustomers(
     @common.Param() params: AreaWhereUniqueInput,
     @common.Body() body: CustomerWhereUniqueInput[]
@@ -237,6 +306,11 @@ export class AreaControllerBase {
   }
 
   @common.Delete("/:id/customers")
+  @nestAccessControl.UseRoles({
+    resource: "Area",
+    action: "update",
+    possession: "any",
+  })
   async disconnectCustomers(
     @common.Param() params: AreaWhereUniqueInput,
     @common.Body() body: CustomerWhereUniqueInput[]
@@ -253,8 +327,14 @@ export class AreaControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id/pops")
   @ApiNestedQuery(PopFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "read",
+    possession: "any",
+  })
   async findPops(
     @common.Req() request: Request,
     @common.Param() params: AreaWhereUniqueInput
@@ -299,6 +379,11 @@ export class AreaControllerBase {
   }
 
   @common.Post("/:id/pops")
+  @nestAccessControl.UseRoles({
+    resource: "Area",
+    action: "update",
+    possession: "any",
+  })
   async connectPops(
     @common.Param() params: AreaWhereUniqueInput,
     @common.Body() body: PopWhereUniqueInput[]
@@ -316,6 +401,11 @@ export class AreaControllerBase {
   }
 
   @common.Patch("/:id/pops")
+  @nestAccessControl.UseRoles({
+    resource: "Area",
+    action: "update",
+    possession: "any",
+  })
   async updatePops(
     @common.Param() params: AreaWhereUniqueInput,
     @common.Body() body: PopWhereUniqueInput[]
@@ -333,6 +423,11 @@ export class AreaControllerBase {
   }
 
   @common.Delete("/:id/pops")
+  @nestAccessControl.UseRoles({
+    resource: "Area",
+    action: "update",
+    possession: "any",
+  })
   async disconnectPops(
     @common.Param() params: AreaWhereUniqueInput,
     @common.Body() body: PopWhereUniqueInput[]

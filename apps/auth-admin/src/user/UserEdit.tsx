@@ -37,7 +37,7 @@ export const UserEdit = (props: EditProps): React.ReactElement => {
             format={(value: any) => value && value.map((v: any) => v.id)}
           />
         </ReferenceArrayInput>
-        <TextInput label="Email" source="email" />
+        <TextInput label="Email" source="email" type="email" />
         <ReferenceInput
           source="employeeProfile.id"
           reference="Employee"
@@ -66,8 +66,8 @@ export const UserEdit = (props: EditProps): React.ReactElement => {
           <SelectInput optionText={ResellerTitle} />
         </ReferenceInput>
         <SelectInput
-          source="role"
-          label="Role"
+          source="roles"
+          label="Roles"
           choices={[
             { label: "SUPER_ADMIN", value: "SUPER_ADMIN" },
             { label: "MANAGER", value: "MANAGER" },

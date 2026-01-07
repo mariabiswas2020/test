@@ -16,7 +16,11 @@ import * as errors from "../../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+import * as nestAccessControl from "nest-access-control";
+import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 import { PopService } from "../pop.service";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { PopCreateInput } from "./PopCreateInput";
 import { Pop } from "./Pop";
 import { PopFindManyArgs } from "./PopFindManyArgs";
@@ -35,12 +39,26 @@ import { PopRechargeFindManyArgs } from "../../popRecharge/base/PopRechargeFindM
 import { PopRecharge } from "../../popRecharge/base/PopRecharge";
 import { PopRechargeWhereUniqueInput } from "../../popRecharge/base/PopRechargeWhereUniqueInput";
 
+@swagger.ApiBearerAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class PopControllerBase {
-  constructor(protected readonly service: PopService) {}
+  constructor(
+    protected readonly service: PopService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Pop })
   @swagger.ApiBody({
     type: PopCreateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "create",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async createPop(@common.Body() data: PopCreateInput): Promise<Pop> {
     return await this.service.createPop({
@@ -95,9 +113,18 @@ export class PopControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
   @swagger.ApiOkResponse({ type: [Pop] })
   @ApiNestedQuery(PopFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "read",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async pops(@common.Req() request: Request): Promise<Pop[]> {
     const args = plainToClass(PopFindManyArgs, request.query);
     return this.service.pops({
@@ -132,9 +159,18 @@ export class PopControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Pop })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "read",
+    possession: "own",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async pop(@common.Param() params: PopWhereUniqueInput): Promise<Pop | null> {
     const result = await this.service.pop({
       where: params,
@@ -174,11 +210,20 @@ export class PopControllerBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Pop })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiBody({
     type: PopUpdateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "update",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async updatePop(
     @common.Param() params: PopWhereUniqueInput,
@@ -249,6 +294,14 @@ export class PopControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Pop })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "delete",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async deletePop(
     @common.Param() params: PopWhereUniqueInput
   ): Promise<Pop | null> {
@@ -293,8 +346,14 @@ export class PopControllerBase {
     }
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id/customers")
   @ApiNestedQuery(CustomerFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "Customer",
+    action: "read",
+    possession: "any",
+  })
   async findCustomers(
     @common.Req() request: Request,
     @common.Param() params: PopWhereUniqueInput
@@ -357,6 +416,11 @@ export class PopControllerBase {
   }
 
   @common.Post("/:id/customers")
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "update",
+    possession: "any",
+  })
   async connectCustomers(
     @common.Param() params: PopWhereUniqueInput,
     @common.Body() body: CustomerWhereUniqueInput[]
@@ -374,6 +438,11 @@ export class PopControllerBase {
   }
 
   @common.Patch("/:id/customers")
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "update",
+    possession: "any",
+  })
   async updateCustomers(
     @common.Param() params: PopWhereUniqueInput,
     @common.Body() body: CustomerWhereUniqueInput[]
@@ -391,6 +460,11 @@ export class PopControllerBase {
   }
 
   @common.Delete("/:id/customers")
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "update",
+    possession: "any",
+  })
   async disconnectCustomers(
     @common.Param() params: PopWhereUniqueInput,
     @common.Body() body: CustomerWhereUniqueInput[]
@@ -407,8 +481,14 @@ export class PopControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id/expenses")
   @ApiNestedQuery(ExpenseFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "Expense",
+    action: "read",
+    possession: "any",
+  })
   async findExpenses(
     @common.Req() request: Request,
     @common.Param() params: PopWhereUniqueInput
@@ -441,6 +521,11 @@ export class PopControllerBase {
   }
 
   @common.Post("/:id/expenses")
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "update",
+    possession: "any",
+  })
   async connectExpenses(
     @common.Param() params: PopWhereUniqueInput,
     @common.Body() body: ExpenseWhereUniqueInput[]
@@ -458,6 +543,11 @@ export class PopControllerBase {
   }
 
   @common.Patch("/:id/expenses")
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "update",
+    possession: "any",
+  })
   async updateExpenses(
     @common.Param() params: PopWhereUniqueInput,
     @common.Body() body: ExpenseWhereUniqueInput[]
@@ -475,6 +565,11 @@ export class PopControllerBase {
   }
 
   @common.Delete("/:id/expenses")
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "update",
+    possession: "any",
+  })
   async disconnectExpenses(
     @common.Param() params: PopWhereUniqueInput,
     @common.Body() body: ExpenseWhereUniqueInput[]
@@ -491,8 +586,14 @@ export class PopControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id/products")
   @ApiNestedQuery(ProductItemFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "ProductItem",
+    action: "read",
+    possession: "any",
+  })
   async findProducts(
     @common.Req() request: Request,
     @common.Param() params: PopWhereUniqueInput
@@ -535,6 +636,11 @@ export class PopControllerBase {
   }
 
   @common.Post("/:id/products")
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "update",
+    possession: "any",
+  })
   async connectProducts(
     @common.Param() params: PopWhereUniqueInput,
     @common.Body() body: ProductItemWhereUniqueInput[]
@@ -552,6 +658,11 @@ export class PopControllerBase {
   }
 
   @common.Patch("/:id/products")
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "update",
+    possession: "any",
+  })
   async updateProducts(
     @common.Param() params: PopWhereUniqueInput,
     @common.Body() body: ProductItemWhereUniqueInput[]
@@ -569,6 +680,11 @@ export class PopControllerBase {
   }
 
   @common.Delete("/:id/products")
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "update",
+    possession: "any",
+  })
   async disconnectProducts(
     @common.Param() params: PopWhereUniqueInput,
     @common.Body() body: ProductItemWhereUniqueInput[]
@@ -585,8 +701,14 @@ export class PopControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id/rechargeHistory")
   @ApiNestedQuery(PopRechargeFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "PopRecharge",
+    action: "read",
+    possession: "any",
+  })
   async findRechargeHistory(
     @common.Req() request: Request,
     @common.Param() params: PopWhereUniqueInput
@@ -619,6 +741,11 @@ export class PopControllerBase {
   }
 
   @common.Post("/:id/rechargeHistory")
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "update",
+    possession: "any",
+  })
   async connectRechargeHistory(
     @common.Param() params: PopWhereUniqueInput,
     @common.Body() body: PopRechargeWhereUniqueInput[]
@@ -636,6 +763,11 @@ export class PopControllerBase {
   }
 
   @common.Patch("/:id/rechargeHistory")
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "update",
+    possession: "any",
+  })
   async updateRechargeHistory(
     @common.Param() params: PopWhereUniqueInput,
     @common.Body() body: PopRechargeWhereUniqueInput[]
@@ -653,6 +785,11 @@ export class PopControllerBase {
   }
 
   @common.Delete("/:id/rechargeHistory")
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "update",
+    possession: "any",
+  })
   async disconnectRechargeHistory(
     @common.Param() params: PopWhereUniqueInput,
     @common.Body() body: PopRechargeWhereUniqueInput[]
@@ -669,8 +806,14 @@ export class PopControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id/subPops")
   @ApiNestedQuery(PopFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "read",
+    possession: "any",
+  })
   async findSubPops(
     @common.Req() request: Request,
     @common.Param() params: PopWhereUniqueInput
@@ -715,6 +858,11 @@ export class PopControllerBase {
   }
 
   @common.Post("/:id/subPops")
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "update",
+    possession: "any",
+  })
   async connectSubPops(
     @common.Param() params: PopWhereUniqueInput,
     @common.Body() body: PopWhereUniqueInput[]
@@ -732,6 +880,11 @@ export class PopControllerBase {
   }
 
   @common.Patch("/:id/subPops")
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "update",
+    possession: "any",
+  })
   async updateSubPops(
     @common.Param() params: PopWhereUniqueInput,
     @common.Body() body: PopWhereUniqueInput[]
@@ -749,6 +902,11 @@ export class PopControllerBase {
   }
 
   @common.Delete("/:id/subPops")
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "update",
+    possession: "any",
+  })
   async disconnectSubPops(
     @common.Param() params: PopWhereUniqueInput,
     @common.Body() body: PopWhereUniqueInput[]

@@ -16,19 +16,37 @@ import * as errors from "../../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+import * as nestAccessControl from "nest-access-control";
+import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 import { MarketingLeadService } from "../marketingLead.service";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { MarketingLeadCreateInput } from "./MarketingLeadCreateInput";
 import { MarketingLead } from "./MarketingLead";
 import { MarketingLeadFindManyArgs } from "./MarketingLeadFindManyArgs";
 import { MarketingLeadWhereUniqueInput } from "./MarketingLeadWhereUniqueInput";
 import { MarketingLeadUpdateInput } from "./MarketingLeadUpdateInput";
 
+@swagger.ApiBearerAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class MarketingLeadControllerBase {
-  constructor(protected readonly service: MarketingLeadService) {}
+  constructor(
+    protected readonly service: MarketingLeadService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Post()
   @swagger.ApiCreatedResponse({ type: MarketingLead })
   @swagger.ApiBody({
     type: MarketingLeadCreateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "MarketingLead",
+    action: "create",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async createMarketingLead(
     @common.Body() data: MarketingLeadCreateInput
@@ -63,9 +81,18 @@ export class MarketingLeadControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
   @swagger.ApiOkResponse({ type: [MarketingLead] })
   @ApiNestedQuery(MarketingLeadFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "MarketingLead",
+    action: "read",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async marketingLeads(
     @common.Req() request: Request
   ): Promise<MarketingLead[]> {
@@ -94,9 +121,18 @@ export class MarketingLeadControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: MarketingLead })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "MarketingLead",
+    action: "read",
+    possession: "own",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async marketingLead(
     @common.Param() params: MarketingLeadWhereUniqueInput
   ): Promise<MarketingLead | null> {
@@ -130,11 +166,20 @@ export class MarketingLeadControllerBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: MarketingLead })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiBody({
     type: MarketingLeadUpdateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "MarketingLead",
+    action: "update",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async updateMarketingLead(
     @common.Param() params: MarketingLeadWhereUniqueInput,
@@ -183,6 +228,14 @@ export class MarketingLeadControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: MarketingLead })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "MarketingLead",
+    action: "delete",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async deleteMarketingLead(
     @common.Param() params: MarketingLeadWhereUniqueInput
   ): Promise<MarketingLead | null> {

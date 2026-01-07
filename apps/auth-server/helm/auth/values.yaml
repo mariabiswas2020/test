@@ -35,6 +35,10 @@ variables:
     SERVICE_NAME: "auth"
     LOG_REQUEST: "false"
     PINO_PRETTY: "false"
+    JWT_SECRET_KEY: "Change_ME!!!"
+    JWT_EXPIRATION: "2d"
+    AUTH0_AUDIENCE: "AUTH0_AUDIENCE"
+    AUTH0_ISSUER_URL: "AUTH0_ISSUER_URL"
   secret: {}
 
 imagePullSecrets: []

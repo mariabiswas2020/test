@@ -13,6 +13,12 @@ import * as graphql from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
+import * as nestAccessControl from "nest-access-control";
+import * as gqlACGuard from "../../auth/gqlAC.guard";
+import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
+import * as common from "@nestjs/common";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { Token } from "./Token";
 import { TokenCountArgs } from "./TokenCountArgs";
 import { TokenFindManyArgs } from "./TokenFindManyArgs";
@@ -24,10 +30,20 @@ import { User } from "../../user/base/User";
 import { TokenCategory } from "../../tokenCategory/base/TokenCategory";
 import { Customer } from "../../customer/base/Customer";
 import { TokenService } from "../token.service";
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Token)
 export class TokenResolverBase {
-  constructor(protected readonly service: TokenService) {}
+  constructor(
+    protected readonly service: TokenService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
 
+  @graphql.Query(() => MetaQueryPayload)
+  @nestAccessControl.UseRoles({
+    resource: "Token",
+    action: "read",
+    possession: "any",
+  })
   async _tokensMeta(
     @graphql.Args() args: TokenCountArgs
   ): Promise<MetaQueryPayload> {
@@ -37,12 +53,24 @@ export class TokenResolverBase {
     };
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => [Token])
+  @nestAccessControl.UseRoles({
+    resource: "Token",
+    action: "read",
+    possession: "any",
+  })
   async tokens(@graphql.Args() args: TokenFindManyArgs): Promise<Token[]> {
     return this.service.tokens(args);
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => Token, { nullable: true })
+  @nestAccessControl.UseRoles({
+    resource: "Token",
+    action: "read",
+    possession: "own",
+  })
   async token(
     @graphql.Args() args: TokenFindUniqueArgs
   ): Promise<Token | null> {
@@ -53,7 +81,13 @@ export class TokenResolverBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => Token)
+  @nestAccessControl.UseRoles({
+    resource: "Token",
+    action: "create",
+    possession: "any",
+  })
   async createToken(@graphql.Args() args: CreateTokenArgs): Promise<Token> {
     return await this.service.createToken({
       ...args,
@@ -79,7 +113,13 @@ export class TokenResolverBase {
     });
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => Token)
+  @nestAccessControl.UseRoles({
+    resource: "Token",
+    action: "update",
+    possession: "any",
+  })
   async updateToken(
     @graphql.Args() args: UpdateTokenArgs
   ): Promise<Token | null> {
@@ -117,6 +157,11 @@ export class TokenResolverBase {
   }
 
   @graphql.Mutation(() => Token)
+  @nestAccessControl.UseRoles({
+    resource: "Token",
+    action: "delete",
+    possession: "any",
+  })
   async deleteToken(
     @graphql.Args() args: DeleteTokenArgs
   ): Promise<Token | null> {
@@ -132,9 +177,15 @@ export class TokenResolverBase {
     }
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => User, {
     nullable: true,
     name: "assignee",
+  })
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "read",
+    possession: "any",
   })
   async getAssignee(@graphql.Parent() parent: Token): Promise<User | null> {
     const result = await this.service.getAssignee(parent.id);
@@ -145,9 +196,15 @@ export class TokenResolverBase {
     return result;
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => TokenCategory, {
     nullable: true,
     name: "category",
+  })
+  @nestAccessControl.UseRoles({
+    resource: "TokenCategory",
+    action: "read",
+    possession: "any",
   })
   async getCategory(
     @graphql.Parent() parent: Token
@@ -160,9 +217,15 @@ export class TokenResolverBase {
     return result;
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => Customer, {
     nullable: true,
     name: "customer",
+  })
+  @nestAccessControl.UseRoles({
+    resource: "Customer",
+    action: "read",
+    possession: "any",
   })
   async getCustomer(@graphql.Parent() parent: Token): Promise<Customer | null> {
     const result = await this.service.getCustomer(parent.id);

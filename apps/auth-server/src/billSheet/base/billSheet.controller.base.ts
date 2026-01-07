@@ -16,19 +16,37 @@ import * as errors from "../../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+import * as nestAccessControl from "nest-access-control";
+import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 import { BillSheetService } from "../billSheet.service";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { BillSheetCreateInput } from "./BillSheetCreateInput";
 import { BillSheet } from "./BillSheet";
 import { BillSheetFindManyArgs } from "./BillSheetFindManyArgs";
 import { BillSheetWhereUniqueInput } from "./BillSheetWhereUniqueInput";
 import { BillSheetUpdateInput } from "./BillSheetUpdateInput";
 
+@swagger.ApiBearerAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class BillSheetControllerBase {
-  constructor(protected readonly service: BillSheetService) {}
+  constructor(
+    protected readonly service: BillSheetService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Post()
   @swagger.ApiCreatedResponse({ type: BillSheet })
   @swagger.ApiBody({
     type: BillSheetCreateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "BillSheet",
+    action: "create",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async createBillSheet(
     @common.Body() data: BillSheetCreateInput
@@ -58,9 +76,18 @@ export class BillSheetControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
   @swagger.ApiOkResponse({ type: [BillSheet] })
   @ApiNestedQuery(BillSheetFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "BillSheet",
+    action: "read",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async billSheets(@common.Req() request: Request): Promise<BillSheet[]> {
     const args = plainToClass(BillSheetFindManyArgs, request.query);
     return this.service.billSheets({
@@ -82,9 +109,18 @@ export class BillSheetControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: BillSheet })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "BillSheet",
+    action: "read",
+    possession: "own",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async billSheet(
     @common.Param() params: BillSheetWhereUniqueInput
   ): Promise<BillSheet | null> {
@@ -113,11 +149,20 @@ export class BillSheetControllerBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: BillSheet })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiBody({
     type: BillSheetUpdateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "BillSheet",
+    action: "update",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async updateBillSheet(
     @common.Param() params: BillSheetWhereUniqueInput,
@@ -161,6 +206,14 @@ export class BillSheetControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: BillSheet })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "BillSheet",
+    action: "delete",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async deleteBillSheet(
     @common.Param() params: BillSheetWhereUniqueInput
   ): Promise<BillSheet | null> {

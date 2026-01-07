@@ -22,7 +22,7 @@ model User {
   permissionRoutes Json?
   phone            String?
   resellerProfile  Reseller?
-  role             EnumUserRole    @default(MANAGER)
+  roles            EnumUserRoles   @default(MANAGER)
   supportTickets   Token[]
   updatedAt        DateTime        @updatedAt
   username         String          @unique
@@ -289,7 +289,7 @@ model Setting {
   value String
 }
 
-enum EnumUserRole {
+enum EnumUserRoles {
   SUPER_ADMIN
   MANAGER
   ACCOUNTANT

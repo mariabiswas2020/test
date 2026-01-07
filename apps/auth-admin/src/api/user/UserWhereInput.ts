@@ -25,7 +25,7 @@ export type UserWhereInput = {
   permissionRoutes?: JsonFilter;
   phone?: StringNullableFilter;
   resellerProfile?: ResellerWhereUniqueInput;
-  role?:
+  roles?:
     | "SUPER_ADMIN"
     | "MANAGER"
     | "ACCOUNTANT"

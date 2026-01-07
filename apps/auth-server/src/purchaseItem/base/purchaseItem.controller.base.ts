@@ -16,19 +16,37 @@ import * as errors from "../../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+import * as nestAccessControl from "nest-access-control";
+import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 import { PurchaseItemService } from "../purchaseItem.service";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { PurchaseItemCreateInput } from "./PurchaseItemCreateInput";
 import { PurchaseItem } from "./PurchaseItem";
 import { PurchaseItemFindManyArgs } from "./PurchaseItemFindManyArgs";
 import { PurchaseItemWhereUniqueInput } from "./PurchaseItemWhereUniqueInput";
 import { PurchaseItemUpdateInput } from "./PurchaseItemUpdateInput";
 
+@swagger.ApiBearerAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class PurchaseItemControllerBase {
-  constructor(protected readonly service: PurchaseItemService) {}
+  constructor(
+    protected readonly service: PurchaseItemService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Post()
   @swagger.ApiCreatedResponse({ type: PurchaseItem })
   @swagger.ApiBody({
     type: PurchaseItemCreateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "PurchaseItem",
+    action: "create",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async createPurchaseItem(
     @common.Body() data: PurchaseItemCreateInput
@@ -66,9 +84,18 @@ export class PurchaseItemControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
   @swagger.ApiOkResponse({ type: [PurchaseItem] })
   @ApiNestedQuery(PurchaseItemFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "PurchaseItem",
+    action: "read",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async purchaseItems(@common.Req() request: Request): Promise<PurchaseItem[]> {
     const args = plainToClass(PurchaseItemFindManyArgs, request.query);
     return this.service.purchaseItems({
@@ -94,9 +121,18 @@ export class PurchaseItemControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: PurchaseItem })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "PurchaseItem",
+    action: "read",
+    possession: "own",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async purchaseItem(
     @common.Param() params: PurchaseItemWhereUniqueInput
   ): Promise<PurchaseItem | null> {
@@ -129,11 +165,20 @@ export class PurchaseItemControllerBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: PurchaseItem })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiBody({
     type: PurchaseItemUpdateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "PurchaseItem",
+    action: "update",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async updatePurchaseItem(
     @common.Param() params: PurchaseItemWhereUniqueInput,
@@ -185,6 +230,14 @@ export class PurchaseItemControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: PurchaseItem })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "PurchaseItem",
+    action: "delete",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async deletePurchaseItem(
     @common.Param() params: PurchaseItemWhereUniqueInput
   ): Promise<PurchaseItem | null> {

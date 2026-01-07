@@ -16,7 +16,11 @@ import * as errors from "../../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+import * as nestAccessControl from "nest-access-control";
+import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 import { ResellerService } from "../reseller.service";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { ResellerCreateInput } from "./ResellerCreateInput";
 import { Reseller } from "./Reseller";
 import { ResellerFindManyArgs } from "./ResellerFindManyArgs";
@@ -29,12 +33,26 @@ import { ResellerRechargeLogFindManyArgs } from "../../resellerRechargeLog/base/
 import { ResellerRechargeLog } from "../../resellerRechargeLog/base/ResellerRechargeLog";
 import { ResellerRechargeLogWhereUniqueInput } from "../../resellerRechargeLog/base/ResellerRechargeLogWhereUniqueInput";
 
+@swagger.ApiBearerAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class ResellerControllerBase {
-  constructor(protected readonly service: ResellerService) {}
+  constructor(
+    protected readonly service: ResellerService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Reseller })
   @swagger.ApiBody({
     type: ResellerCreateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "Reseller",
+    action: "create",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async createReseller(
     @common.Body() data: ResellerCreateInput
@@ -61,9 +79,18 @@ export class ResellerControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
   @swagger.ApiOkResponse({ type: [Reseller] })
   @ApiNestedQuery(ResellerFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "Reseller",
+    action: "read",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async resellers(@common.Req() request: Request): Promise<Reseller[]> {
     const args = plainToClass(ResellerFindManyArgs, request.query);
     return this.service.resellers({
@@ -82,9 +109,18 @@ export class ResellerControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Reseller })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "Reseller",
+    action: "read",
+    possession: "own",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async reseller(
     @common.Param() params: ResellerWhereUniqueInput
   ): Promise<Reseller | null> {
@@ -110,11 +146,20 @@ export class ResellerControllerBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Reseller })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiBody({
     type: ResellerUpdateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "Reseller",
+    action: "update",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async updateReseller(
     @common.Param() params: ResellerWhereUniqueInput,
@@ -155,6 +200,14 @@ export class ResellerControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Reseller })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "Reseller",
+    action: "delete",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async deleteReseller(
     @common.Param() params: ResellerWhereUniqueInput
   ): Promise<Reseller | null> {
@@ -183,8 +236,14 @@ export class ResellerControllerBase {
     }
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id/pops")
   @ApiNestedQuery(PopFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "read",
+    possession: "any",
+  })
   async findPops(
     @common.Req() request: Request,
     @common.Param() params: ResellerWhereUniqueInput
@@ -229,6 +288,11 @@ export class ResellerControllerBase {
   }
 
   @common.Post("/:id/pops")
+  @nestAccessControl.UseRoles({
+    resource: "Reseller",
+    action: "update",
+    possession: "any",
+  })
   async connectPops(
     @common.Param() params: ResellerWhereUniqueInput,
     @common.Body() body: PopWhereUniqueInput[]
@@ -246,6 +310,11 @@ export class ResellerControllerBase {
   }
 
   @common.Patch("/:id/pops")
+  @nestAccessControl.UseRoles({
+    resource: "Reseller",
+    action: "update",
+    possession: "any",
+  })
   async updatePops(
     @common.Param() params: ResellerWhereUniqueInput,
     @common.Body() body: PopWhereUniqueInput[]
@@ -263,6 +332,11 @@ export class ResellerControllerBase {
   }
 
   @common.Delete("/:id/pops")
+  @nestAccessControl.UseRoles({
+    resource: "Reseller",
+    action: "update",
+    possession: "any",
+  })
   async disconnectPops(
     @common.Param() params: ResellerWhereUniqueInput,
     @common.Body() body: PopWhereUniqueInput[]
@@ -279,8 +353,14 @@ export class ResellerControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id/rechargeLogs")
   @ApiNestedQuery(ResellerRechargeLogFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "ResellerRechargeLog",
+    action: "read",
+    possession: "any",
+  })
   async findRechargeLogs(
     @common.Req() request: Request,
     @common.Param() params: ResellerWhereUniqueInput
@@ -312,6 +392,11 @@ export class ResellerControllerBase {
   }
 
   @common.Post("/:id/rechargeLogs")
+  @nestAccessControl.UseRoles({
+    resource: "Reseller",
+    action: "update",
+    possession: "any",
+  })
   async connectRechargeLogs(
     @common.Param() params: ResellerWhereUniqueInput,
     @common.Body() body: ResellerRechargeLogWhereUniqueInput[]
@@ -329,6 +414,11 @@ export class ResellerControllerBase {
   }
 
   @common.Patch("/:id/rechargeLogs")
+  @nestAccessControl.UseRoles({
+    resource: "Reseller",
+    action: "update",
+    possession: "any",
+  })
   async updateRechargeLogs(
     @common.Param() params: ResellerWhereUniqueInput,
     @common.Body() body: ResellerRechargeLogWhereUniqueInput[]
@@ -346,6 +436,11 @@ export class ResellerControllerBase {
   }
 
   @common.Delete("/:id/rechargeLogs")
+  @nestAccessControl.UseRoles({
+    resource: "Reseller",
+    action: "update",
+    possession: "any",
+  })
   async disconnectRechargeLogs(
     @common.Param() params: ResellerWhereUniqueInput,
     @common.Body() body: ResellerRechargeLogWhereUniqueInput[]

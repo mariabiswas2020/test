@@ -13,6 +13,12 @@ import * as graphql from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
+import * as nestAccessControl from "nest-access-control";
+import * as gqlACGuard from "../../auth/gqlAC.guard";
+import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
+import * as common from "@nestjs/common";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { PopRecharge } from "./PopRecharge";
 import { PopRechargeCountArgs } from "./PopRechargeCountArgs";
 import { PopRechargeFindManyArgs } from "./PopRechargeFindManyArgs";
@@ -22,10 +28,20 @@ import { UpdatePopRechargeArgs } from "./UpdatePopRechargeArgs";
 import { DeletePopRechargeArgs } from "./DeletePopRechargeArgs";
 import { Pop } from "../../pop/base/Pop";
 import { PopRechargeService } from "../popRecharge.service";
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => PopRecharge)
 export class PopRechargeResolverBase {
-  constructor(protected readonly service: PopRechargeService) {}
+  constructor(
+    protected readonly service: PopRechargeService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
 
+  @graphql.Query(() => MetaQueryPayload)
+  @nestAccessControl.UseRoles({
+    resource: "PopRecharge",
+    action: "read",
+    possession: "any",
+  })
   async _popRechargesMeta(
     @graphql.Args() args: PopRechargeCountArgs
   ): Promise<MetaQueryPayload> {
@@ -35,14 +51,26 @@ export class PopRechargeResolverBase {
     };
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => [PopRecharge])
+  @nestAccessControl.UseRoles({
+    resource: "PopRecharge",
+    action: "read",
+    possession: "any",
+  })
   async popRecharges(
     @graphql.Args() args: PopRechargeFindManyArgs
   ): Promise<PopRecharge[]> {
     return this.service.popRecharges(args);
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => PopRecharge, { nullable: true })
+  @nestAccessControl.UseRoles({
+    resource: "PopRecharge",
+    action: "read",
+    possession: "own",
+  })
   async popRecharge(
     @graphql.Args() args: PopRechargeFindUniqueArgs
   ): Promise<PopRecharge | null> {
@@ -53,7 +81,13 @@ export class PopRechargeResolverBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => PopRecharge)
+  @nestAccessControl.UseRoles({
+    resource: "PopRecharge",
+    action: "create",
+    possession: "any",
+  })
   async createPopRecharge(
     @graphql.Args() args: CreatePopRechargeArgs
   ): Promise<PopRecharge> {
@@ -69,7 +103,13 @@ export class PopRechargeResolverBase {
     });
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => PopRecharge)
+  @nestAccessControl.UseRoles({
+    resource: "PopRecharge",
+    action: "update",
+    possession: "any",
+  })
   async updatePopRecharge(
     @graphql.Args() args: UpdatePopRechargeArgs
   ): Promise<PopRecharge | null> {
@@ -95,6 +135,11 @@ export class PopRechargeResolverBase {
   }
 
   @graphql.Mutation(() => PopRecharge)
+  @nestAccessControl.UseRoles({
+    resource: "PopRecharge",
+    action: "delete",
+    possession: "any",
+  })
   async deletePopRecharge(
     @graphql.Args() args: DeletePopRechargeArgs
   ): Promise<PopRecharge | null> {
@@ -110,9 +155,15 @@ export class PopRechargeResolverBase {
     }
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => Pop, {
     nullable: true,
     name: "pop",
+  })
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "read",
+    possession: "any",
   })
   async getPop(@graphql.Parent() parent: PopRecharge): Promise<Pop | null> {
     const result = await this.service.getPop(parent.id);

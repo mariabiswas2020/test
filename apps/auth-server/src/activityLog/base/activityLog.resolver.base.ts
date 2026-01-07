@@ -13,6 +13,12 @@ import * as graphql from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
+import * as nestAccessControl from "nest-access-control";
+import * as gqlACGuard from "../../auth/gqlAC.guard";
+import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
+import * as common from "@nestjs/common";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { ActivityLog } from "./ActivityLog";
 import { ActivityLogCountArgs } from "./ActivityLogCountArgs";
 import { ActivityLogFindManyArgs } from "./ActivityLogFindManyArgs";
@@ -22,10 +28,20 @@ import { UpdateActivityLogArgs } from "./UpdateActivityLogArgs";
 import { DeleteActivityLogArgs } from "./DeleteActivityLogArgs";
 import { User } from "../../user/base/User";
 import { ActivityLogService } from "../activityLog.service";
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => ActivityLog)
 export class ActivityLogResolverBase {
-  constructor(protected readonly service: ActivityLogService) {}
+  constructor(
+    protected readonly service: ActivityLogService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
 
+  @graphql.Query(() => MetaQueryPayload)
+  @nestAccessControl.UseRoles({
+    resource: "ActivityLog",
+    action: "read",
+    possession: "any",
+  })
   async _activityLogsMeta(
     @graphql.Args() args: ActivityLogCountArgs
   ): Promise<MetaQueryPayload> {
@@ -35,14 +51,26 @@ export class ActivityLogResolverBase {
     };
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => [ActivityLog])
+  @nestAccessControl.UseRoles({
+    resource: "ActivityLog",
+    action: "read",
+    possession: "any",
+  })
   async activityLogs(
     @graphql.Args() args: ActivityLogFindManyArgs
   ): Promise<ActivityLog[]> {
     return this.service.activityLogs(args);
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => ActivityLog, { nullable: true })
+  @nestAccessControl.UseRoles({
+    resource: "ActivityLog",
+    action: "read",
+    possession: "own",
+  })
   async activityLog(
     @graphql.Args() args: ActivityLogFindUniqueArgs
   ): Promise<ActivityLog | null> {
@@ -53,7 +81,13 @@ export class ActivityLogResolverBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => ActivityLog)
+  @nestAccessControl.UseRoles({
+    resource: "ActivityLog",
+    action: "create",
+    possession: "any",
+  })
   async createActivityLog(
     @graphql.Args() args: CreateActivityLogArgs
   ): Promise<ActivityLog> {
@@ -69,7 +103,13 @@ export class ActivityLogResolverBase {
     });
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => ActivityLog)
+  @nestAccessControl.UseRoles({
+    resource: "ActivityLog",
+    action: "update",
+    possession: "any",
+  })
   async updateActivityLog(
     @graphql.Args() args: UpdateActivityLogArgs
   ): Promise<ActivityLog | null> {
@@ -95,6 +135,11 @@ export class ActivityLogResolverBase {
   }
 
   @graphql.Mutation(() => ActivityLog)
+  @nestAccessControl.UseRoles({
+    resource: "ActivityLog",
+    action: "delete",
+    possession: "any",
+  })
   async deleteActivityLog(
     @graphql.Args() args: DeleteActivityLogArgs
   ): Promise<ActivityLog | null> {
@@ -110,9 +155,15 @@ export class ActivityLogResolverBase {
     }
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => User, {
     nullable: true,
     name: "user",
+  })
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "read",
+    possession: "any",
   })
   async getUser(@graphql.Parent() parent: ActivityLog): Promise<User | null> {
     const result = await this.service.getUser(parent.id);

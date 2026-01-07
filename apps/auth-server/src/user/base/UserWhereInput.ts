@@ -23,7 +23,7 @@ import { BooleanFilter } from "../../util/BooleanFilter";
 import { MarketingLeadListRelationFilter } from "../../marketingLead/base/MarketingLeadListRelationFilter";
 import { JsonFilter } from "../../util/JsonFilter";
 import { ResellerWhereUniqueInput } from "../../reseller/base/ResellerWhereUniqueInput";
-import { EnumUserRole } from "./EnumUserRole";
+import { EnumUserRoles } from "./EnumUserRoles";
 import { TokenListRelationFilter } from "../../token/base/TokenListRelationFilter";
 
 @InputType()
@@ -189,14 +189,14 @@ class UserWhereInput {
 
   @ApiProperty({
     required: false,
-    enum: EnumUserRole,
+    enum: EnumUserRoles,
   })
-  @IsEnum(EnumUserRole)
+  @IsEnum(EnumUserRoles)
   @IsOptional()
-  @Field(() => EnumUserRole, {
+  @Field(() => EnumUserRoles, {
     nullable: true,
   })
-  role?:
+  roles?:
     | "SUPER_ADMIN"
     | "MANAGER"
     | "ACCOUNTANT"

@@ -16,19 +16,37 @@ import * as errors from "../../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+import * as nestAccessControl from "nest-access-control";
+import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 import { ExpenseService } from "../expense.service";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { ExpenseCreateInput } from "./ExpenseCreateInput";
 import { Expense } from "./Expense";
 import { ExpenseFindManyArgs } from "./ExpenseFindManyArgs";
 import { ExpenseWhereUniqueInput } from "./ExpenseWhereUniqueInput";
 import { ExpenseUpdateInput } from "./ExpenseUpdateInput";
 
+@swagger.ApiBearerAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class ExpenseControllerBase {
-  constructor(protected readonly service: ExpenseService) {}
+  constructor(
+    protected readonly service: ExpenseService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Expense })
   @swagger.ApiBody({
     type: ExpenseCreateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "Expense",
+    action: "create",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async createExpense(
     @common.Body() data: ExpenseCreateInput
@@ -61,9 +79,18 @@ export class ExpenseControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
   @swagger.ApiOkResponse({ type: [Expense] })
   @ApiNestedQuery(ExpenseFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "Expense",
+    action: "read",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async expenses(@common.Req() request: Request): Promise<Expense[]> {
     const args = plainToClass(ExpenseFindManyArgs, request.query);
     return this.service.expenses({
@@ -86,9 +113,18 @@ export class ExpenseControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Expense })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "Expense",
+    action: "read",
+    possession: "own",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async expense(
     @common.Param() params: ExpenseWhereUniqueInput
   ): Promise<Expense | null> {
@@ -118,11 +154,20 @@ export class ExpenseControllerBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Expense })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiBody({
     type: ExpenseUpdateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "Expense",
+    action: "update",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async updateExpense(
     @common.Param() params: ExpenseWhereUniqueInput,
@@ -169,6 +214,14 @@ export class ExpenseControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Expense })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "Expense",
+    action: "delete",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async deleteExpense(
     @common.Param() params: ExpenseWhereUniqueInput
   ): Promise<Expense | null> {

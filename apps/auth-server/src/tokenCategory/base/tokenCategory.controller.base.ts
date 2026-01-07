@@ -16,7 +16,11 @@ import * as errors from "../../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+import * as nestAccessControl from "nest-access-control";
+import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 import { TokenCategoryService } from "../tokenCategory.service";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { TokenCategoryCreateInput } from "./TokenCategoryCreateInput";
 import { TokenCategory } from "./TokenCategory";
 import { TokenCategoryFindManyArgs } from "./TokenCategoryFindManyArgs";
@@ -26,12 +30,26 @@ import { TokenFindManyArgs } from "../../token/base/TokenFindManyArgs";
 import { Token } from "../../token/base/Token";
 import { TokenWhereUniqueInput } from "../../token/base/TokenWhereUniqueInput";
 
+@swagger.ApiBearerAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class TokenCategoryControllerBase {
-  constructor(protected readonly service: TokenCategoryService) {}
+  constructor(
+    protected readonly service: TokenCategoryService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Post()
   @swagger.ApiCreatedResponse({ type: TokenCategory })
   @swagger.ApiBody({
     type: TokenCategoryCreateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "TokenCategory",
+    action: "create",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async createTokenCategory(
     @common.Body() data: TokenCategoryCreateInput
@@ -46,9 +64,18 @@ export class TokenCategoryControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
   @swagger.ApiOkResponse({ type: [TokenCategory] })
   @ApiNestedQuery(TokenCategoryFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "TokenCategory",
+    action: "read",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async tokenCategories(
     @common.Req() request: Request
   ): Promise<TokenCategory[]> {
@@ -63,9 +90,18 @@ export class TokenCategoryControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: TokenCategory })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "TokenCategory",
+    action: "read",
+    possession: "own",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async tokenCategory(
     @common.Param() params: TokenCategoryWhereUniqueInput
   ): Promise<TokenCategory | null> {
@@ -85,11 +121,20 @@ export class TokenCategoryControllerBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: TokenCategory })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiBody({
     type: TokenCategoryUpdateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "TokenCategory",
+    action: "update",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async updateTokenCategory(
     @common.Param() params: TokenCategoryWhereUniqueInput,
@@ -118,6 +163,14 @@ export class TokenCategoryControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: TokenCategory })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "TokenCategory",
+    action: "delete",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async deleteTokenCategory(
     @common.Param() params: TokenCategoryWhereUniqueInput
   ): Promise<TokenCategory | null> {
@@ -140,8 +193,14 @@ export class TokenCategoryControllerBase {
     }
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id/tokens")
   @ApiNestedQuery(TokenFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "Token",
+    action: "read",
+    possession: "any",
+  })
   async findTokens(
     @common.Req() request: Request,
     @common.Param() params: TokenCategoryWhereUniqueInput
@@ -186,6 +245,11 @@ export class TokenCategoryControllerBase {
   }
 
   @common.Post("/:id/tokens")
+  @nestAccessControl.UseRoles({
+    resource: "TokenCategory",
+    action: "update",
+    possession: "any",
+  })
   async connectTokens(
     @common.Param() params: TokenCategoryWhereUniqueInput,
     @common.Body() body: TokenWhereUniqueInput[]
@@ -203,6 +267,11 @@ export class TokenCategoryControllerBase {
   }
 
   @common.Patch("/:id/tokens")
+  @nestAccessControl.UseRoles({
+    resource: "TokenCategory",
+    action: "update",
+    possession: "any",
+  })
   async updateTokens(
     @common.Param() params: TokenCategoryWhereUniqueInput,
     @common.Body() body: TokenWhereUniqueInput[]
@@ -220,6 +289,11 @@ export class TokenCategoryControllerBase {
   }
 
   @common.Delete("/:id/tokens")
+  @nestAccessControl.UseRoles({
+    resource: "TokenCategory",
+    action: "update",
+    possession: "any",
+  })
   async disconnectTokens(
     @common.Param() params: TokenCategoryWhereUniqueInput,
     @common.Body() body: TokenWhereUniqueInput[]

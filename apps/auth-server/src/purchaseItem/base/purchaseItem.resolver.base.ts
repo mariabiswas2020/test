@@ -13,6 +13,12 @@ import * as graphql from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
+import * as nestAccessControl from "nest-access-control";
+import * as gqlACGuard from "../../auth/gqlAC.guard";
+import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
+import * as common from "@nestjs/common";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { PurchaseItem } from "./PurchaseItem";
 import { PurchaseItemCountArgs } from "./PurchaseItemCountArgs";
 import { PurchaseItemFindManyArgs } from "./PurchaseItemFindManyArgs";
@@ -23,10 +29,20 @@ import { DeletePurchaseItemArgs } from "./DeletePurchaseItemArgs";
 import { Product } from "../../product/base/Product";
 import { Purchase } from "../../purchase/base/Purchase";
 import { PurchaseItemService } from "../purchaseItem.service";
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => PurchaseItem)
 export class PurchaseItemResolverBase {
-  constructor(protected readonly service: PurchaseItemService) {}
+  constructor(
+    protected readonly service: PurchaseItemService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
 
+  @graphql.Query(() => MetaQueryPayload)
+  @nestAccessControl.UseRoles({
+    resource: "PurchaseItem",
+    action: "read",
+    possession: "any",
+  })
   async _purchaseItemsMeta(
     @graphql.Args() args: PurchaseItemCountArgs
   ): Promise<MetaQueryPayload> {
@@ -36,14 +52,26 @@ export class PurchaseItemResolverBase {
     };
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => [PurchaseItem])
+  @nestAccessControl.UseRoles({
+    resource: "PurchaseItem",
+    action: "read",
+    possession: "any",
+  })
   async purchaseItems(
     @graphql.Args() args: PurchaseItemFindManyArgs
   ): Promise<PurchaseItem[]> {
     return this.service.purchaseItems(args);
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => PurchaseItem, { nullable: true })
+  @nestAccessControl.UseRoles({
+    resource: "PurchaseItem",
+    action: "read",
+    possession: "own",
+  })
   async purchaseItem(
     @graphql.Args() args: PurchaseItemFindUniqueArgs
   ): Promise<PurchaseItem | null> {
@@ -54,7 +82,13 @@ export class PurchaseItemResolverBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => PurchaseItem)
+  @nestAccessControl.UseRoles({
+    resource: "PurchaseItem",
+    action: "create",
+    possession: "any",
+  })
   async createPurchaseItem(
     @graphql.Args() args: CreatePurchaseItemArgs
   ): Promise<PurchaseItem> {
@@ -74,7 +108,13 @@ export class PurchaseItemResolverBase {
     });
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => PurchaseItem)
+  @nestAccessControl.UseRoles({
+    resource: "PurchaseItem",
+    action: "update",
+    possession: "any",
+  })
   async updatePurchaseItem(
     @graphql.Args() args: UpdatePurchaseItemArgs
   ): Promise<PurchaseItem | null> {
@@ -104,6 +144,11 @@ export class PurchaseItemResolverBase {
   }
 
   @graphql.Mutation(() => PurchaseItem)
+  @nestAccessControl.UseRoles({
+    resource: "PurchaseItem",
+    action: "delete",
+    possession: "any",
+  })
   async deletePurchaseItem(
     @graphql.Args() args: DeletePurchaseItemArgs
   ): Promise<PurchaseItem | null> {
@@ -119,9 +164,15 @@ export class PurchaseItemResolverBase {
     }
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => Product, {
     nullable: true,
     name: "product",
+  })
+  @nestAccessControl.UseRoles({
+    resource: "Product",
+    action: "read",
+    possession: "any",
   })
   async getProduct(
     @graphql.Parent() parent: PurchaseItem
@@ -134,9 +185,15 @@ export class PurchaseItemResolverBase {
     return result;
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => Purchase, {
     nullable: true,
     name: "purchase",
+  })
+  @nestAccessControl.UseRoles({
+    resource: "Purchase",
+    action: "read",
+    possession: "any",
   })
   async getPurchase(
     @graphql.Parent() parent: PurchaseItem

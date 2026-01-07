@@ -13,6 +13,12 @@ import * as graphql from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
+import * as nestAccessControl from "nest-access-control";
+import * as gqlACGuard from "../../auth/gqlAC.guard";
+import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
+import * as common from "@nestjs/common";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { BillSheet } from "./BillSheet";
 import { BillSheetCountArgs } from "./BillSheetCountArgs";
 import { BillSheetFindManyArgs } from "./BillSheetFindManyArgs";
@@ -22,10 +28,20 @@ import { UpdateBillSheetArgs } from "./UpdateBillSheetArgs";
 import { DeleteBillSheetArgs } from "./DeleteBillSheetArgs";
 import { Customer } from "../../customer/base/Customer";
 import { BillSheetService } from "../billSheet.service";
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => BillSheet)
 export class BillSheetResolverBase {
-  constructor(protected readonly service: BillSheetService) {}
+  constructor(
+    protected readonly service: BillSheetService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
 
+  @graphql.Query(() => MetaQueryPayload)
+  @nestAccessControl.UseRoles({
+    resource: "BillSheet",
+    action: "read",
+    possession: "any",
+  })
   async _billSheetsMeta(
     @graphql.Args() args: BillSheetCountArgs
   ): Promise<MetaQueryPayload> {
@@ -35,14 +51,26 @@ export class BillSheetResolverBase {
     };
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => [BillSheet])
+  @nestAccessControl.UseRoles({
+    resource: "BillSheet",
+    action: "read",
+    possession: "any",
+  })
   async billSheets(
     @graphql.Args() args: BillSheetFindManyArgs
   ): Promise<BillSheet[]> {
     return this.service.billSheets(args);
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => BillSheet, { nullable: true })
+  @nestAccessControl.UseRoles({
+    resource: "BillSheet",
+    action: "read",
+    possession: "own",
+  })
   async billSheet(
     @graphql.Args() args: BillSheetFindUniqueArgs
   ): Promise<BillSheet | null> {
@@ -53,7 +81,13 @@ export class BillSheetResolverBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => BillSheet)
+  @nestAccessControl.UseRoles({
+    resource: "BillSheet",
+    action: "create",
+    possession: "any",
+  })
   async createBillSheet(
     @graphql.Args() args: CreateBillSheetArgs
   ): Promise<BillSheet> {
@@ -69,7 +103,13 @@ export class BillSheetResolverBase {
     });
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => BillSheet)
+  @nestAccessControl.UseRoles({
+    resource: "BillSheet",
+    action: "update",
+    possession: "any",
+  })
   async updateBillSheet(
     @graphql.Args() args: UpdateBillSheetArgs
   ): Promise<BillSheet | null> {
@@ -95,6 +135,11 @@ export class BillSheetResolverBase {
   }
 
   @graphql.Mutation(() => BillSheet)
+  @nestAccessControl.UseRoles({
+    resource: "BillSheet",
+    action: "delete",
+    possession: "any",
+  })
   async deleteBillSheet(
     @graphql.Args() args: DeleteBillSheetArgs
   ): Promise<BillSheet | null> {
@@ -110,9 +155,15 @@ export class BillSheetResolverBase {
     }
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => Customer, {
     nullable: true,
     name: "customer",
+  })
+  @nestAccessControl.UseRoles({
+    resource: "Customer",
+    action: "read",
+    possession: "any",
   })
   async getCustomer(
     @graphql.Parent() parent: BillSheet

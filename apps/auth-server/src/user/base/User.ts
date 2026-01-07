@@ -29,7 +29,7 @@ import { IsJSONValue } from "../../validators";
 import { GraphQLJSON } from "graphql-type-json";
 import { JsonValue } from "type-fest";
 import { Reseller } from "../../reseller/base/Reseller";
-import { EnumUserRole } from "./EnumUserRole";
+import { EnumUserRoles } from "./EnumUserRoles";
 import { Token } from "../../token/base/Token";
 
 @ObjectType()
@@ -65,7 +65,6 @@ class User {
     type: String,
   })
   @IsString()
-  @MaxLength(256)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
@@ -172,13 +171,13 @@ class User {
 
   @ApiProperty({
     required: true,
-    enum: EnumUserRole,
+    enum: EnumUserRoles,
   })
-  @IsEnum(EnumUserRole)
-  @Field(() => EnumUserRole, {
+  @IsEnum(EnumUserRoles)
+  @Field(() => EnumUserRoles, {
     nullable: true,
   })
-  role?:
+  roles?:
     | "SUPER_ADMIN"
     | "MANAGER"
     | "ACCOUNTANT"

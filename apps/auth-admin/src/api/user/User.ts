@@ -21,7 +21,7 @@ export type User = {
   permissionRoutes: JsonValue;
   phone: string | null;
   resellerProfile?: Reseller | null;
-  role?:
+  roles?:
     | "SUPER_ADMIN"
     | "MANAGER"
     | "ACCOUNTANT"

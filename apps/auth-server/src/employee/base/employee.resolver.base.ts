@@ -13,6 +13,12 @@ import * as graphql from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
+import * as nestAccessControl from "nest-access-control";
+import * as gqlACGuard from "../../auth/gqlAC.guard";
+import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
+import * as common from "@nestjs/common";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { Employee } from "./Employee";
 import { EmployeeCountArgs } from "./EmployeeCountArgs";
 import { EmployeeFindManyArgs } from "./EmployeeFindManyArgs";
@@ -22,10 +28,20 @@ import { UpdateEmployeeArgs } from "./UpdateEmployeeArgs";
 import { DeleteEmployeeArgs } from "./DeleteEmployeeArgs";
 import { User } from "../../user/base/User";
 import { EmployeeService } from "../employee.service";
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Employee)
 export class EmployeeResolverBase {
-  constructor(protected readonly service: EmployeeService) {}
+  constructor(
+    protected readonly service: EmployeeService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
 
+  @graphql.Query(() => MetaQueryPayload)
+  @nestAccessControl.UseRoles({
+    resource: "Employee",
+    action: "read",
+    possession: "any",
+  })
   async _employeesMeta(
     @graphql.Args() args: EmployeeCountArgs
   ): Promise<MetaQueryPayload> {
@@ -35,14 +51,26 @@ export class EmployeeResolverBase {
     };
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => [Employee])
+  @nestAccessControl.UseRoles({
+    resource: "Employee",
+    action: "read",
+    possession: "any",
+  })
   async employees(
     @graphql.Args() args: EmployeeFindManyArgs
   ): Promise<Employee[]> {
     return this.service.employees(args);
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => Employee, { nullable: true })
+  @nestAccessControl.UseRoles({
+    resource: "Employee",
+    action: "read",
+    possession: "own",
+  })
   async employee(
     @graphql.Args() args: EmployeeFindUniqueArgs
   ): Promise<Employee | null> {
@@ -53,7 +81,13 @@ export class EmployeeResolverBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => Employee)
+  @nestAccessControl.UseRoles({
+    resource: "Employee",
+    action: "create",
+    possession: "any",
+  })
   async createEmployee(
     @graphql.Args() args: CreateEmployeeArgs
   ): Promise<Employee> {
@@ -69,7 +103,13 @@ export class EmployeeResolverBase {
     });
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => Employee)
+  @nestAccessControl.UseRoles({
+    resource: "Employee",
+    action: "update",
+    possession: "any",
+  })
   async updateEmployee(
     @graphql.Args() args: UpdateEmployeeArgs
   ): Promise<Employee | null> {
@@ -95,6 +135,11 @@ export class EmployeeResolverBase {
   }
 
   @graphql.Mutation(() => Employee)
+  @nestAccessControl.UseRoles({
+    resource: "Employee",
+    action: "delete",
+    possession: "any",
+  })
   async deleteEmployee(
     @graphql.Args() args: DeleteEmployeeArgs
   ): Promise<Employee | null> {
@@ -110,9 +155,15 @@ export class EmployeeResolverBase {
     }
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => User, {
     nullable: true,
     name: "user",
+  })
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "read",
+    possession: "any",
   })
   async getUser(@graphql.Parent() parent: Employee): Promise<User | null> {
     const result = await this.service.getUser(parent.id);

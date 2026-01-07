@@ -12,7 +12,7 @@ export type UserOrderByInput = {
   permissionRoutes?: SortOrder;
   phone?: SortOrder;
   resellerProfileId?: SortOrder;
-  role?: SortOrder;
+  roles?: SortOrder;
   updatedAt?: SortOrder;
   username?: SortOrder;
 };

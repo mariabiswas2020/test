@@ -16,19 +16,37 @@ import * as errors from "../../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+import * as nestAccessControl from "nest-access-control";
+import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 import { ResellerRechargeLogService } from "../resellerRechargeLog.service";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { ResellerRechargeLogCreateInput } from "./ResellerRechargeLogCreateInput";
 import { ResellerRechargeLog } from "./ResellerRechargeLog";
 import { ResellerRechargeLogFindManyArgs } from "./ResellerRechargeLogFindManyArgs";
 import { ResellerRechargeLogWhereUniqueInput } from "./ResellerRechargeLogWhereUniqueInput";
 import { ResellerRechargeLogUpdateInput } from "./ResellerRechargeLogUpdateInput";
 
+@swagger.ApiBearerAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class ResellerRechargeLogControllerBase {
-  constructor(protected readonly service: ResellerRechargeLogService) {}
+  constructor(
+    protected readonly service: ResellerRechargeLogService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Post()
   @swagger.ApiCreatedResponse({ type: ResellerRechargeLog })
   @swagger.ApiBody({
     type: ResellerRechargeLogCreateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "ResellerRechargeLog",
+    action: "create",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async createResellerRechargeLog(
     @common.Body() data: ResellerRechargeLogCreateInput
@@ -58,9 +76,18 @@ export class ResellerRechargeLogControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
   @swagger.ApiOkResponse({ type: [ResellerRechargeLog] })
   @ApiNestedQuery(ResellerRechargeLogFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "ResellerRechargeLog",
+    action: "read",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async resellerRechargeLogs(
     @common.Req() request: Request
   ): Promise<ResellerRechargeLog[]> {
@@ -84,9 +111,18 @@ export class ResellerRechargeLogControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: ResellerRechargeLog })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "ResellerRechargeLog",
+    action: "read",
+    possession: "own",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async resellerRechargeLog(
     @common.Param() params: ResellerRechargeLogWhereUniqueInput
   ): Promise<ResellerRechargeLog | null> {
@@ -115,11 +151,20 @@ export class ResellerRechargeLogControllerBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: ResellerRechargeLog })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiBody({
     type: ResellerRechargeLogUpdateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "ResellerRechargeLog",
+    action: "update",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async updateResellerRechargeLog(
     @common.Param() params: ResellerRechargeLogWhereUniqueInput,
@@ -163,6 +208,14 @@ export class ResellerRechargeLogControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: ResellerRechargeLog })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "ResellerRechargeLog",
+    action: "delete",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async deleteResellerRechargeLog(
     @common.Param() params: ResellerRechargeLogWhereUniqueInput
   ): Promise<ResellerRechargeLog | null> {

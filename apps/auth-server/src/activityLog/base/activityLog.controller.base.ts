@@ -16,19 +16,37 @@ import * as errors from "../../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+import * as nestAccessControl from "nest-access-control";
+import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 import { ActivityLogService } from "../activityLog.service";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { ActivityLogCreateInput } from "./ActivityLogCreateInput";
 import { ActivityLog } from "./ActivityLog";
 import { ActivityLogFindManyArgs } from "./ActivityLogFindManyArgs";
 import { ActivityLogWhereUniqueInput } from "./ActivityLogWhereUniqueInput";
 import { ActivityLogUpdateInput } from "./ActivityLogUpdateInput";
 
+@swagger.ApiBearerAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class ActivityLogControllerBase {
-  constructor(protected readonly service: ActivityLogService) {}
+  constructor(
+    protected readonly service: ActivityLogService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Post()
   @swagger.ApiCreatedResponse({ type: ActivityLog })
   @swagger.ApiBody({
     type: ActivityLogCreateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "ActivityLog",
+    action: "create",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async createActivityLog(
     @common.Body() data: ActivityLogCreateInput
@@ -57,9 +75,18 @@ export class ActivityLogControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
   @swagger.ApiOkResponse({ type: [ActivityLog] })
   @ApiNestedQuery(ActivityLogFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "ActivityLog",
+    action: "read",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async activityLogs(@common.Req() request: Request): Promise<ActivityLog[]> {
     const args = plainToClass(ActivityLogFindManyArgs, request.query);
     return this.service.activityLogs({
@@ -80,9 +107,18 @@ export class ActivityLogControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: ActivityLog })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "ActivityLog",
+    action: "read",
+    possession: "own",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async activityLog(
     @common.Param() params: ActivityLogWhereUniqueInput
   ): Promise<ActivityLog | null> {
@@ -110,11 +146,20 @@ export class ActivityLogControllerBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: ActivityLog })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiBody({
     type: ActivityLogUpdateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "ActivityLog",
+    action: "update",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async updateActivityLog(
     @common.Param() params: ActivityLogWhereUniqueInput,
@@ -157,6 +202,14 @@ export class ActivityLogControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: ActivityLog })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "ActivityLog",
+    action: "delete",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async deleteActivityLog(
     @common.Param() params: ActivityLogWhereUniqueInput
   ): Promise<ActivityLog | null> {

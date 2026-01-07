@@ -16,19 +16,37 @@ import * as errors from "../../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+import * as nestAccessControl from "nest-access-control";
+import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 import { TokenService } from "../token.service";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { TokenCreateInput } from "./TokenCreateInput";
 import { Token } from "./Token";
 import { TokenFindManyArgs } from "./TokenFindManyArgs";
 import { TokenWhereUniqueInput } from "./TokenWhereUniqueInput";
 import { TokenUpdateInput } from "./TokenUpdateInput";
 
+@swagger.ApiBearerAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class TokenControllerBase {
-  constructor(protected readonly service: TokenService) {}
+  constructor(
+    protected readonly service: TokenService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Token })
   @swagger.ApiBody({
     type: TokenCreateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "Token",
+    action: "create",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async createToken(@common.Body() data: TokenCreateInput): Promise<Token> {
     return await this.service.createToken({
@@ -81,9 +99,18 @@ export class TokenControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
   @swagger.ApiOkResponse({ type: [Token] })
   @ApiNestedQuery(TokenFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "Token",
+    action: "read",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async tokens(@common.Req() request: Request): Promise<Token[]> {
     const args = plainToClass(TokenFindManyArgs, request.query);
     return this.service.tokens({
@@ -118,9 +145,18 @@ export class TokenControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Token })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "Token",
+    action: "read",
+    possession: "own",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async token(
     @common.Param() params: TokenWhereUniqueInput
   ): Promise<Token | null> {
@@ -162,11 +198,20 @@ export class TokenControllerBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Token })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiBody({
     type: TokenUpdateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "Token",
+    action: "update",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async updateToken(
     @common.Param() params: TokenWhereUniqueInput,
@@ -235,6 +280,14 @@ export class TokenControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Token })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "Token",
+    action: "delete",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async deleteToken(
     @common.Param() params: TokenWhereUniqueInput
   ): Promise<Token | null> {

@@ -41,7 +41,7 @@ export const UserList = (props: ListProps): React.ReactElement => {
         >
           <TextField source={RESELLER_TITLE_FIELD} />
         </ReferenceField>
-        <TextField label="Role" source="role" />
+        <TextField label="Roles" source="roles" />
         <DateField source="updatedAt" label="Updated At" />
         <TextField label="Username" source="username" />{" "}
       </Datagrid>

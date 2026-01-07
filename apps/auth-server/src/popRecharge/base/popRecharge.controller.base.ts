@@ -16,19 +16,37 @@ import * as errors from "../../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
+import * as nestAccessControl from "nest-access-control";
+import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 import { PopRechargeService } from "../popRecharge.service";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { PopRechargeCreateInput } from "./PopRechargeCreateInput";
 import { PopRecharge } from "./PopRecharge";
 import { PopRechargeFindManyArgs } from "./PopRechargeFindManyArgs";
 import { PopRechargeWhereUniqueInput } from "./PopRechargeWhereUniqueInput";
 import { PopRechargeUpdateInput } from "./PopRechargeUpdateInput";
 
+@swagger.ApiBearerAuth()
+@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class PopRechargeControllerBase {
-  constructor(protected readonly service: PopRechargeService) {}
+  constructor(
+    protected readonly service: PopRechargeService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Post()
   @swagger.ApiCreatedResponse({ type: PopRecharge })
   @swagger.ApiBody({
     type: PopRechargeCreateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "PopRecharge",
+    action: "create",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async createPopRecharge(
     @common.Body() data: PopRechargeCreateInput
@@ -59,9 +77,18 @@ export class PopRechargeControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
   @swagger.ApiOkResponse({ type: [PopRecharge] })
   @ApiNestedQuery(PopRechargeFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "PopRecharge",
+    action: "read",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async popRecharges(@common.Req() request: Request): Promise<PopRecharge[]> {
     const args = plainToClass(PopRechargeFindManyArgs, request.query);
     return this.service.popRecharges({
@@ -84,9 +111,18 @@ export class PopRechargeControllerBase {
     });
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: PopRecharge })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "PopRecharge",
+    action: "read",
+    possession: "own",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async popRecharge(
     @common.Param() params: PopRechargeWhereUniqueInput
   ): Promise<PopRecharge | null> {
@@ -116,11 +152,20 @@ export class PopRechargeControllerBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: PopRecharge })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiBody({
     type: PopRechargeUpdateInput,
+  })
+  @nestAccessControl.UseRoles({
+    resource: "PopRecharge",
+    action: "update",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
   })
   async updatePopRecharge(
     @common.Param() params: PopRechargeWhereUniqueInput,
@@ -165,6 +210,14 @@ export class PopRechargeControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: PopRecharge })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @nestAccessControl.UseRoles({
+    resource: "PopRecharge",
+    action: "delete",
+    possession: "any",
+  })
+  @swagger.ApiForbiddenResponse({
+    type: errors.ForbiddenException,
+  })
   async deletePopRecharge(
     @common.Param() params: PopRechargeWhereUniqueInput
   ): Promise<PopRecharge | null> {

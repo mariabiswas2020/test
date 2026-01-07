@@ -28,7 +28,7 @@ import { IsJSONValue } from "../../validators";
 import { GraphQLJSON } from "graphql-type-json";
 import { InputJsonValue } from "../../types";
 import { ResellerWhereUniqueInput } from "../../reseller/base/ResellerWhereUniqueInput";
-import { EnumUserRole } from "./EnumUserRole";
+import { EnumUserRoles } from "./EnumUserRoles";
 import { TokenUpdateManyWithoutUsersInput } from "./TokenUpdateManyWithoutUsersInput";
 
 @InputType()
@@ -62,7 +62,6 @@ class UserUpdateInput {
     type: String,
   })
   @IsString()
-  @MaxLength(256)
   @IsOptional()
   @Field(() => String, {
     nullable: true,
@@ -176,14 +175,14 @@ class UserUpdateInput {
 
   @ApiProperty({
     required: false,
-    enum: EnumUserRole,
+    enum: EnumUserRoles,
   })
-  @IsEnum(EnumUserRole)
+  @IsEnum(EnumUserRoles)
   @IsOptional()
-  @Field(() => EnumUserRole, {
+  @Field(() => EnumUserRoles, {
     nullable: true,
   })
-  role?:
+  roles?:
     | "SUPER_ADMIN"
     | "MANAGER"
     | "ACCOUNTANT"

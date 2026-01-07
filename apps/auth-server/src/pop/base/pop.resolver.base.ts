@@ -13,6 +13,12 @@ import * as graphql from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
+import * as nestAccessControl from "nest-access-control";
+import * as gqlACGuard from "../../auth/gqlAC.guard";
+import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
+import * as common from "@nestjs/common";
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { Pop } from "./Pop";
 import { PopCountArgs } from "./PopCountArgs";
 import { PopFindManyArgs } from "./PopFindManyArgs";
@@ -31,10 +37,20 @@ import { PopRecharge } from "../../popRecharge/base/PopRecharge";
 import { Area } from "../../area/base/Area";
 import { Reseller } from "../../reseller/base/Reseller";
 import { PopService } from "../pop.service";
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Pop)
 export class PopResolverBase {
-  constructor(protected readonly service: PopService) {}
+  constructor(
+    protected readonly service: PopService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
 
+  @graphql.Query(() => MetaQueryPayload)
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "read",
+    possession: "any",
+  })
   async _popsMeta(
     @graphql.Args() args: PopCountArgs
   ): Promise<MetaQueryPayload> {
@@ -44,12 +60,24 @@ export class PopResolverBase {
     };
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => [Pop])
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "read",
+    possession: "any",
+  })
   async pops(@graphql.Args() args: PopFindManyArgs): Promise<Pop[]> {
     return this.service.pops(args);
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => Pop, { nullable: true })
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "read",
+    possession: "own",
+  })
   async pop(@graphql.Args() args: PopFindUniqueArgs): Promise<Pop | null> {
     const result = await this.service.pop(args);
     if (result === null) {
@@ -58,7 +86,13 @@ export class PopResolverBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => Pop)
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "create",
+    possession: "any",
+  })
   async createPop(@graphql.Args() args: CreatePopArgs): Promise<Pop> {
     return await this.service.createPop({
       ...args,
@@ -86,7 +120,13 @@ export class PopResolverBase {
     });
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => Pop)
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "update",
+    possession: "any",
+  })
   async updatePop(@graphql.Args() args: UpdatePopArgs): Promise<Pop | null> {
     try {
       return await this.service.updatePop({
@@ -124,6 +164,11 @@ export class PopResolverBase {
   }
 
   @graphql.Mutation(() => Pop)
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "delete",
+    possession: "any",
+  })
   async deletePop(@graphql.Args() args: DeletePopArgs): Promise<Pop | null> {
     try {
       return await this.service.deletePop(args);
@@ -137,7 +182,13 @@ export class PopResolverBase {
     }
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => [Customer], { name: "customers" })
+  @nestAccessControl.UseRoles({
+    resource: "Customer",
+    action: "read",
+    possession: "any",
+  })
   async findCustomers(
     @graphql.Parent() parent: Pop,
     @graphql.Args() args: CustomerFindManyArgs
@@ -151,7 +202,13 @@ export class PopResolverBase {
     return results;
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => [Expense], { name: "expenses" })
+  @nestAccessControl.UseRoles({
+    resource: "Expense",
+    action: "read",
+    possession: "any",
+  })
   async findExpenses(
     @graphql.Parent() parent: Pop,
     @graphql.Args() args: ExpenseFindManyArgs
@@ -165,7 +222,13 @@ export class PopResolverBase {
     return results;
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => [ProductItem], { name: "products" })
+  @nestAccessControl.UseRoles({
+    resource: "ProductItem",
+    action: "read",
+    possession: "any",
+  })
   async findProducts(
     @graphql.Parent() parent: Pop,
     @graphql.Args() args: ProductItemFindManyArgs
@@ -179,7 +242,13 @@ export class PopResolverBase {
     return results;
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => [PopRecharge], { name: "rechargeHistory" })
+  @nestAccessControl.UseRoles({
+    resource: "PopRecharge",
+    action: "read",
+    possession: "any",
+  })
   async findRechargeHistory(
     @graphql.Parent() parent: Pop,
     @graphql.Args() args: PopRechargeFindManyArgs
@@ -193,7 +262,13 @@ export class PopResolverBase {
     return results;
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => [Pop], { name: "subPops" })
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "read",
+    possession: "any",
+  })
   async findSubPops(
     @graphql.Parent() parent: Pop,
     @graphql.Args() args: PopFindManyArgs
@@ -207,9 +282,15 @@ export class PopResolverBase {
     return results;
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => Area, {
     nullable: true,
     name: "area",
+  })
+  @nestAccessControl.UseRoles({
+    resource: "Area",
+    action: "read",
+    possession: "any",
   })
   async getArea(@graphql.Parent() parent: Pop): Promise<Area | null> {
     const result = await this.service.getArea(parent.id);
@@ -220,9 +301,15 @@ export class PopResolverBase {
     return result;
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => Pop, {
     nullable: true,
     name: "parentPop",
+  })
+  @nestAccessControl.UseRoles({
+    resource: "Pop",
+    action: "read",
+    possession: "any",
   })
   async getParentPop(@graphql.Parent() parent: Pop): Promise<Pop | null> {
     const result = await this.service.getParentPop(parent.id);
@@ -233,9 +320,15 @@ export class PopResolverBase {
     return result;
   }
 
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.ResolveField(() => Reseller, {
     nullable: true,
     name: "reseller",
+  })
+  @nestAccessControl.UseRoles({
+    resource: "Reseller",
+    action: "read",
+    possession: "any",
   })
   async getReseller(@graphql.Parent() parent: Pop): Promise<Reseller | null> {
     const result = await this.service.getReseller(parent.id);

@@ -30,6 +30,9 @@ export class TokenCategoryControllerBase {
   constructor(protected readonly service: TokenCategoryService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: TokenCategory })
+  @swagger.ApiBody({
+    type: TokenCategoryCreateInput,
+  })
   async createTokenCategory(
     @common.Body() data: TokenCategoryCreateInput
   ): Promise<TokenCategory> {
@@ -85,6 +88,9 @@ export class TokenCategoryControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: TokenCategory })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiBody({
+    type: TokenCategoryUpdateInput,
+  })
   async updateTokenCategory(
     @common.Param() params: TokenCategoryWhereUniqueInput,
     @common.Body() data: TokenCategoryUpdateInput

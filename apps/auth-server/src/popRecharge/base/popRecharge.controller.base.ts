@@ -27,6 +27,9 @@ export class PopRechargeControllerBase {
   constructor(protected readonly service: PopRechargeService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: PopRecharge })
+  @swagger.ApiBody({
+    type: PopRechargeCreateInput,
+  })
   async createPopRecharge(
     @common.Body() data: PopRechargeCreateInput
   ): Promise<PopRecharge> {
@@ -116,6 +119,9 @@ export class PopRechargeControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: PopRecharge })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiBody({
+    type: PopRechargeUpdateInput,
+  })
   async updatePopRecharge(
     @common.Param() params: PopRechargeWhereUniqueInput,
     @common.Body() data: PopRechargeUpdateInput

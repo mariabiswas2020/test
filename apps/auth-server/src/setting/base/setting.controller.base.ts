@@ -27,6 +27,9 @@ export class SettingControllerBase {
   constructor(protected readonly service: SettingService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Setting })
+  @swagger.ApiBody({
+    type: SettingCreateInput,
+  })
   async createSetting(
     @common.Body() data: SettingCreateInput
   ): Promise<Setting> {
@@ -80,6 +83,9 @@ export class SettingControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Setting })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiBody({
+    type: SettingUpdateInput,
+  })
   async updateSetting(
     @common.Param() params: SettingWhereUniqueInput,
     @common.Body() data: SettingUpdateInput

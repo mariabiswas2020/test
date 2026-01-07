@@ -39,6 +39,9 @@ export class PopControllerBase {
   constructor(protected readonly service: PopService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Pop })
+  @swagger.ApiBody({
+    type: PopCreateInput,
+  })
   async createPop(@common.Body() data: PopCreateInput): Promise<Pop> {
     return await this.service.createPop({
       data: {
@@ -174,6 +177,9 @@ export class PopControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Pop })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiBody({
+    type: PopUpdateInput,
+  })
   async updatePop(
     @common.Param() params: PopWhereUniqueInput,
     @common.Body() data: PopUpdateInput

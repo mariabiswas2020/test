@@ -27,6 +27,9 @@ export class BillSheetControllerBase {
   constructor(protected readonly service: BillSheetService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: BillSheet })
+  @swagger.ApiBody({
+    type: BillSheetCreateInput,
+  })
   async createBillSheet(
     @common.Body() data: BillSheetCreateInput
   ): Promise<BillSheet> {
@@ -113,6 +116,9 @@ export class BillSheetControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: BillSheet })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiBody({
+    type: BillSheetUpdateInput,
+  })
   async updateBillSheet(
     @common.Param() params: BillSheetWhereUniqueInput,
     @common.Body() data: BillSheetUpdateInput

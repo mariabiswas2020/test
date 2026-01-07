@@ -27,6 +27,9 @@ export class ResellerRechargeLogControllerBase {
   constructor(protected readonly service: ResellerRechargeLogService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: ResellerRechargeLog })
+  @swagger.ApiBody({
+    type: ResellerRechargeLogCreateInput,
+  })
   async createResellerRechargeLog(
     @common.Body() data: ResellerRechargeLogCreateInput
   ): Promise<ResellerRechargeLog> {
@@ -115,6 +118,9 @@ export class ResellerRechargeLogControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: ResellerRechargeLog })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiBody({
+    type: ResellerRechargeLogUpdateInput,
+  })
   async updateResellerRechargeLog(
     @common.Param() params: ResellerRechargeLogWhereUniqueInput,
     @common.Body() data: ResellerRechargeLogUpdateInput

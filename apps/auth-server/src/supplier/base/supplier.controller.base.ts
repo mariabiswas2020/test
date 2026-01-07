@@ -30,6 +30,9 @@ export class SupplierControllerBase {
   constructor(protected readonly service: SupplierService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Supplier })
+  @swagger.ApiBody({
+    type: SupplierCreateInput,
+  })
   async createSupplier(
     @common.Body() data: SupplierCreateInput
   ): Promise<Supplier> {
@@ -86,6 +89,9 @@ export class SupplierControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Supplier })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiBody({
+    type: SupplierUpdateInput,
+  })
   async updateSupplier(
     @common.Param() params: SupplierWhereUniqueInput,
     @common.Body() data: SupplierUpdateInput

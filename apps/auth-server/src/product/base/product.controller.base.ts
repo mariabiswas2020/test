@@ -33,6 +33,9 @@ export class ProductControllerBase {
   constructor(protected readonly service: ProductService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Product })
+  @swagger.ApiBody({
+    type: ProductCreateInput,
+  })
   async createProduct(
     @common.Body() data: ProductCreateInput
   ): Promise<Product> {
@@ -98,6 +101,9 @@ export class ProductControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Product })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiBody({
+    type: ProductUpdateInput,
+  })
   async updateProduct(
     @common.Param() params: ProductWhereUniqueInput,
     @common.Body() data: ProductUpdateInput

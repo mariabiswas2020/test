@@ -27,6 +27,9 @@ export class MarketingLeadControllerBase {
   constructor(protected readonly service: MarketingLeadService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: MarketingLead })
+  @swagger.ApiBody({
+    type: MarketingLeadCreateInput,
+  })
   async createMarketingLead(
     @common.Body() data: MarketingLeadCreateInput
   ): Promise<MarketingLead> {
@@ -130,6 +133,9 @@ export class MarketingLeadControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: MarketingLead })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiBody({
+    type: MarketingLeadUpdateInput,
+  })
   async updateMarketingLead(
     @common.Param() params: MarketingLeadWhereUniqueInput,
     @common.Body() data: MarketingLeadUpdateInput

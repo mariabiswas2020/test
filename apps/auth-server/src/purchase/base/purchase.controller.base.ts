@@ -33,6 +33,9 @@ export class PurchaseControllerBase {
   constructor(protected readonly service: PurchaseService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Purchase })
+  @swagger.ApiBody({
+    type: PurchaseCreateInput,
+  })
   async createPurchase(
     @common.Body() data: PurchaseCreateInput
   ): Promise<Purchase> {
@@ -116,6 +119,9 @@ export class PurchaseControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Purchase })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiBody({
+    type: PurchaseUpdateInput,
+  })
   async updatePurchase(
     @common.Param() params: PurchaseWhereUniqueInput,
     @common.Body() data: PurchaseUpdateInput

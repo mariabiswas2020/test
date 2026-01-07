@@ -27,6 +27,9 @@ export class ActivityLogControllerBase {
   constructor(protected readonly service: ActivityLogService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: ActivityLog })
+  @swagger.ApiBody({
+    type: ActivityLogCreateInput,
+  })
   async createActivityLog(
     @common.Body() data: ActivityLogCreateInput
   ): Promise<ActivityLog> {
@@ -110,6 +113,9 @@ export class ActivityLogControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: ActivityLog })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiBody({
+    type: ActivityLogUpdateInput,
+  })
   async updateActivityLog(
     @common.Param() params: ActivityLogWhereUniqueInput,
     @common.Body() data: ActivityLogUpdateInput

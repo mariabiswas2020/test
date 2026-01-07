@@ -27,6 +27,9 @@ export class TokenControllerBase {
   constructor(protected readonly service: TokenService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Token })
+  @swagger.ApiBody({
+    type: TokenCreateInput,
+  })
   async createToken(@common.Body() data: TokenCreateInput): Promise<Token> {
     return await this.service.createToken({
       data: {
@@ -162,6 +165,9 @@ export class TokenControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Token })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiBody({
+    type: TokenUpdateInput,
+  })
   async updateToken(
     @common.Param() params: TokenWhereUniqueInput,
     @common.Body() data: TokenUpdateInput

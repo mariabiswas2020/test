@@ -27,6 +27,9 @@ export class EmployeeControllerBase {
   constructor(protected readonly service: EmployeeService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Employee })
+  @swagger.ApiBody({
+    type: EmployeeCreateInput,
+  })
   async createEmployee(
     @common.Body() data: EmployeeCreateInput
   ): Promise<Employee> {
@@ -113,6 +116,9 @@ export class EmployeeControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Employee })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiBody({
+    type: EmployeeUpdateInput,
+  })
   async updateEmployee(
     @common.Param() params: EmployeeWhereUniqueInput,
     @common.Body() data: EmployeeUpdateInput
